@@ -1,0 +1,1027 @@
+fileFormatVersion: 2
+guid: 676cc6eb785dd4d7dbf8b3b556fb712e
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: -621399361019285132
+    second: bg_pattern_tile_0
+  - first:
+      213: -2782795527938481173
+    second: bg_pattern_tile_1
+  - first:
+      213: -3080289942309275110
+    second: bg_pattern_tile_2
+  - first:
+      213: -4151318643931372449
+    second: bg_pattern_tile_3
+  - first:
+      213: -2491943231197307729
+    second: bg_pattern_tile_4
+  - first:
+      213: -1984790135877445008
+    second: bg_pattern_tile_5
+  - first:
+      213: -1725384861036871000
+    second: bg_pattern_tile_6
+  - first:
+      213: -2172875287561253859
+    second: bg_pattern_tile_7
+  - first:
+      213: -7457936268917258246
+    second: bg_pattern_tile_8
+  - first:
+      213: 3889212718070505593
+    second: bg_pattern_tile_9
+  - first:
+      213: 3303240989263459548
+    second: bg_pattern_tile_10
+  - first:
+      213: 738704266954721229
+    second: bg_pattern_tile_11
+  - first:
+      213: -7215896102189072497
+    second: bg_pattern_tile_12
+  - first:
+      213: -7561784152711571670
+    second: bg_pattern_tile_13
+  - first:
+      213: -1722985883319525651
+    second: bg_pattern_tile_14
+  - first:
+      213: -3630874069561130428
+    second: bg_pattern_tile_15
+  - first:
+      213: 9119414258004996781
+    second: bg_pattern_tile_16
+  - first:
+      213: 2009570681970082006
+    second: bg_pattern_tile_17
+  - first:
+      213: 481707403235925328
+    second: bg_pattern_tile_18
+  - first:
+      213: 6948897001281022706
+    second: bg_pattern_tile_19
+  - first:
+      213: -5870430021135646728
+    second: bg_pattern_tile_20
+  - first:
+      213: 5683253930002286672
+    second: bg_pattern_tile_21
+  - first:
+      213: -1359196399473070188
+    second: bg_pattern_tile_22
+  - first:
+      213: 8528983451745210359
+    second: bg_pattern_tile_23
+  - first:
+      213: -8116969856677858199
+    second: bg_pattern_tile_24
+  - first:
+      213: -1337032653588226278
+    second: bg_pattern_tile_25
+  - first:
+      213: 8965991609054663239
+    second: bg_pattern_tile_26
+  - first:
+      213: 9170718120153804578
+    second: bg_pattern_tile_27
+  - first:
+      213: -4965684670318708485
+    second: bg_pattern_tile_28
+  - first:
+      213: 5885594213042881736
+    second: bg_pattern_tile_29
+  - first:
+      213: 2305021640937919369
+    second: bg_pattern_tile_30
+  - first:
+      213: 2946840125155819348
+    second: bg_pattern_tile_31
+  - first:
+      213: -8855082433515734922
+    second: bg_pattern_tile_32
+  - first:
+      213: -159011291923718344
+    second: bg_pattern_tile_33
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 1
+    aniso: 1
+    mipBias: 0
+    wrapU: 0
+    wrapV: 0
+    wrapW: 0
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 1
+  spriteExtrude: 1
+  spriteMeshType: 0
+  alignment: 0
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 100
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 1024
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Android
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: iOS
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: bg_pattern_tile_0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 822
+        width: 86
+        height: 163
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 4717acec2985067f0800000000000000
+      internalID: -621399361019285132
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: bg_pattern_tile_1
+      rect:
+        serializedVersion: 2
+        x: 203
+        y: 878
+        width: 79
+        height: 75
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: be36ea216368169d0800000000000000
+      internalID: -2782795527938481173
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: bg_pattern_tile_2
+      rect:
+        serializedVersion: 2
+        x: 417
+        y: 853
+        width: 147
+        height: 95
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a1a72771e9c9045d0800000000000000
+      internalID: -3080289942309275110
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: bg_pattern_tile_3
+      rect:
+        serializedVersion: 2
+        x: 714
+        y: 857
+        width: 148
+        height: 115
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: f54a30f10bd8366c0800000000000000
+      internalID: -4151318643931372449
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: bg_pattern_tile_4
+      rect:
+        serializedVersion: 2
+        x: 944
+        y: 821
+        width: 80
+        height: 137
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: fac9b0885d6da6dd0800000000000000
+      internalID: -2491943231197307729
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: bg_pattern_tile_5
+      rect:
+        serializedVersion: 2
+        x: 154
+        y: 731
+        width: 46
+        height: 51
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 07a535523eb9474e0800000000000000
+      internalID: -1984790135877445008
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: bg_pattern_tile_6
+      rect:
+        serializedVersion: 2
+        x: 199
+        y: 748
+        width: 44
+        height: 55
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 8a28f014c933e08e0800000000000000
+      internalID: -1725384861036871000
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: bg_pattern_tile_7
+      rect:
+        serializedVersion: 2
+        x: 244
+        y: 729
+        width: 41
+        height: 52
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: d1ccfa7307568d1e0800000000000000
+      internalID: -2172875287561253859
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: bg_pattern_tile_8
+      rect:
+        serializedVersion: 2
+        x: 717
+        y: 593
+        width: 192
+        height: 160
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: af74fad2a76108890800000000000000
+      internalID: -7457936268917258246
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: bg_pattern_tile_9
+      rect:
+        serializedVersion: 2
+        x: 134
+        y: 688
+        width: 48
+        height: 48
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 97026847c5249f530800000000000000
+      internalID: 3889212718070505593
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: bg_pattern_tile_10
+      rect:
+        serializedVersion: 2
+        x: 176
+        y: 648
+        width: 107
+        height: 98
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: cd4fe8cad2877dd20800000000000000
+      internalID: 3303240989263459548
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: bg_pattern_tile_11
+      rect:
+        serializedVersion: 2
+        x: 423
+        y: 604
+        width: 142
+        height: 102
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: dc7c6e1fd97604a00800000000000000
+      internalID: 738704266954721229
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: bg_pattern_tile_12
+      rect:
+        serializedVersion: 2
+        x: 546
+        y: 640
+        width: 51
+        height: 65
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: f8ff4ecf9bcfbdb90800000000000000
+      internalID: -7215896102189072497
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: bg_pattern_tile_13
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 598
+        width: 7
+        height: 35
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a27d27d80652f0790800000000000000
+      internalID: -7561784152711571670
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: bg_pattern_tile_14
+      rect:
+        serializedVersion: 2
+        x: 11
+        y: 581
+        width: 38
+        height: 46
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: dee1ab7c779b618e0800000000000000
+      internalID: -1722985883319525651
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: bg_pattern_tile_15
+      rect:
+        serializedVersion: 2
+        x: 959
+        y: 569
+        width: 36
+        height: 48
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 442c1ab554b8c9dc0800000000000000
+      internalID: -3630874069561130428
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: bg_pattern_tile_16
+      rect:
+        serializedVersion: 2
+        x: 996
+        y: 590
+        width: 28
+        height: 49
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: da2350073faae8e70800000000000000
+      internalID: 9119414258004996781
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: bg_pattern_tile_17
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 505
+        width: 36
+        height: 85
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 6d0cdd953ed63eb10800000000000000
+      internalID: 2009570681970082006
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: bg_pattern_tile_18
+      rect:
+        serializedVersion: 2
+        x: 31
+        y: 545
+        width: 40
+        height: 44
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 05d9d8fb45e5fa600800000000000000
+      internalID: 481707403235925328
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: bg_pattern_tile_19
+      rect:
+        serializedVersion: 2
+        x: 966
+        y: 511
+        width: 58
+        height: 79
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 2fae12e71017f6060800000000000000
+      internalID: 6948897001281022706
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: bg_pattern_tile_20
+      rect:
+        serializedVersion: 2
+        x: 217
+        y: 445
+        width: 66
+        height: 66
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 8ffbb67affa088ea0800000000000000
+      internalID: -5870430021135646728
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: bg_pattern_tile_21
+      rect:
+        serializedVersion: 2
+        x: 428
+        y: 341
+        width: 168
+        height: 115
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 05801229659fede40800000000000000
+      internalID: 5683253930002286672
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: bg_pattern_tile_22
+      rect:
+        serializedVersion: 2
+        x: 670
+        y: 453
+        width: 65
+        height: 66
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 49fea65731a232de0800000000000000
+      internalID: -1359196399473070188
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: bg_pattern_tile_23
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 311
+        width: 79
+        height: 90
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 7ff4578c2490d5670800000000000000
+      internalID: 8528983451745210359
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: bg_pattern_tile_24
+      rect:
+        serializedVersion: 2
+        x: 777
+        y: 292
+        width: 92
+        height: 84
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 964b920cbeaba5f80800000000000000
+      internalID: -8116969856677858199
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: bg_pattern_tile_25
+      rect:
+        serializedVersion: 2
+        x: 973
+        y: 311
+        width: 51
+        height: 87
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a1f96cda2e7e17de0800000000000000
+      internalID: -1337032653588226278
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: bg_pattern_tile_26
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 66
+        width: 91
+        height: 157
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 74216d45dd99d6c70800000000000000
+      internalID: 8965991609054663239
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: bg_pattern_tile_27
+      rect:
+        serializedVersion: 2
+        x: 210
+        y: 201
+        width: 102
+        height: 94
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 22f610faa8fe44f70800000000000000
+      internalID: 9170718120153804578
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: bg_pattern_tile_28
+      rect:
+        serializedVersion: 2
+        x: 592
+        y: 202
+        width: 65
+        height: 67
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: bf8fc070a18561bb0800000000000000
+      internalID: -4965684670318708485
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: bg_pattern_tile_29
+      rect:
+        serializedVersion: 2
+        x: 192
+        y: 28
+        width: 67
+        height: 66
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 8c40488e0c4dda150800000000000000
+      internalID: 5885594213042881736
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: bg_pattern_tile_30
+      rect:
+        serializedVersion: 2
+        x: 337
+        y: 33
+        width: 169
+        height: 139
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 98351bb48f41dff10800000000000000
+      internalID: 2305021640937919369
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: bg_pattern_tile_31
+      rect:
+        serializedVersion: 2
+        x: 683
+        y: 40
+        width: 146
+        height: 114
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 45fb7c51b7745e820800000000000000
+      internalID: 2946840125155819348
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: bg_pattern_tile_32
+      rect:
+        serializedVersion: 2
+        x: 804
+        y: 89
+        width: 51
+        height: 65
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 6783e75617d6c1580800000000000000
+      internalID: -8855082433515734922
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: bg_pattern_tile_33
+      rect:
+        serializedVersion: 2
+        x: 958
+        y: 66
+        width: 66
+        height: 131
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 83f5c9d82141bcdf0800000000000000
+      internalID: -159011291923718344
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: 5e97eb03825dee720800000000000000
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      bg_pattern_tile_0: -621399361019285132
+      bg_pattern_tile_1: -2782795527938481173
+      bg_pattern_tile_10: 3303240989263459548
+      bg_pattern_tile_11: 738704266954721229
+      bg_pattern_tile_12: -7215896102189072497
+      bg_pattern_tile_13: -7561784152711571670
+      bg_pattern_tile_14: -1722985883319525651
+      bg_pattern_tile_15: -3630874069561130428
+      bg_pattern_tile_16: 9119414258004996781
+      bg_pattern_tile_17: 2009570681970082006
+      bg_pattern_tile_18: 481707403235925328
+      bg_pattern_tile_19: 6948897001281022706
+      bg_pattern_tile_2: -3080289942309275110
+      bg_pattern_tile_20: -5870430021135646728
+      bg_pattern_tile_21: 5683253930002286672
+      bg_pattern_tile_22: -1359196399473070188
+      bg_pattern_tile_23: 8528983451745210359
+      bg_pattern_tile_24: -8116969856677858199
+      bg_pattern_tile_25: -1337032653588226278
+      bg_pattern_tile_26: 8965991609054663239
+      bg_pattern_tile_27: 9170718120153804578
+      bg_pattern_tile_28: -4965684670318708485
+      bg_pattern_tile_29: 5885594213042881736
+      bg_pattern_tile_3: -4151318643931372449
+      bg_pattern_tile_30: 2305021640937919369
+      bg_pattern_tile_31: 2946840125155819348
+      bg_pattern_tile_32: -8855082433515734922
+      bg_pattern_tile_33: -159011291923718344
+      bg_pattern_tile_4: -2491943231197307729
+      bg_pattern_tile_5: -1984790135877445008
+      bg_pattern_tile_6: -1725384861036871000
+      bg_pattern_tile_7: -2172875287561253859
+      bg_pattern_tile_8: -7457936268917258246
+      bg_pattern_tile_9: 3889212718070505593
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

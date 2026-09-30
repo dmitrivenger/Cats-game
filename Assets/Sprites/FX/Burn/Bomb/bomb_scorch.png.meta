@@ -1,0 +1,1193 @@
+fileFormatVersion: 2
+guid: c81ee8597036b45189632bd55e37d45f
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: 7677667356588528710
+    second: bomb_scorch_0
+  - first:
+      213: 4374007943348109902
+    second: bomb_scorch_1
+  - first:
+      213: 7808145981916539192
+    second: bomb_scorch_2
+  - first:
+      213: 25686606877109167
+    second: bomb_scorch_3
+  - first:
+      213: -5225167116290421936
+    second: bomb_scorch_4
+  - first:
+      213: -3508903318491620458
+    second: bomb_scorch_5
+  - first:
+      213: -909584405085349412
+    second: bomb_scorch_6
+  - first:
+      213: -4898935943270005333
+    second: bomb_scorch_7
+  - first:
+      213: 6621548304183478034
+    second: bomb_scorch_8
+  - first:
+      213: 9038910519824703665
+    second: bomb_scorch_9
+  - first:
+      213: -6431766007912479983
+    second: bomb_scorch_10
+  - first:
+      213: 435488310121604299
+    second: bomb_scorch_11
+  - first:
+      213: -1051807470923515728
+    second: bomb_scorch_12
+  - first:
+      213: 6128649873939615753
+    second: bomb_scorch_13
+  - first:
+      213: -6643260731099751474
+    second: bomb_scorch_14
+  - first:
+      213: 4001081809725010185
+    second: bomb_scorch_15
+  - first:
+      213: -5806533163151844611
+    second: bomb_scorch_16
+  - first:
+      213: -15140715976221658
+    second: bomb_scorch_17
+  - first:
+      213: 2231821181457312247
+    second: bomb_scorch_18
+  - first:
+      213: 7488715684837452649
+    second: bomb_scorch_19
+  - first:
+      213: -8688839414271055286
+    second: bomb_scorch_20
+  - first:
+      213: 825373403369147073
+    second: bomb_scorch_21
+  - first:
+      213: 945418423966105596
+    second: bomb_scorch_22
+  - first:
+      213: 5516441388204785967
+    second: bomb_scorch_23
+  - first:
+      213: 5162036417829413076
+    second: bomb_scorch_24
+  - first:
+      213: 6994497814017696924
+    second: bomb_scorch_25
+  - first:
+      213: -1129261861790271346
+    second: bomb_scorch_26
+  - first:
+      213: 8279588641654550814
+    second: bomb_scorch_27
+  - first:
+      213: -2057992843269983956
+    second: bomb_scorch_28
+  - first:
+      213: 8045595402325061956
+    second: bomb_scorch_29
+  - first:
+      213: 1188953019732853022
+    second: bomb_scorch_30
+  - first:
+      213: 3096561148031010359
+    second: bomb_scorch_31
+  - first:
+      213: 2876545617812019385
+    second: bomb_scorch_32
+  - first:
+      213: 7049459240642564421
+    second: bomb_scorch_33
+  - first:
+      213: 3822235928488832983
+    second: bomb_scorch_34
+  - first:
+      213: -5951140479898106604
+    second: bomb_scorch_35
+  - first:
+      213: 1460671198462100192
+    second: bomb_scorch_36
+  - first:
+      213: 4577878924597874302
+    second: bomb_scorch_37
+  - first:
+      213: 2187944592868651967
+    second: bomb_scorch_38
+  - first:
+      213: 5718452395728732631
+    second: bomb_scorch_39
+  - first:
+      213: 4080880850604163133
+    second: bomb_scorch_40
+  - first:
+      213: 5988032463084488668
+    second: bomb_scorch_41
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 1
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 1
+  spriteExtrude: 1
+  spriteMeshType: 0
+  alignment: 0
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 100
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 512
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Android
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: iOS
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: bomb_scorch_0
+      rect:
+        serializedVersion: 2
+        x: 592
+        y: 982
+        width: 9
+        height: 8
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 644521568cd8c8a60800000000000000
+      internalID: 7677667356588528710
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: bomb_scorch_1
+      rect:
+        serializedVersion: 2
+        x: 561
+        y: 948
+        width: 17
+        height: 22
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e42400ccc0993bc30800000000000000
+      internalID: 4374007943348109902
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: bomb_scorch_2
+      rect:
+        serializedVersion: 2
+        x: 200
+        y: 902
+        width: 13
+        height: 16
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 8396786b66b1c5c60800000000000000
+      internalID: 7808145981916539192
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: bomb_scorch_3
+      rect:
+        serializedVersion: 2
+        x: 273
+        y: 639
+        width: 227
+        height: 296
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: fab256635d14b5000800000000000000
+      internalID: 25686606877109167
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: bomb_scorch_4
+      rect:
+        serializedVersion: 2
+        x: 539
+        y: 634
+        width: 224
+        height: 295
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 05b057d113a7c77b0800000000000000
+      internalID: -5225167116290421936
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: bomb_scorch_5
+      rect:
+        serializedVersion: 2
+        x: 821
+        y: 873
+        width: 16
+        height: 17
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 69b1e16d50fdd4fc0800000000000000
+      internalID: -3508903318491620458
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: bomb_scorch_6
+      rect:
+        serializedVersion: 2
+        x: 857
+        y: 875
+        width: 18
+        height: 24
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: cd917a18dc18063f0800000000000000
+      internalID: -909584405085349412
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: bomb_scorch_7
+      rect:
+        serializedVersion: 2
+        x: 180
+        y: 790
+        width: 25
+        height: 21
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ba58ffb17bb730cb0800000000000000
+      internalID: -4898935943270005333
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: bomb_scorch_8
+      rect:
+        serializedVersion: 2
+        x: 200
+        y: 807
+        width: 18
+        height: 18
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 21742f5a91774eb50800000000000000
+      internalID: 6621548304183478034
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: bomb_scorch_9
+      rect:
+        serializedVersion: 2
+        x: 809
+        y: 778
+        width: 26
+        height: 30
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 1b061b24a39a07d70800000000000000
+      internalID: 9038910519824703665
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: bomb_scorch_10
+      rect:
+        serializedVersion: 2
+        x: 877
+        y: 807
+        width: 17
+        height: 16
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 113c1fb84e6cdb6a0800000000000000
+      internalID: -6431766007912479983
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: bomb_scorch_11
+      rect:
+        serializedVersion: 2
+        x: 215
+        y: 772
+        width: 14
+        height: 13
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: bc422ac8f4a2b0600800000000000000
+      internalID: 435488310121604299
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: bomb_scorch_12
+      rect:
+        serializedVersion: 2
+        x: 725
+        y: 461
+        width: 242
+        height: 275
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 0b8708b8daa3761f0800000000000000
+      internalID: -1051807470923515728
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: bomb_scorch_13
+      rect:
+        serializedVersion: 2
+        x: 913
+        y: 730
+        width: 24
+        height: 18
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 900d9e0e6965d0550800000000000000
+      internalID: 6128649873939615753
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: bomb_scorch_14
+      rect:
+        serializedVersion: 2
+        x: 55
+        y: 659
+        width: 12
+        height: 10
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ecb5f7400956ec3a0800000000000000
+      internalID: -6643260731099751474
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: bomb_scorch_15
+      rect:
+        serializedVersion: 2
+        x: 75
+        y: 665
+        width: 8
+        height: 9
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 901bfe115b2b68730800000000000000
+      internalID: 4001081809725010185
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: bomb_scorch_16
+      rect:
+        serializedVersion: 2
+        x: 84
+        y: 457
+        width: 224
+        height: 272
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: dfa1fc93adc0b6fa0800000000000000
+      internalID: -5806533163151844611
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: bomb_scorch_17
+      rect:
+        serializedVersion: 2
+        x: 63
+        y: 640
+        width: 15
+        height: 16
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 62c979a59953acff0800000000000000
+      internalID: -15140715976221658
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: bomb_scorch_18
+      rect:
+        serializedVersion: 2
+        x: 76
+        y: 576
+        width: 15
+        height: 17
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 7f9a4f23a8509fe10800000000000000
+      internalID: 2231821181457312247
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: bomb_scorch_19
+      rect:
+        serializedVersion: 2
+        x: 179
+        y: 100
+        width: 669
+        height: 531
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 96be1aa0d334de760800000000000000
+      internalID: 7488715684837452649
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: bomb_scorch_20
+      rect:
+        serializedVersion: 2
+        x: 125
+        y: 419
+        width: 15
+        height: 14
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a4ae5f1969a0b6780800000000000000
+      internalID: -8688839414271055286
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: bomb_scorch_21
+      rect:
+        serializedVersion: 2
+        x: 166
+        y: 387
+        width: 14
+        height: 15
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 1ca8fd2ccb0547b00800000000000000
+      internalID: 825373403369147073
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: bomb_scorch_22
+      rect:
+        serializedVersion: 2
+        x: 906
+        y: 399
+        width: 12
+        height: 12
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: cfffb9c2c0dce1d00800000000000000
+      internalID: 945418423966105596
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: bomb_scorch_23
+      rect:
+        serializedVersion: 2
+        x: 136
+        y: 358
+        width: 24
+        height: 22
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: f21853817365e8c40800000000000000
+      internalID: 5516441388204785967
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: bomb_scorch_24
+      rect:
+        serializedVersion: 2
+        x: 862
+        y: 372
+        width: 27
+        height: 25
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 4d02a5ab5cc33a740800000000000000
+      internalID: 5162036417829413076
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: bomb_scorch_25
+      rect:
+        serializedVersion: 2
+        x: 919
+        y: 347
+        width: 11
+        height: 12
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: c9465c214b2711160800000000000000
+      internalID: 6994497814017696924
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: bomb_scorch_26
+      rect:
+        serializedVersion: 2
+        x: 888
+        y: 312
+        width: 18
+        height: 19
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e88389dd15e0450f0800000000000000
+      internalID: -1129261861790271346
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: bomb_scorch_27
+      rect:
+        serializedVersion: 2
+        x: 100
+        y: 276
+        width: 19
+        height: 22
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e11bd20a00207e270800000000000000
+      internalID: 8279588641654550814
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: bomb_scorch_28
+      rect:
+        serializedVersion: 2
+        x: 166
+        y: 231
+        width: 18
+        height: 15
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: c21b89aa96a8073e0800000000000000
+      internalID: -2057992843269983956
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: bomb_scorch_29
+      rect:
+        serializedVersion: 2
+        x: 167
+        y: 199
+        width: 39
+        height: 39
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 441f91a1462b7af60800000000000000
+      internalID: 8045595402325061956
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: bomb_scorch_30
+      rect:
+        serializedVersion: 2
+        x: 837
+        y: 233
+        width: 10
+        height: 7
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e110ecbd872008010800000000000000
+      internalID: 1188953019732853022
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: bomb_scorch_31
+      rect:
+        serializedVersion: 2
+        x: 839
+        y: 205
+        width: 6
+        height: 6
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 7360aa535f139fa20800000000000000
+      internalID: 3096561148031010359
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: bomb_scorch_32
+      rect:
+        serializedVersion: 2
+        x: 182
+        y: 165
+        width: 6
+        height: 10
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 9b854e1bffa8be720800000000000000
+      internalID: 2876545617812019385
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: bomb_scorch_33
+      rect:
+        serializedVersion: 2
+        x: 173
+        y: 141
+        width: 14
+        height: 16
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 541581964d5b4d160800000000000000
+      internalID: 7049459240642564421
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: bomb_scorch_34
+      rect:
+        serializedVersion: 2
+        x: 835
+        y: 143
+        width: 19
+        height: 14
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 7dfef4d635f4b0530800000000000000
+      internalID: 3822235928488832983
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: bomb_scorch_35
+      rect:
+        serializedVersion: 2
+        x: 836
+        y: 122
+        width: 13
+        height: 14
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 415c937934d496da0800000000000000
+      internalID: -5951140479898106604
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: bomb_scorch_36
+      rect:
+        serializedVersion: 2
+        x: 560
+        y: 101
+        width: 7
+        height: 7
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 0e24afd47b8554410800000000000000
+      internalID: 1460671198462100192
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: bomb_scorch_37
+      rect:
+        serializedVersion: 2
+        x: 569
+        y: 83
+        width: 20
+        height: 21
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e7e476590a4e78f30800000000000000
+      internalID: 4577878924597874302
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: bomb_scorch_38
+      rect:
+        serializedVersion: 2
+        x: 574
+        y: 103
+        width: 7
+        height: 9
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: fb33c26d3042d5e10800000000000000
+      internalID: 2187944592868651967
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: bomb_scorch_39
+      rect:
+        serializedVersion: 2
+        x: 588
+        y: 86
+        width: 19
+        height: 19
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 7d1846008260c5f40800000000000000
+      internalID: 5718452395728732631
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: bomb_scorch_40
+      rect:
+        serializedVersion: 2
+        x: 459
+        y: 66
+        width: 25
+        height: 29
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: d3084fe138332a830800000000000000
+      internalID: 4080880850604163133
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: bomb_scorch_41
+      rect:
+        serializedVersion: 2
+        x: 554
+        y: 35
+        width: 12
+        height: 14
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: cd788a99cc3c91350800000000000000
+      internalID: 5988032463084488668
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: 5e97eb03825dee720800000000000000
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable: {}
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

@@ -1,0 +1,2512 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 799467751095344c59e78e24575d5c17, type: 3}
+  m_Name: GameArt
+  m_EditorClassIdentifier: Assembly-CSharp::GameArt
+  sprites:
+  - key: cat_0
+    path: Assets/Sprites/red.png
+    sprite: {fileID: 21300000, guid: 78c60a54112404f9a82a68ddb708115c, type: 3}
+    content:
+      serializedVersion: 2
+      x: 0.0234375
+      y: 0.016806724
+      width: 0.9375
+      height: 0.9579832
+    stamp: 639261979309732335
+  - key: cat_0_an
+    path: Assets/Sprites/red-an.png
+    sprite: {fileID: 21300000, guid: 36784503a155a4c3ab07bd71f58c1ac7, type: 3}
+    content:
+      serializedVersion: 2
+      x: 0.03125
+      y: 0.008403362
+      width: 0.92578125
+      height: 0.96638656
+    stamp: 639261979286359995
+  - key: cat_1
+    path: Assets/Sprites/white.png
+    sprite: {fileID: 21300000, guid: 2e9b67b8e49a6475bb74e90dd8d0fca1, type: 3}
+    content:
+      serializedVersion: 2
+      x: 0.02734375
+      y: 0.004201681
+      width: 0.94921875
+      height: 0.9747899
+    stamp: 639261979306758505
+  - key: cat_1_an
+    path: Assets/Sprites/white_an.png
+    sprite: {fileID: 21300000, guid: 82a2b345c6a3c4684aed218c281f65ac, type: 3}
+    content:
+      serializedVersion: 2
+      x: 0.0234375
+      y: 0.012605042
+      width: 0.9609375
+      height: 0.9747899
+    stamp: 639261979290009604
+  - key: cat_2
+    path: Assets/Sprites/grey.png
+    sprite: {fileID: 21300000, guid: cfa75d12e49484524ad0a6084bc77952, type: 3}
+    content:
+      serializedVersion: 2
+      x: 0.05859375
+      y: 0.024390243
+      width: 0.88671875
+      height: 0.9268293
+    stamp: 639261979300532347
+  - key: cat_2_an
+    path: Assets/Sprites/grey_an.png
+    sprite: {fileID: 21300000, guid: 4f0365fd49f5b4ac1ad5f4544bf4d6ff, type: 3}
+    content:
+      serializedVersion: 2
+      x: 0.02734375
+      y: 0.0121951215
+      width: 0.953125
+      height: 0.9593496
+    stamp: 639261979308188888
+  - key: cat_3
+    path: Assets/Sprites/black.png
+    sprite: {fileID: 21300000, guid: 9b38c7bca51214f03919e87ade480bb4, type: 3}
+    content:
+      serializedVersion: 2
+      x: 0.0390625
+      y: 0.008130081
+      width: 0.93359375
+      height: 0.9593496
+    stamp: 639261979291831245
+  - key: cat_3_an
+    path: Assets/Sprites/black-an.png
+    sprite: {fileID: 21300000, guid: 18392769f149c425db26cbf26a59896d, type: 3}
+    content:
+      serializedVersion: 2
+      x: 0.02734375
+      y: 0.0040650405
+      width: 0.953125
+      height: 0.9756098
+    stamp: 639261979283282635
+  - key: cat_4
+    path: Assets/Sprites/yellow_black.png
+    sprite: {fileID: 21300000, guid: 54303a1180617432492a36488504e53e, type: 3}
+    content:
+      serializedVersion: 2
+      x: 0.04296875
+      y: 0.03125
+      width: 0.91796875
+      height: 0.953125
+    stamp: 639261979302092369
+  - key: cat_4_an
+    path: Assets/Sprites/yellow_black-an.png
+    sprite: {fileID: 21300000, guid: 08eeab0c6356940739594030cf5772bb, type: 3}
+    content:
+      serializedVersion: 2
+      x: 0.03515625
+      y: 0.01953125
+      width: 0.93359375
+      height: 0.96875
+    stamp: 639261979293331608
+  - key: mint_face_0
+    path: Assets/Sprites/mint_face_red.png
+    sprite: {fileID: 21300000, guid: cb73ec647097f4db78aa805a6630d8b8, type: 3}
+    content:
+      serializedVersion: 2
+      x: 0.01953125
+      y: 0.046875
+      width: 0.9609375
+      height: 0.91015625
+    stamp: 639261979273537035
+  - key: mint_face_1
+    path: Assets/Sprites/mint_face_white.png
+    sprite: {fileID: 21300000, guid: 2484b6bf7e55c4001a8e683ea8370519, type: 3}
+    content:
+      serializedVersion: 2
+      x: 0.01953125
+      y: 0.04296875
+      width: 0.9609375
+      height: 0.91796875
+    stamp: 639261979279295610
+  - key: mint_face_2
+    path: Assets/Sprites/mint_face_grey.png
+    sprite: {fileID: 21300000, guid: 7d8a61059095a4b2680f86d64789688b, type: 3}
+    content:
+      serializedVersion: 2
+      x: 0.01953125
+      y: 0.02734375
+      width: 0.9609375
+      height: 0.94921875
+    stamp: 639261979281438114
+  - key: mint_face_3
+    path: Assets/Sprites/mint_face_black.png
+    sprite: {fileID: 21300000, guid: 71639744db8e94aadb14c62dce27d091, type: 3}
+    content:
+      serializedVersion: 2
+      x: 0.01953125
+      y: 0.02734375
+      width: 0.9609375
+      height: 0.94921875
+    stamp: 639261979297700694
+  - key: mint_face_4
+    path: Assets/Sprites/mint_face_yellow.png
+    sprite: {fileID: 21300000, guid: bc121dcf79bcd4d81a6752feb71bcc9e, type: 3}
+    content:
+      serializedVersion: 2
+      x: 0.04296875
+      y: 0.01953125
+      width: 0.9140625
+      height: 0.9609375
+    stamp: 639261979275655382
+  - key: special_line
+    path: Assets/Sprites/cat-cross.png
+    sprite: {fileID: 21300000, guid: a5d4c930c7cea44e9b07f16dea50da42, type: 3}
+    content:
+      serializedVersion: 2
+      x: 0
+      y: 0.015625
+      width: 1
+      height: 0.984375
+    stamp: 639261979287857288
+  - key: special_bomb
+    path: Assets/Sprites/cat-bomb.png
+    sprite: {fileID: 21300000, guid: 18cf825039feb44838d65d9b4db375c2, type: 3}
+    content:
+      serializedVersion: 2
+      x: 0.02734375
+      y: 0
+      width: 0.97265625
+      height: 1
+    stamp: 639261979295082925
+  - key: special_rainbow
+    path: Assets/Sprites/cat-rainbow.png
+    sprite: {fileID: 21300000, guid: 3c2551b642510440b867213cd01e20c1, type: 3}
+    content:
+      serializedVersion: 2
+      x: 0.015625
+      y: 0.01171875
+      width: 0.984375
+      height: 0.97265625
+    stamp: 639261979284945363
+  - key: special_hunter
+    path: Assets/Sprites/Cat-hunter.png
+    sprite: {fileID: 21300000, guid: 451cd599a0311408e8257179f3501590, type: 3}
+    content:
+      serializedVersion: 2
+      x: 0.015625
+      y: 0.0078125
+      width: 0.984375
+      height: 0.98828125
+    stamp: 639261979299177387
+  - key: special_hunter_an
+    path: Assets/Sprites/Cat-hunter.png
+    sprite: {fileID: 21300000, guid: 451cd599a0311408e8257179f3501590, type: 3}
+    content:
+      serializedVersion: 2
+      x: 0.015625
+      y: 0.0078125
+      width: 0.984375
+      height: 0.98828125
+    stamp: 639261979299177387
+  - key: box_full
+    path: Assets/Sprites/Cat-blockers/box_full.png
+    sprite: {fileID: 21300000, guid: 6f31abedd7ac745ddb8d960be0c79e90, type: 3}
+    content:
+      serializedVersion: 2
+      x: 0.00390625
+      y: 0.0625
+      width: 0.99609375
+      height: 0.59375
+    stamp: 639261979339854322
+  - key: box_damaged
+    path: Assets/Sprites/Cat-blockers/box_damaged.png
+    sprite: {fileID: 21300000, guid: fa70ca62d007241688f8eb9a09e82a1b, type: 3}
+    content:
+      serializedVersion: 2
+      x: 0.03125
+      y: 0.0625
+      width: 0.96875
+      height: 0.59375
+    stamp: 639261979321490380
+  - key: box_full_back
+    path: Assets/Sprites/Cat-blockers/split/box_full_back.png
+    sprite: {fileID: 21300000, guid: 5bdd28cfdd9ba40c389066992d700117, type: 3}
+    content:
+      serializedVersion: 2
+      x: 0.00390625
+      y: 0.44140625
+      width: 0.99609375
+      height: 0.21484375
+    stamp: 639261979344994492
+  - key: box_full_front
+    path: Assets/Sprites/Cat-blockers/split/box_full_front.png
+    sprite: {fileID: 21300000, guid: 0309a4d12c16040bcafc42708e423952, type: 3}
+    content:
+      serializedVersion: 2
+      x: 0.0859375
+      y: 0.0625
+      width: 0.828125
+      height: 0.37890625
+    stamp: 639261979342415243
+  - key: box_damaged_back
+    path: Assets/Sprites/Cat-blockers/split/box_damaged_back.png
+    sprite: {fileID: 21300000, guid: c137e14f6a24e47e6b5c7d8d44b92f4f, type: 3}
+    content:
+      serializedVersion: 2
+      x: 0.12890625
+      y: 0.44140625
+      width: 0.87109375
+      height: 0.21484375
+    stamp: 639261979343531804
+  - key: box_damaged_front
+    path: Assets/Sprites/Cat-blockers/split/box_damaged_front.png
+    sprite: {fileID: 21300000, guid: 6b6d9188b9f9a490e886e3e1128e6708, type: 3}
+    content:
+      serializedVersion: 2
+      x: 0.03125
+      y: 0.0625
+      width: 0.88671875
+      height: 0.37890625
+    stamp: 639261979346303808
+  - key: yarn_wrap
+    path: Assets/Sprites/Cat-blockers/yarn_wrap.png
+    sprite: {fileID: 21300000, guid: 9b9f4819511a64310bb2e71a036aae48, type: 3}
+    content:
+      serializedVersion: 2
+      x: 0.08203125
+      y: 0.07421875
+      width: 0.8359375
+      height: 0.84375
+    stamp: 639261979334207834
+  - key: yarn_ball
+    path: Assets/Sprites/Cat-blockers/yarn_ball.png
+    sprite: {fileID: 21300000, guid: fe2d279428a3e4132a7f8e5083388174, type: 3}
+    content:
+      serializedVersion: 2
+      x: 0.16796875
+      y: 0.16796875
+      width: 0.74609375
+      height: 0.62109375
+    stamp: 639261979311405426
+  - key: mint_wreath
+    path: Assets/Sprites/Cat-blockers/mint_wreath.png
+    sprite: {fileID: 21300000, guid: 6077a5fcb3dad4ad5b38cc9a27f71b9a, type: 3}
+    content:
+      serializedVersion: 2
+      x: 0.01953125
+      y: 0.03515625
+      width: 0.9609375
+      height: 0.9296875
+    stamp: 639261979331165058
+  - key: chest_closed
+    path: Assets/ui/Chest/chest_closed.png
+    sprite: {fileID: 21300000, guid: a32d904d1030d489da5c173e5217eea2, type: 3}
+    content:
+      serializedVersion: 2
+      x: 0.00390625
+      y: 0.006849315
+      width: 0.9941406
+      height: 0.98858446
+    stamp: 639263697794215086
+  - key: chest_open
+    path: Assets/ui/Chest/chest_open.png
+    sprite: {fileID: 21300000, guid: 87142846125984f0da366d22b9266eb5, type: 3}
+    content:
+      serializedVersion: 2
+      x: 0.001953125
+      y: 0.0034482758
+      width: 0.9980469
+      height: 0.99310344
+    stamp: 639263697810970454
+  - key: map_chest
+    path: Assets/Level-menu/map_chest.png
+    sprite: {fileID: 21300000, guid: 067f9509c9c684eedbbac15f16521fea, type: 3}
+    content:
+      serializedVersion: 2
+      x: 0.00390625
+      y: 0.004716981
+      width: 0.99609375
+      height: 0.990566
+    stamp: 639263697822250815
+  - key: daily_bowl
+    path: Assets/ui/Daily/daily_bowl.png
+    sprite: {fileID: 21300000, guid: 13e4df874d8944dbfb51e4e08d66f026, type: 3}
+    content:
+      serializedVersion: 2
+      x: 0.00390625
+      y: 0.008928572
+      width: 0.99609375
+      height: 0.98660713
+    stamp: 639263697827329011
+  - key: daily_fish
+    path: Assets/ui/Daily/daily_fish.png
+    sprite: {fileID: 21300000, guid: 2bbc32b0ca50942ca945aef2fd6a4efb, type: 3}
+    content:
+      serializedVersion: 2
+      x: 0.00390625
+      y: 0.009009009
+      width: 0.9921875
+      height: 0.9864865
+    stamp: 639263697833250100
+  - key: daily_icon
+    path: Assets/ui/Daily/daily_icon.png
+    sprite: {fileID: 21300000, guid: 4fe98946544e64884abe07e667b02b39, type: 3}
+    content:
+      serializedVersion: 2
+      x: 0.0078125
+      y: 0.0078125
+      width: 0.98828125
+      height: 0.98828125
+    stamp: 639263697843160703
+  - key: milk_x2
+    path: Assets/Sprites/Milk/milk_x2.png
+    sprite: {fileID: 21300000, guid: e40862e04eaba4969be5c38e375f854e, type: 3}
+    content:
+      serializedVersion: 2
+      x: 0.00390625
+      y: 0.020547945
+      width: 0.9921875
+      height: 0.96575344
+    stamp: 639263697848339698
+  - key: mouse_idle
+    path: Assets/Sprites/Mouse/mouse_idle.png
+    sprite: {fileID: 21300000, guid: e6b222fc6dda7450eb07824d6672c49a, type: 3}
+    content:
+      serializedVersion: 2
+      x: 0.0091743115
+      y: 0.00390625
+      width: 0.98623854
+      height: 0.9921875
+    stamp: 639263712903022786
+  - key: mouse_run
+    path: Assets/Sprites/Mouse/mouse_run.png
+    sprite: {fileID: 21300000, guid: 1d3d5df9afc684896b3390f86e9dee08, type: 3}
+    content:
+      serializedVersion: 2
+      x: 0.0078125
+      y: 0.008403362
+      width: 0.98828125
+      height: 0.9873949
+    stamp: 639263712909149244
+  - key: mouse_caught
+    path: Assets/Sprites/Mouse/mouse_caught.png
+    sprite: {fileID: 21300000, guid: e50c2545124bf4cf39fdef778d802733, type: 3}
+    content:
+      serializedVersion: 2
+      x: 0.00390625
+      y: 0.00390625
+      width: 0.99609375
+      height: 0.9921875
+    stamp: 639263712919592060
+  - key: caught_sack
+    path: Assets/Sprites/Mouse/caught_sack.png
+    sprite: {fileID: 21300000, guid: e51b3ff9e657a40e7900e3aaddad98ff, type: 3}
+    content:
+      serializedVersion: 2
+      x: 0.010989011
+      y: 0.00390625
+      width: 0.98351645
+      height: 0.9921875
+    stamp: 639263712928300240
+  - key: caught_word
+    path: Assets/Combos/Caught/caught_word.png
+    sprite: {fileID: 21300000, guid: 6c020c68742d24bbdb1b936f44ce6557, type: 3}
+    content:
+      serializedVersion: 2
+      x: 0.001953125
+      y: 0.016666668
+      width: 0.99609375
+      height: 0.98333335
+    stamp: 639263712933747926
+  - key: caught_paw
+    path: Assets/Combos/Caught/caught_paw.png
+    sprite: {fileID: 21300000, guid: fbf5893638ef74209b3505a90e8fea3a, type: 3}
+    content:
+      serializedVersion: 2
+      x: 0.007352941
+      y: 0.00390625
+      width: 0.9877451
+      height: 0.99609375
+    stamp: 639263712943613403
+  - key: badge_meet
+    path: Assets/ui/badge_meet.png
+    sprite: {fileID: 21300000, guid: be1cbe6c47c8e4fb2ae273c7df9cc7da, type: 3}
+    content:
+      serializedVersion: 2
+      x: 0.00390625
+      y: 0.010526316
+      width: 0.9941406
+      height: 0.9894737
+    stamp: 639263712952839200
+  - key: milk_bucket
+    path: Assets/Sprites/Milk/milk_bucket.png
+    sprite: {fileID: 21300000, guid: 6d0a0597c44954e33827590dc88d19ac, type: 3}
+    content:
+      serializedVersion: 2
+      x: 0.008
+      y: 0.0078125
+      width: 0.984
+      height: 0.98828125
+    stamp: 639263682400681262
+  - key: milk_bucket_tipped
+    path: Assets/Sprites/Milk/milk_bucket_tipped.png
+    sprite: {fileID: 21300000, guid: de1e7d558ecbc4f0db970e5483afa2b2, type: 3}
+    content:
+      serializedVersion: 2
+      x: 0.0078125
+      y: 0.004672897
+      width: 0.98828125
+      height: 0.99065423
+    stamp: 639263682408831108
+  - key: milk_puddle
+    path: Assets/Sprites/Milk/milk_puddle.png
+    sprite: {fileID: 21300000, guid: 421ebad5d078343588da1da2e5699d54, type: 3}
+    content:
+      serializedVersion: 2
+      x: 0.0078125
+      y: 0.00877193
+      width: 0.98828125
+      height: 0.9868421
+    stamp: 639263682414133836
+  - key: milk_splash_1
+    path: Assets/Sprites/FX/Milk/milk_splash_1.png
+    sprite: {fileID: 21300000, guid: af8de37be557d433d8d4e75d695e6153, type: 3}
+    content:
+      serializedVersion: 2
+      x: 0.015625
+      y: 0.017857144
+      width: 0.9765625
+      height: 0.96428573
+    stamp: 639263682420328920
+  - key: milk_splash_2
+    path: Assets/Sprites/FX/Milk/milk_splash_2.png
+    sprite: {fileID: 21300000, guid: cfa157721549c4116afdf17538a53c10, type: 3}
+    content:
+      serializedVersion: 2
+      x: 0.0078125
+      y: 0.008928572
+      width: 0.9921875
+      height: 0.97321427
+    stamp: 639263682427341775
+  - key: milk_splash_3
+    path: Assets/Sprites/FX/Milk/milk_splash_3.png
+    sprite: {fileID: 21300000, guid: e2cb90f110eab4d34b5296fcf3426e53, type: 3}
+    content:
+      serializedVersion: 2
+      x: 0.0234375
+      y: 0.015625
+      width: 0.9609375
+      height: 0.96875
+    stamp: 639263682431757325
+  - key: milk_splash_4
+    path: Assets/Sprites/FX/Milk/milk_splash_4.png
+    sprite: {fileID: 21300000, guid: ac1bc8ebfa0a44182af85f299219c936, type: 3}
+    content:
+      serializedVersion: 2
+      x: 0.025641026
+      y: 0.015625
+      width: 0.9358974
+      height: 0.9765625
+    stamp: 639263682436532019
+  - key: milk_splash_5
+    path: Assets/Sprites/FX/Milk/milk_splash_5.png
+    sprite: {fileID: 21300000, guid: 0ba3f2e7d029e4d7d866766668d53fdf, type: 3}
+    content:
+      serializedVersion: 2
+      x: 0.0234375
+      y: 0.015873017
+      width: 0.9609375
+      height: 0.96825397
+    stamp: 639263682442194233
+  - key: milk_splash_6
+    path: Assets/Sprites/FX/Milk/milk_splash_6.png
+    sprite: {fileID: 21300000, guid: 82f013f8f5e2f474bafd6244742023b8, type: 3}
+    content:
+      serializedVersion: 2
+      x: 0.015625
+      y: 0.016949153
+      width: 0.96875
+      height: 0.9661017
+    stamp: 639263682448691347
+  - key: tile_foam_1
+    path: Assets/Sprites/Foam/tile_foam_1.png
+    sprite: {fileID: 21300000, guid: b313e4b2beb7a40ad9ceafdd8004b103, type: 3}
+    content:
+      serializedVersion: 2
+      x: 0.007874016
+      y: 0.00390625
+      width: 0.988189
+      height: 0.9921875
+    stamp: 639263596305197024
+  - key: tile_foam_2
+    path: Assets/Sprites/Foam/tile_foam_2.png
+    sprite: {fileID: 21300000, guid: 6b8bc1f8e4859449d951ad901f2c8f30, type: 3}
+    content:
+      serializedVersion: 2
+      x: 0.0078125
+      y: 0.011904762
+      width: 0.984375
+      height: 0.98015875
+    stamp: 639263596322220822
+  - key: goal_foam
+    path: Assets/Sprites/Foam/goal_foam.png
+    sprite: {fileID: 21300000, guid: 82e10f994c7334e0993a52b9a3b741b1, type: 3}
+    content:
+      serializedVersion: 2
+      x: 0.008196721
+      y: 0.0078125
+      width: 0.98770493
+      height: 0.98828125
+    stamp: 639263596336390739
+  - key: bubble_1
+    path: Assets/Sprites/FX/Foam/bubble_1.png
+    sprite: {fileID: 21300000, guid: ee30d65cfc95d43fab6145fd70522bd8, type: 3}
+    content:
+      serializedVersion: 2
+      x: 0.015625
+      y: 0.023809524
+      width: 0.96875
+      height: 0.95238096
+    stamp: 639263596344414883
+  - key: bubble_2
+    path: Assets/Sprites/FX/Foam/bubble_2.png
+    sprite: {fileID: 21300000, guid: 31d48c314b5434fbbb8ede6441cc8194, type: 3}
+    content:
+      serializedVersion: 2
+      x: 0.03125
+      y: 0.031746034
+      width: 0.9453125
+      height: 0.9444444
+    stamp: 639263596353034968
+  - key: bubble_3
+    path: Assets/Sprites/FX/Foam/bubble_3.png
+    sprite: {fileID: 21300000, guid: 1874f8132a1eb4be980ded67c3cfcef4, type: 3}
+    content:
+      serializedVersion: 2
+      x: 0.037037037
+      y: 0.03773585
+      width: 0.9259259
+      height: 0.9245283
+    stamp: 639263596360457730
+  - key: bubble_4
+    path: Assets/Sprites/FX/Foam/bubble_4.png
+    sprite: {fileID: 21300000, guid: c5046f12350ea4a9dbba6bc49ea4a2cb, type: 3}
+    content:
+      serializedVersion: 2
+      x: 0.0234375
+      y: 0.024590164
+      width: 0.9609375
+      height: 0.9590164
+    stamp: 639263596367789549
+  - key: bubble_5
+    path: Assets/Sprites/FX/Foam/bubble_5.png
+    sprite: {fileID: 21300000, guid: c498da1f4fe434bcd91b37e99790b750, type: 3}
+    content:
+      serializedVersion: 2
+      x: 0.03125
+      y: 0.017857144
+      width: 0.953125
+      height: 0.95535713
+    stamp: 639263596375820736
+  - key: bubble_6
+    path: Assets/Sprites/FX/Foam/bubble_6.png
+    sprite: {fileID: 21300000, guid: 9f6dcd37d103d41cfb5e64c37fae346b, type: 3}
+    content:
+      serializedVersion: 2
+      x: 0.032786883
+      y: 0.015625
+      width: 0.94262296
+      height: 0.9609375
+    stamp: 639263596383363627
+  - key: bubble_7
+    path: Assets/Sprites/FX/Foam/bubble_7.png
+    sprite: {fileID: 21300000, guid: dde695e192bfa4e628187cbfd7d3b7ff, type: 3}
+    content:
+      serializedVersion: 2
+      x: 0.03125
+      y: 0.0234375
+      width: 0.9453125
+      height: 0.953125
+    stamp: 639263596399021992
+  - key: bubble_8
+    path: Assets/Sprites/FX/Foam/bubble_8.png
+    sprite: {fileID: 21300000, guid: a5981e4e21eaf4a8bb129292c49150ec, type: 3}
+    content:
+      serializedVersion: 2
+      x: 0.051282052
+      y: 0.05263158
+      width: 0.88461536
+      height: 0.90789473
+    stamp: 639263596405401006
+  - key: mint_leaf
+    path: Assets/Sprites/Cat-blockers/mint_leaf.png
+    sprite: {fileID: 21300000, guid: 99a655927b43e4c38b09c1ba945fc41b, type: 3}
+    content:
+      serializedVersion: 2
+      x: 0.15625
+      y: 0.0234375
+      width: 0.6875
+      height: 0.95703125
+    stamp: 639261979317330417
+  - key: dizzy_stars
+    path: Assets/Sprites/Cat-blockers/dizzy_stars.png
+    sprite: {fileID: 21300000, guid: 6e2b3bea087684d86baa1f80bacb09cc, type: 3}
+    content:
+      serializedVersion: 2
+      x: 0.01953125
+      y: 0.203125
+      width: 0.9609375
+      height: 0.59765625
+    stamp: 639261979335304016
+  - key: vase
+    path: Assets/Sprites/Cat-blockers/vase.png
+    sprite: {fileID: 21300000, guid: 3cce0fe492ecc4cf08005ffd75471670, type: 3}
+    content:
+      serializedVersion: 2
+      x: 0.1953125
+      y: 0.01953125
+      width: 0.609375
+      height: 0.9609375
+    stamp: 639261979329697876
+  - key: vase_cracked
+    path: Assets/Sprites/Cat-blockers/vase_cracked.png
+    sprite: {fileID: 21300000, guid: af9880a414ac7444d8d95bb1e0959862, type: 3}
+    content:
+      serializedVersion: 2
+      x: 0.05859375
+      y: 0.01953125
+      width: 0.8828125
+      height: 0.9453125
+    stamp: 639261979327320239
+  - key: fish_bowl
+    path: Assets/Sprites/Cat-blockers/fish_bowl.png
+    sprite: {fileID: 21300000, guid: ff58414904b934c9bbebc56465c8ea39, type: 3}
+    content:
+      serializedVersion: 2
+      x: 0.01953125
+      y: 0.046875
+      width: 0.9609375
+      height: 0.88671875
+    stamp: 639261979315979321
+  - key: fish
+    path: Assets/Sprites/Cat-blockers/fish.png
+    sprite: {fileID: 21300000, guid: 7b721668db1ba468cafae4e92b6da574, type: 3}
+    content:
+      serializedVersion: 2
+      x: 0.01953125
+      y: 0.15234375
+      width: 0.9609375
+      height: 0.6953125
+    stamp: 639261979341101316
+  - key: bowl_exit
+    path: Assets/Sprites/Cat-blockers/bowl_exit.png
+    sprite: {fileID: 21300000, guid: f5e71617b6a7d419496d9b228206660c, type: 3}
+    content:
+      serializedVersion: 2
+      x: 0.0703125
+      y: 0.01953125
+      width: 0.859375
+      height: 0.96484375
+    stamp: 639261979338029571
+  - key: box_piece_1
+    path: Assets/Sprites/FX/box_piece_1.png
+    sprite: {fileID: 21300000, guid: 33c61f9e7c8324bb581e9eb0448528bc, type: 3}
+    content:
+      serializedVersion: 2
+      x: 0.01171875
+      y: 0.016129032
+      width: 0.98046875
+      height: 0.9677419
+    stamp: 639261978404929627
+  - key: box_piece_2
+    path: Assets/Sprites/FX/box_piece_2.png
+    sprite: {fileID: 21300000, guid: 426562f1b68524676b41e2f289ebbb5d, type: 3}
+    content:
+      serializedVersion: 2
+      x: 0.027777778
+      y: 0.030303031
+      width: 0.9513889
+      height: 0.9469697
+    stamp: 639261978403141023
+  - key: box_piece_3
+    path: Assets/Sprites/FX/box_piece_3.png
+    sprite: {fileID: 21300000, guid: 450dbc21f314146a49b02735746c6b50, type: 3}
+    content:
+      serializedVersion: 2
+      x: 0.014851485
+      y: 0.017391304
+      width: 0.97029704
+      height: 0.9695652
+    stamp: 639261978402672527
+  - key: vase_shard_1
+    path: Assets/Sprites/FX/vase_shard_1.png
+    sprite: {fileID: 21300000, guid: 594cbfc606c694bd98a44cd6553531a9, type: 3}
+    content:
+      serializedVersion: 2
+      x: 0.020833334
+      y: 0.01171875
+      width: 0.9583333
+      height: 0.98046875
+    stamp: 639261978412166393
+  - key: vase_shard_2
+    path: Assets/Sprites/FX/vase_shard_2.png
+    sprite: {fileID: 21300000, guid: da3207c7bc4a640b18c878b48f91d857, type: 3}
+    content:
+      serializedVersion: 2
+      x: 0.025641026
+      y: 0.018181818
+      width: 0.94871795
+      height: 0.9681818
+    stamp: 639261978414438944
+  - key: vase_shard_3
+    path: Assets/Sprites/FX/vase_shard_3.png
+    sprite: {fileID: 21300000, guid: a57382cd8bbe14fe9b08a501f127c906, type: 3}
+    content:
+      serializedVersion: 2
+      x: 0.03
+      y: 0.027272727
+      width: 0.94
+      height: 0.94545454
+    stamp: 639260412693269717
+  - key: petal_1
+    path: Assets/Sprites/FX/petal_1.png
+    sprite: {fileID: 21300000, guid: 3e1e43e89c3324ffc927256e062205b9, type: 3}
+    content:
+      serializedVersion: 2
+      x: 0.018518519
+      y: 0.01980198
+      width: 0.962963
+      height: 0.9653465
+    stamp: 639261978406748730
+  - key: petal_2
+    path: Assets/Sprites/FX/petal_2.png
+    sprite: {fileID: 21300000, guid: 87b0a1da9d99245e490f4b8fa9cb2b7f, type: 3}
+    content:
+      serializedVersion: 2
+      x: 0.03508772
+      y: 0.022727273
+      width: 0.9385965
+      height: 0.95454544
+    stamp: 639261978408931977
+  - key: petal_3
+    path: Assets/Sprites/FX/petal_3.png
+    sprite: {fileID: 21300000, guid: 243301ade9f5640bfbe44faef3a52575, type: 3}
+    content:
+      serializedVersion: 2
+      x: 0.023809524
+      y: 0.020408163
+      width: 0.9583333
+      height: 0.96428573
+    stamp: 639261978409423438
+  - key: petal_4
+    path: Assets/Sprites/FX/petal_4.png
+    sprite: {fileID: 21300000, guid: ca1de579ea2654bd481d1ef07fe9a446, type: 3}
+    content:
+      serializedVersion: 2
+      x: 0.016853932
+      y: 0.023255814
+      width: 0.96629214
+      height: 0.9593023
+    stamp: 639261978403673802
+  - key: water_drop_1
+    path: Assets/Sprites/FX/water_drop_1.png
+    sprite: {fileID: 21300000, guid: eb6b02cacd78e488abf5abddf21d1f71, type: 3}
+    content:
+      serializedVersion: 2
+      x: 0.026666667
+      y: 0.025316456
+      width: 0.94666666
+      height: 0.9556962
+    stamp: 639261978405715869
+  - key: water_drop_2
+    path: Assets/Sprites/FX/water_drop_2.png
+    sprite: {fileID: 21300000, guid: 4eacafff2928d43d38e7a9b0a811e0d5, type: 3}
+    content:
+      serializedVersion: 2
+      x: 0.014705882
+      y: 0.018348623
+      width: 0.9705882
+      height: 0.9678899
+    stamp: 639261978408030054
+  - key: water_drop_3
+    path: Assets/Sprites/FX/water_drop_3.png
+    sprite: {fileID: 21300000, guid: 3959dc87b17364e9da3ec461d3cc8a51, type: 3}
+    content:
+      serializedVersion: 2
+      x: 0.026666667
+      y: 0.025316456
+      width: 0.94666666
+      height: 0.9556962
+    stamp: 639261978410218200
+  - key: yarn_thread_1
+    path: Assets/Sprites/FX/yarn_thread_1.png
+    sprite: {fileID: 21300000, guid: 6b16b8ced24b04db7918608e87cb56c2, type: 3}
+    content:
+      serializedVersion: 2
+      x: 0.01171875
+      y: 0.017699115
+      width: 0.9765625
+      height: 0.96902657
+    stamp: 639261978406236130
+  - key: yarn_thread_2
+    path: Assets/Sprites/FX/yarn_thread_2.png
+    sprite: {fileID: 21300000, guid: 83990f8b43e8a46c683832860aca9e00, type: 3}
+    content:
+      serializedVersion: 2
+      x: 0.01171875
+      y: 0.017391304
+      width: 0.9765625
+      height: 0.9695652
+    stamp: 639261978408605521
+  - key: pu_paw
+    path: Assets/Sprites/power-ups/power-up-paw.png
+    sprite: {fileID: 21300000, guid: caa066ad7ba44415b86737e9b50612e9, type: 3}
+    content:
+      serializedVersion: 2
+      x: 0.05078125
+      y: 0.0234375
+      width: 0.921875
+      height: 0.90625
+    stamp: 639261979354554807
+  - key: pu_bomb
+    path: Assets/Sprites/power-ups/power-up-bomb.png
+    sprite: {fileID: 21300000, guid: 1adbf9922e392421983088c16b93feb8, type: 3}
+    content:
+      serializedVersion: 2
+      x: 0.05859375
+      y: 0.05859375
+      width: 0.91015625
+      height: 0.90234375
+    stamp: 639261979351774962
+  - key: pu_color
+    path: Assets/Sprites/power-ups/power-up-color.png
+    sprite: {fileID: 21300000, guid: 023c266e7ee78482fb7db2dea1c2258d, type: 3}
+    content:
+      serializedVersion: 2
+      x: 0.08203125
+      y: 0.0546875
+      width: 0.86328125
+      height: 0.91796875
+    stamp: 639261979348951301
+  - key: pu_moves
+    path: Assets/ui/moves 1.png
+    sprite: {fileID: 21300000, guid: 6c10a4dbe3fcf4a9f86a0db72969009b, type: 3}
+    content:
+      serializedVersion: 2
+      x: 0.0546875
+      y: 0.03125
+      width: 0.89453125
+      height: 0.91796875
+    stamp: 639261979152526186
+  - key: combo_1
+    path: Assets/Combos/soft/Combo.png
+    sprite: {fileID: 21300000, guid: 038c4a931c9634ba796d0b8b059dc5ec, type: 3}
+    content:
+      serializedVersion: 2
+      x: 0.0546875
+      y: 0.055555556
+      width: 0.90625
+      height: 0.9152047
+    stamp: 639261978249426539
+  - key: combo_2
+    path: Assets/Combos/soft/super_kombo.png
+    sprite: {fileID: 21300000, guid: 42520d82574564b8c87eca801c8e5e60, type: 3}
+    content:
+      serializedVersion: 2
+      x: 0
+      y: 0
+      width: 0.9902344
+      height: 0.9609375
+    stamp: 639261978274299742
+  - key: combo_3
+    path: Assets/Combos/soft/mega_kombo.png
+    sprite: {fileID: 21300000, guid: 489317903047c4e898730607924eb40b, type: 3}
+    content:
+      serializedVersion: 2
+      x: 0.00984252
+      y: 0.037109375
+      width: 0.96259844
+      height: 0.94140625
+    stamp: 639261978287097289
+  - key: combo_4
+    path: Assets/Combos/soft/monster_kombo.png
+    sprite: {fileID: 21300000, guid: ee57a2dd71aea43948ca8afe865f2f35, type: 3}
+    content:
+      serializedVersion: 2
+      x: 0
+      y: 0
+      width: 0.9824219
+      height: 0.96875
+    stamp: 639261978262472465
+  - key: ui_panel
+    path: Assets/ui/hud_panel3.png
+    sprite: {fileID: 21300000, guid: eb9a896a2d7924340ab26f44c586d8c5, type: 3}
+    content:
+      serializedVersion: 2
+      x: 0.0009765625
+      y: 0.0040650405
+      width: 0.99902344
+      height: 0.9918699
+    stamp: 639263596420369996
+  - key: ui_balance
+    path: Assets/ui/balance.png
+    sprite: {fileID: 21300000, guid: 3cae5d729dd1d4f419d90edb9650778f, type: 3}
+    content:
+      serializedVersion: 2
+      x: 0.01953125
+      y: 0.0234375
+      width: 0.9609375
+      height: 0.953125
+    stamp: 639261979222094388
+  - key: ui_moves
+    path: Assets/ui/moves.png
+    sprite: {fileID: 21300000, guid: dfd51488a004a4fdabbb5df801efb0c9, type: 3}
+    content:
+      serializedVersion: 2
+      x: 0.2421875
+      y: 0.15625
+      width: 0.7421875
+      height: 0.71875
+    stamp: 639261979191319029
+  - key: ui_check
+    path: Assets/ui/check.png
+    sprite: {fileID: 21300000, guid: 0c6a1080d08ef49cf837934d849ed3b6, type: 3}
+    content:
+      serializedVersion: 2
+      x: 0.02734375
+      y: 0.16015625
+      width: 0.9453125
+      height: 0.68359375
+    stamp: 639261979149857613
+  - key: ui_play
+    path: Assets/ui/play.png
+    sprite: {fileID: 21300000, guid: 7b45662d1e6ef477ea95cad05a5be2ba, type: 3}
+    content:
+      serializedVersion: 2
+      x: 0.0390625
+      y: 0.0234375
+      width: 0.921875
+      height: 0.9609375
+    stamp: 639261979255993830
+  - key: ui_play_p
+    path: Assets/ui/play_pressed.png
+    sprite: {fileID: 21300000, guid: e60039feea62241c2b5204fd30ea27f5, type: 3}
+    content:
+      serializedVersion: 2
+      x: 0.08203125
+      y: 0.0234375
+      width: 0.83984375
+      height: 0.875
+    stamp: 639261979181584965
+  - key: ui_pause
+    path: Assets/ui/pause.png
+    sprite: {fileID: 21300000, guid: 0a53fa4210ef64f589fff597a003ad7b, type: 3}
+    content:
+      serializedVersion: 2
+      x: 0.0390625
+      y: 0.0234375
+      width: 0.921875
+      height: 0.9609375
+    stamp: 639261979229391271
+  - key: ui_pause_p
+    path: Assets/ui/pause-pressed.png
+    sprite: {fileID: 21300000, guid: 47bd767761c654a8fb2d465b61aa018f, type: 3}
+    content:
+      serializedVersion: 2
+      x: 0.0390625
+      y: 0.0234375
+      width: 0.921875
+      height: 0.9609375
+    stamp: 639261979205317751
+  - key: ui_next
+    path: Assets/ui/next.png
+    sprite: {fileID: 21300000, guid: 23477728019cb4266ad7bb4d17f2d92e, type: 3}
+    content:
+      serializedVersion: 2
+      x: 0.04296875
+      y: 0.0234375
+      width: 0.9140625
+      height: 0.95703125
+    stamp: 639261979249214201
+  - key: ui_next_p
+    path: Assets/ui/next-pressed.png
+    sprite: {fileID: 21300000, guid: af1c8eab96180410f80f24d04cc855dc, type: 3}
+    content:
+      serializedVersion: 2
+      x: 0.04296875
+      y: 0.0234375
+      width: 0.9140625
+      height: 0.95703125
+    stamp: 639261979242267155
+  - key: ui_replay
+    path: Assets/ui/replay.png
+    sprite: {fileID: 21300000, guid: 635ea2fa2513b4d8aab7876e72621249, type: 3}
+    content:
+      serializedVersion: 2
+      x: 0.08203125
+      y: 0.0234375
+      width: 0.8359375
+      height: 0.87109375
+    stamp: 639261979148216371
+  - key: ui_replay_p
+    path: Assets/ui/replay-pressed.png
+    sprite: {fileID: 21300000, guid: be4348d3e2f6c4dd791a3502a49786ef, type: 3}
+    content:
+      serializedVersion: 2
+      x: 0.0390625
+      y: 0.0234375
+      width: 0.921875
+      height: 0.9609375
+    stamp: 639261979158708330
+  - key: ui_sett
+    path: Assets/ui/sett.png
+    sprite: {fileID: 21300000, guid: 9c9a6fffff8f04635b8ca7c5a980cbf9, type: 3}
+    content:
+      serializedVersion: 2
+      x: 0.01953125
+      y: 0.01953125
+      width: 0.9609375
+      height: 0.9609375
+    stamp: 639261979188196382
+  - key: ui_sett_p
+    path: Assets/ui/sett-pressed.png
+    sprite: {fileID: 21300000, guid: 971824238ab7949cdb46b44afc1cd2ad, type: 3}
+    content:
+      serializedVersion: 2
+      x: 0.01953125
+      y: 0.01953125
+      width: 0.9609375
+      height: 0.9609375
+    stamp: 639261979198080546
+  - key: ui_levels
+    path: Assets/ui/level_select.png
+    sprite: {fileID: 21300000, guid: 0f290f76cdf0347cf8aeaf384eb4cf35, type: 3}
+    content:
+      serializedVersion: 2
+      x: 0.09375
+      y: 0.08203125
+      width: 0.8359375
+      height: 0.875
+    stamp: 639261979210032758
+  - key: ui_levels_p
+    path: Assets/ui/Level_selec-pressed.png
+    sprite: {fileID: 21300000, guid: 523f0efb11cd04dd3bc890b1d0d3eaec, type: 3}
+    content:
+      serializedVersion: 2
+      x: 0.04296875
+      y: 0.0234375
+      width: 0.9140625
+      height: 0.95703125
+    stamp: 639261979235381830
+  - key: ui_popup_panel
+    path: Assets/ui/popup_panel.png
+    sprite: {fileID: 21300000, guid: cb7b96ffb5ccd4e358a4ce71d75d8524, type: 3}
+    content:
+      serializedVersion: 2
+      x: 0.014234875
+      y: 0.00997151
+      width: 0.9839858
+      height: 0.9900285
+    stamp: 639261978004751260
+  - key: ui_close
+    path: Assets/ui/Close.png
+    sprite: {fileID: 21300000, guid: 4c134dce9006e4e4eaf8f8b39b0773ca, type: 3}
+    content:
+      serializedVersion: 2
+      x: 0.0390625
+      y: 0.0078125
+      width: 0.91796875
+      height: 0.984375
+    stamp: 639261979262192050
+  - key: ui_score
+    path: Assets/ui/score.png
+    sprite: {fileID: 21300000, guid: 5d808e65155704bfdb522b6761f3da88, type: 3}
+    content:
+      serializedVersion: 2
+      x: 0.03125
+      y: 0.05078125
+      width: 0.9453125
+      height: 0.91015625
+    stamp: 639261979215387109
+  - key: banner_win
+    path: Assets/ui/win.png
+    sprite: {fileID: 21300000, guid: b805ab3a93b3a42f590bb02a341fad19, type: 3}
+    content:
+      serializedVersion: 2
+      x: 0.03125
+      y: 0.037931036
+      width: 0.9316406
+      height: 0.94482756
+    stamp: 639261977912890242
+  - key: banner_lose
+    path: Assets/ui/lose.png
+    sprite: {fileID: 21300000, guid: 3bf51e9a48114437393ba60fea42eaac, type: 3}
+    content:
+      serializedVersion: 2
+      x: 0.048828125
+      y: 0.08275862
+      width: 0.9042969
+      height: 0.85172415
+    stamp: 639261977930131410
+  - key: cell_tile
+    path: Assets/ui/cell_tile.png
+    sprite: {fileID: 21300000, guid: 190375472a89b4f0dbe8dd636e3186ad, type: 3}
+    content:
+      serializedVersion: 2
+      x: 0
+      y: 0
+      width: 1
+      height: 1
+    stamp: 639261979176341865
+  - key: app_icon
+    path: Assets/ui/logo.png
+    sprite: {fileID: 21300000, guid: 6d3a6655c27504fafbda3ccb0b95a7fa, type: 3}
+    content:
+      serializedVersion: 2
+      x: 0
+      y: 0
+      width: 1
+      height: 1
+    stamp: 639261978070440681
+  - key: fx_life
+    path: Assets/ui/life.png
+    sprite: {fileID: 21300000, guid: 78b8e7c5e38ad45c9843ba19fe697241, type: 3}
+    content:
+      serializedVersion: 2
+      x: 0.015625
+      y: 0.01953125
+      width: 0.97265625
+      height: 0.96484375
+    stamp: 639261329574379570
+  - key: map_node_done
+    path: Assets/Level-menu/map_node_done.png
+    sprite: {fileID: 21300000, guid: 450524d61372c4e2abdc9ba386de61e3, type: 3}
+    content:
+      serializedVersion: 2
+      x: 0.05859375
+      y: 0.0390625
+      width: 0.88671875
+      height: 0.92578125
+    stamp: 639261363018529863
+  - key: map_node_current
+    path: Assets/Level-menu/map_node_current.png
+    sprite: {fileID: 21300000, guid: c3b418c94ca624614a9c799b0c6cfc7c, type: 3}
+    content:
+      serializedVersion: 2
+      x: 0.04296875
+      y: 0.0390625
+      width: 0.9140625
+      height: 0.92578125
+    stamp: 639261363008062501
+  - key: map_node_locked
+    path: Assets/Level-menu/map_node_locked.png
+    sprite: {fileID: 21300000, guid: 61e2abe57d20b49e3817508e74a3e101, type: 3}
+    content:
+      serializedVersion: 2
+      x: 0.07421875
+      y: 0.0390625
+      width: 0.8515625
+      height: 0.92578125
+    stamp: 639261363026515100
+  - key: map_marker
+    path: Assets/Level-menu/map_marker.png
+    sprite: {fileID: 21300000, guid: 9dc0214ddc4dc46ca966c9f8038e5d12, type: 3}
+    content:
+      serializedVersion: 2
+      x: 0.05859375
+      y: 0.03515625
+      width: 0.8828125
+      height: 0.9296875
+    stamp: 639261362988455438
+  - key: map_decor_1
+    path: Assets/Level-menu/map_decor_1.png
+    sprite: {fileID: 21300000, guid: e09c382643feb408587e036218e2c0c2, type: 3}
+    content:
+      serializedVersion: 2
+      x: 0.04375
+      y: 0.0875
+      width: 0.9125
+      height: 0.83125
+    stamp: 639261362777112751
+  - key: map_decor_2
+    path: Assets/Level-menu/map_decor_2.png
+    sprite: {fileID: 21300000, guid: ec34f318129b34dfc965ce7ca6394983, type: 3}
+    content:
+      serializedVersion: 2
+      x: 0.04375
+      y: 0.2125
+      width: 0.9125
+      height: 0.58125
+    stamp: 639261362849134538
+  - key: map_decor_3
+    path: Assets/Level-menu/map_decor_3.png
+    sprite: {fileID: 21300000, guid: 88d504ff6a16c441b8dca8424a1844b2, type: 3}
+    content:
+      serializedVersion: 2
+      x: 0.04375
+      y: 0.13125
+      width: 0.9125
+      height: 0.74375
+    stamp: 639261362858023387
+  - key: map_decor_4
+    path: Assets/Level-menu/map_decor_4.png
+    sprite: {fileID: 21300000, guid: c108f736ec1f64104b815aff08e9978c, type: 3}
+    content:
+      serializedVersion: 2
+      x: 0.04375
+      y: 0.16875
+      width: 0.9125
+      height: 0.6625
+    stamp: 639261362867602844
+  - key: map_decor_5
+    path: Assets/Level-menu/map_decor_5.png
+    sprite: {fileID: 21300000, guid: 234ffed3fe84b48c89daa0bbd8f15573, type: 3}
+    content:
+      serializedVersion: 2
+      x: 0.04375
+      y: 0.18125
+      width: 0.9125
+      height: 0.64375
+    stamp: 639261362875915983
+  - key: map_decor_6
+    path: Assets/Level-menu/map_decor_6.png
+    sprite: {fileID: 21300000, guid: a8d60339bb6384cd38ac1d6047855183, type: 3}
+    content:
+      serializedVersion: 2
+      x: 0.04375
+      y: 0.1625
+      width: 0.9125
+      height: 0.68125
+    stamp: 639261362887557768
+  - key: map_decor_7
+    path: Assets/Level-menu/map_decor_7.png
+    sprite: {fileID: 21300000, guid: c394a3ab27f6d4655b5042d927195154, type: 3}
+    content:
+      serializedVersion: 2
+      x: 0.04375
+      y: 0.16875
+      width: 0.9125
+      height: 0.66875
+    stamp: 639261362897009010
+  - key: map_decor_8
+    path: Assets/Level-menu/map_decor_8.png
+    sprite: {fileID: 21300000, guid: 7c2d730ad2b004dbea23ebab9cb25f68, type: 3}
+    content:
+      serializedVersion: 2
+      x: 0.1125
+      y: 0.04375
+      width: 0.78125
+      height: 0.9125
+    stamp: 639261362922989856
+  - key: map_decor_9
+    path: Assets/Level-menu/map_decor_9.png
+    sprite: {fileID: 21300000, guid: 273273751d50e43b39f5d877dff9b608, type: 3}
+    content:
+      serializedVersion: 2
+      x: 0.15
+      y: 0.04375
+      width: 0.7
+      height: 0.9125
+    stamp: 639261362933497533
+  - key: map_decor_10
+    path: Assets/Level-menu/map_decor_10.png
+    sprite: {fileID: 21300000, guid: e3d63320b151e4482818294989cb3d29, type: 3}
+    content:
+      serializedVersion: 2
+      x: 0.0875
+      y: 0.04375
+      width: 0.83125
+      height: 0.9125
+    stamp: 639261362784350006
+  - key: map_decor_11
+    path: Assets/Level-menu/map_decor_11.png
+    sprite: {fileID: 21300000, guid: f843446399c5f4fdeb6874eee9cf8ec3, type: 3}
+    content:
+      serializedVersion: 2
+      x: 0.06875
+      y: 0.04375
+      width: 0.86875
+      height: 0.9125
+    stamp: 639261362791704885
+  - key: map_decor_12
+    path: Assets/Level-menu/map_decor_12.png
+    sprite: {fileID: 21300000, guid: 6c5e5953883704b00ae9cf5fd91379fc, type: 3}
+    content:
+      serializedVersion: 2
+      x: 0.08125
+      y: 0.04375
+      width: 0.8375
+      height: 0.9125
+    stamp: 639261362799874826
+  - key: map_decor_13
+    path: Assets/Level-menu/map_decor_13.png
+    sprite: {fileID: 21300000, guid: b8a9e55a43270457ea059e6d05a560c1, type: 3}
+    content:
+      serializedVersion: 2
+      x: 0.05625
+      y: 0.04375
+      width: 0.8875
+      height: 0.9125
+    stamp: 639261362806579259
+  - key: map_decor_14
+    path: Assets/Level-menu/map_decor_14.png
+    sprite: {fileID: 21300000, guid: 15b097f27d0694148a20af90bc13be6f, type: 3}
+    content:
+      serializedVersion: 2
+      x: 0.04375
+      y: 0.09375
+      width: 0.9125
+      height: 0.8125
+    stamp: 639261362813862730
+  - key: map_decor_15
+    path: Assets/Level-menu/map_decor_15.png
+    sprite: {fileID: 21300000, guid: 63a17f157e8884c04942da848da1e198, type: 3}
+    content:
+      serializedVersion: 2
+      x: 0.04375
+      y: 0.075
+      width: 0.9125
+      height: 0.85625
+    stamp: 639261362824208867
+  - key: map_decor_16
+    path: Assets/Level-menu/map_decor_16.png
+    sprite: {fileID: 21300000, guid: 0d3f54ead34e14907bea87df91839a78, type: 3}
+    content:
+      serializedVersion: 2
+      x: 0.04375
+      y: 0.09375
+      width: 0.9125
+      height: 0.81875
+    stamp: 639261362835562466
+  - key: map_flower_1
+    path: Assets/Level-menu/map_flower_1.png
+    sprite: {fileID: 21300000, guid: 65e5a6463b18640b39980afd5002308f, type: 3}
+    content:
+      serializedVersion: 2
+      x: 0.0625
+      y: 0.16666667
+      width: 0.875
+      height: 0.6875
+    stamp: 639261362939750620
+  - key: map_flower_2
+    path: Assets/Level-menu/map_flower_2.png
+    sprite: {fileID: 21300000, guid: ac47745c07a7742ff9641e0ba8895934, type: 3}
+    content:
+      serializedVersion: 2
+      x: 0.1875
+      y: 0.0625
+      width: 0.625
+      height: 0.875
+    stamp: 639261362946183412
+  - key: map_flower_3
+    path: Assets/Level-menu/map_flower_3.png
+    sprite: {fileID: 21300000, guid: 6bc45943e4a1a43b790c4f7c30eeee1c, type: 3}
+    content:
+      serializedVersion: 2
+      x: 0.125
+      y: 0.0625
+      width: 0.75
+      height: 0.875
+    stamp: 639261362952247850
+  - key: map_flower_4
+    path: Assets/Level-menu/map_flower_4.png
+    sprite: {fileID: 21300000, guid: bcd785a2fec32452a8c719536f97a148, type: 3}
+    content:
+      serializedVersion: 2
+      x: 0.0625
+      y: 0.125
+      width: 0.875
+      height: 0.7708333
+    stamp: 639261362958211808
+  - key: map_flower_5
+    path: Assets/Level-menu/map_flower_5.png
+    sprite: {fileID: 21300000, guid: b9694c31b602d4affa6098cd5e54d316, type: 3}
+    content:
+      serializedVersion: 2
+      x: 0.104166664
+      y: 0.0625
+      width: 0.7916667
+      height: 0.875
+    stamp: 639261362963851263
+  - key: map_flower_6
+    path: Assets/Level-menu/map_flower_6.png
+    sprite: {fileID: 21300000, guid: 791637f138dc4450c90eec4a56152ccb, type: 3}
+    content:
+      serializedVersion: 2
+      x: 0.16666667
+      y: 0.0625
+      width: 0.6875
+      height: 0.875
+    stamp: 639261362969442907
+  - key: ui_booster_glow
+    path: Assets/ui/booster_glow.png
+    sprite: {fileID: 21300000, guid: 74bd12c78307949259b67318d089f8d5, type: 3}
+    content:
+      serializedVersion: 2
+      x: 0.09375
+      y: 0.09375
+      width: 0.81640625
+      height: 0.81640625
+    stamp: 639261345665968893
+  - key: ui_booster_sparkle
+    path: Assets/ui/booster_sparkle.png
+    sprite: {fileID: 21300000, guid: df7eb60ab65004cff948f7bb6046b592, type: 3}
+    content:
+      serializedVersion: 2
+      x: 0.046875
+      y: 0.046875
+      width: 0.90625
+      height: 0.90625
+    stamp: 639261345672005774
+  - key: cmb_word_1
+    path: Assets/Combos/Layers/combo_word_1.png
+    sprite: {fileID: 21300000, guid: f96b7275f90c24d5a856f87886452684, type: 3}
+    content:
+      serializedVersion: 2
+      x: 0.001953125
+      y: 0.0054347827
+      width: 0.99609375
+      height: 0.98913044
+    stamp: 639261978197902348
+  - key: cmb_word_2
+    path: Assets/Combos/Layers/combo_word_2.png
+    sprite: {fileID: 21300000, guid: 4a7e6565f7eda45499ce5efba6bdeaa5, type: 3}
+    content:
+      serializedVersion: 2
+      x: 0.001953125
+      y: 0.009009009
+      width: 0.99609375
+      height: 0.9864865
+    stamp: 639261978214646037
+  - key: cmb_word_3
+    path: Assets/Combos/Layers/combo_word_3.png
+    sprite: {fileID: 21300000, guid: b83bba0376fe4432193a6b2848fddc3b, type: 3}
+    content:
+      serializedVersion: 2
+      x: 0.001953125
+      y: 0.008928572
+      width: 0.99609375
+      height: 0.98660713
+    stamp: 639261978206288618
+  - key: cmb_word_4
+    path: Assets/Combos/Layers/combo_word_4.png
+    sprite: {fileID: 21300000, guid: 07b7c95a9104b47799b2a80549fe4889, type: 3}
+    content:
+      serializedVersion: 2
+      x: 0.001953125
+      y: 0.009345794
+      width: 0.99609375
+      height: 0.9859813
+    stamp: 639261978189358409
+  - key: cmb_paw
+    path: Assets/Combos/Layers/combo_paw.png
+    sprite: {fileID: 21300000, guid: 37406adf11e7a44a0b7a58926987f4f5, type: 3}
+    content:
+      serializedVersion: 2
+      x: 0
+      y: 0.0036231885
+      width: 0.99777776
+      height: 0.98913044
+    stamp: 639261978222388626
+  - key: cmb_paw_monster
+    path: Assets/Combos/Layers/combo_paw_monster.png
+    sprite: {fileID: 21300000, guid: 947309b2a8a3c44e0ae74d7bd35577fb, type: 3}
+    content:
+      serializedVersion: 2
+      x: 0
+      y: 0.0037037036
+      width: 0.99777776
+      height: 0.9925926
+    stamp: 639261978179337686
+  - key: cmb_rocket
+    path: Assets/Combos/Layers/combo_rocket.png
+    sprite: {fileID: 21300000, guid: d42671045ea914bcd8e2602efca786ae, type: 3}
+    content:
+      serializedVersion: 2
+      x: 0.008403362
+      y: 0.00390625
+      width: 0.9831933
+      height: 0.9921875
+    stamp: 639261979266468603
+  - key: cmb_star
+    path: Assets/Combos/Layers/combo_star.png
+    sprite: {fileID: 21300000, guid: d923aa8fb092942e1931f4d1f4d57db5, type: 3}
+    content:
+      serializedVersion: 2
+      x: 0.00390625
+      y: 0.012711864
+      width: 0.9921875
+      height: 0.9788136
+    stamp: 639261979271485022
+  - key: cmb_monster
+    path: Assets/Combos/Layers/combo_monster.png
+    sprite: {fileID: 21300000, guid: 672536f8bfce54425b0204bd175fb250, type: 3}
+    content:
+      serializedVersion: 2
+      x: 0.00729927
+      y: 0.0028571428
+      width: 0.98540145
+      height: 0.9942857
+    stamp: 639261918409881340
+  - key: cmb_slash
+    path: Assets/Combos/Layers/combo_slash.png
+    sprite: {fileID: 21300000, guid: 92554401e0e9e4ee7b0ee217e1cc6bb8, type: 3}
+    content:
+      serializedVersion: 2
+      x: 0.00390625
+      y: 0.017006803
+      width: 0.9921875
+      height: 0.9659864
+    stamp: 639261978239439281
+  - key: cmb_burst
+    path: Assets/Combos/Layers/combo_burst.png
+    sprite: {fileID: 21300000, guid: a5a8659219fd3425da7c1ae03f5f8fb7, type: 3}
+    content:
+      serializedVersion: 2
+      x: 0.0044444446
+      y: 0.006976744
+      width: 0.99333334
+      height: 0.9883721
+    stamp: 639261978228551563
+  - key: cmb_bit_1
+    path: Assets/Combos/Layers/combo_bit_1.png
+    sprite: {fileID: 21300000, guid: 610b8a538b2db4b79964092b3e9ec324, type: 3}
+    content:
+      serializedVersion: 2
+      x: 0.017857144
+      y: 0.0125
+      width: 0.96428573
+      height: 0.975
+    stamp: 639261978171530625
+  - key: cmb_bit_2
+    path: Assets/Combos/Layers/combo_bit_2.png
+    sprite: {fileID: 21300000, guid: 4bddacc63068b4888b4c2b938d898de4, type: 3}
+    content:
+      serializedVersion: 2
+      x: 0.0125
+      y: 0.012820513
+      width: 0.9875
+      height: 0.98717946
+    stamp: 639261918355540052
+  - key: cmb_bit_3
+    path: Assets/Combos/Layers/combo_bit_3.png
+    sprite: {fileID: 21300000, guid: 940804c2dddd94c5d82c657979a7d54a, type: 3}
+    content:
+      serializedVersion: 2
+      x: 0.02
+      y: 0.0125
+      width: 0.96
+      height: 0.9875
+    stamp: 639261978171232724
+  - key: cmb_bit_4
+    path: Assets/Combos/Layers/combo_bit_4.png
+    sprite: {fileID: 21300000, guid: 320a789bc796e40ca9163bded4564e01, type: 3}
+    content:
+      serializedVersion: 2
+      x: 0.017857144
+      y: 0.0125
+      width: 0.96428573
+      height: 0.9875
+    stamp: 639261978189610676
+  - key: cmb_bit_5
+    path: Assets/Combos/Layers/combo_bit_5.png
+    sprite: {fileID: 21300000, guid: 9454e72d9b55b4c45ad2a20aa0b79bd3, type: 3}
+    content:
+      serializedVersion: 2
+      x: 0.015151516
+      y: 0.0125
+      width: 0.9848485
+      height: 0.9875
+    stamp: 639261918374464276
+  - key: cmb_bit_6
+    path: Assets/Combos/Layers/combo_bit_6.png
+    sprite: {fileID: 21300000, guid: 88782cdf401504e4b8154cc423857c7e, type: 3}
+    content:
+      serializedVersion: 2
+      x: 0.02
+      y: 0.0125
+      width: 0.98
+      height: 0.9875
+    stamp: 639261918379612617
+  - key: cmb_bit_7
+    path: Assets/Combos/Layers/combo_bit_7.png
+    sprite: {fileID: 21300000, guid: f16ac08ab229d4c49a81be9dd976e617, type: 3}
+    content:
+      serializedVersion: 2
+      x: 0.0125
+      y: 0.0125
+      width: 0.9875
+      height: 0.9875
+    stamp: 639261918385430976
+  - key: cmb_bit_8
+    path: Assets/Combos/Layers/combo_bit_8.png
+    sprite: {fileID: 21300000, guid: e3921c1970e4f42cf8c0696cc0e90cee, type: 3}
+    content:
+      serializedVersion: 2
+      x: 0.0125
+      y: 0.025641026
+      width: 0.975
+      height: 0.96153843
+    stamp: 639261978239760714
+  - key: res_win_rays
+    path: Assets/ui/Result/win_rays.png
+    sprite: {fileID: 21300000, guid: 3f9c5978e704447c48ca14a242edd2d3, type: 3}
+    content:
+      serializedVersion: 2
+      x: 0
+      y: 0
+      width: 1
+      height: 1
+    stamp: 639261903326190360
+  - key: res_win_firework
+    path: Assets/ui/Result/win_firework.png
+    sprite: {fileID: 21300000, guid: c6c2d7a77c23249dbb9ff58c544f95aa, type: 3}
+    content:
+      serializedVersion: 2
+      x: 0.00390625
+      y: 0.003937008
+      width: 0.9941406
+      height: 0.992126
+    stamp: 639261978148972992
+  - key: res_win_cats
+    path: Assets/ui/Result/win_cats.png
+    sprite: {fileID: 21300000, guid: effccd4abe5fe41babe0b8e6cbb2d1ae, type: 3}
+    content:
+      serializedVersion: 2
+      x: 0.014285714
+      y: 0.010416667
+      width: 0.98285717
+      height: 0.9131944
+    stamp: 639261978127313644
+  - key: res_lose_cloud
+    path: Assets/ui/Result/lose_cloud.png
+    sprite: {fileID: 21300000, guid: 7812e25e4ccb74c6a9db3e20504364dd, type: 3}
+    content:
+      serializedVersion: 2
+      x: 0.0044444446
+      y: 0.0051020407
+      width: 0.99333334
+      height: 0.9897959
+    stamp: 639261978168914040
+  - key: res_lose_drop
+    path: Assets/ui/Result/lose_drop.png
+    sprite: {fileID: 21300000, guid: 3ae4918091bbe4b1897542894f217b74, type: 3}
+    content:
+      serializedVersion: 2
+      x: 0.03846154
+      y: 0.02
+      width: 0.9230769
+      height: 0.95
+    stamp: 639261978129146959
+  - key: res_lose_splash
+    path: Assets/ui/Result/lose_splash.png
+    sprite: {fileID: 21300000, guid: 55abb9125fd4f41318104336742b84d8, type: 3}
+    content:
+      serializedVersion: 2
+      x: 0.015
+      y: 0.01764706
+      width: 0.975
+      height: 0.9705882
+    stamp: 639261903234957939
+  - key: res_lose_cats
+    path: Assets/ui/Result/lose_cats.png
+    sprite: {fileID: 21300000, guid: 92a09c038210048baaa47fbb9c3d3cce, type: 3}
+    content:
+      serializedVersion: 2
+      x: 0.058571428
+      y: 0
+      width: 0.93857145
+      height: 0.9944751
+    stamp: 639261903213786759
+  - key: res_confetti_1
+    path: Assets/ui/Result/win_confetti_1.png
+    sprite: {fileID: 21300000, guid: b3745b6ac3432493b8aeb49858c05da9, type: 3}
+    content:
+      serializedVersion: 2
+      x: 0.013888889
+      y: 0.0125
+      width: 0.9722222
+      height: 0.9875
+    stamp: 639261978128804321
+  - key: res_confetti_2
+    path: Assets/ui/Result/win_confetti_2.png
+    sprite: {fileID: 21300000, guid: 333f75c45924e45e2ad5b82cf309d74c, type: 3}
+    content:
+      serializedVersion: 2
+      x: 0.013157895
+      y: 0.0125
+      width: 0.9868421
+      height: 0.9875
+    stamp: 639261903337328937
+  - key: res_confetti_3
+    path: Assets/ui/Result/win_confetti_3.png
+    sprite: {fileID: 21300000, guid: 1ac8d4fe866a841b99c7a2bad35849b2, type: 3}
+    content:
+      serializedVersion: 2
+      x: 0.025
+      y: 0.025
+      width: 0.9625
+      height: 0.9625
+    stamp: 639261978129593198
+  - key: res_confetti_4
+    path: Assets/ui/Result/win_confetti_4.png
+    sprite: {fileID: 21300000, guid: 2fe106c61ffef464b9fc67ca2a3cb6ac, type: 3}
+    content:
+      serializedVersion: 2
+      x: 0.0125
+      y: 0.012820513
+      width: 0.9875
+      height: 0.974359
+    stamp: 639261978128215915
+  - key: res_confetti_5
+    path: Assets/ui/Result/win_confetti_5.png
+    sprite: {fileID: 21300000, guid: 5fac54afbe2a448d1b4bec5a11320709, type: 3}
+    content:
+      serializedVersion: 2
+      x: 0.025
+      y: 0.028571429
+      width: 0.9625
+      height: 0.94285715
+    stamp: 639261978128591490
+  - key: res_confetti_6
+    path: Assets/ui/Result/win_confetti_6.png
+    sprite: {fileID: 21300000, guid: dd7c936aa281c4ebcb5e30da9596f511, type: 3}
+    content:
+      serializedVersion: 2
+      x: 0.025
+      y: 0.027777778
+      width: 0.9625
+      height: 0.9444444
+    stamp: 639261978127933686
+  - key: res_confetti_7
+    path: Assets/ui/Result/win_confetti_7.png
+    sprite: {fileID: 21300000, guid: d55ac7255568b444caf4eda886fbf9a9, type: 3}
+    content:
+      serializedVersion: 2
+      x: 0.0125
+      y: 0.027777778
+      width: 0.975
+      height: 0.9583333
+    stamp: 639261978127597240
+  - key: res_confetti_8
+    path: Assets/ui/Result/win_confetti_8.png
+    sprite: {fileID: 21300000, guid: 5f2c9611311ac4a71abf733bfdeca3ae, type: 3}
+    content:
+      serializedVersion: 2
+      x: 0.04
+      y: 0.0125
+      width: 0.94
+      height: 0.975
+    stamp: 639261978129789867
+  - key: fx_flash
+    path: Assets/Sprites/FX/Burn/regular/fx_flash.png
+    sprite: {fileID: 21300000, guid: 22f1678b1151544b0b1dc219d03b8b49, type: 3}
+    content:
+      serializedVersion: 2
+      x: 0.015625
+      y: 0.01171875
+      width: 0.97265625
+      height: 0.9765625
+    stamp: 639261978494740515
+  - key: fx_ring
+    path: Assets/Sprites/FX/Burn/regular/fx_ring.png
+    sprite: {fileID: 21300000, guid: d69fa7e4199164706a99ccc495af335e, type: 3}
+    content:
+      serializedVersion: 2
+      x: 0.03515625
+      y: 0.0390625
+      width: 0.94140625
+      height: 0.9375
+    stamp: 639261978502402325
+  - key: fx_puff
+    path: Assets/Sprites/FX/Burn/regular/fx_puff.png
+    sprite: {fileID: 21300000, guid: 24170b961419a4b80b2145801955c38f, type: 3}
+    content:
+      serializedVersion: 2
+      x: 0.02734375
+      y: 0.05078125
+      width: 0.93359375
+      height: 0.8984375
+    stamp: 639261978499817371
+  - key: fx_sparkle
+    path: Assets/Sprites/FX/Burn/regular/fx_sparkle.png
+    sprite: {fileID: 21300000, guid: feb7c4ae56a434f969eecdddfa5137e1, type: 3}
+    content:
+      serializedVersion: 2
+      x: 0.18359375
+      y: 0.15234375
+      width: 0.63671875
+      height: 0.71484375
+    stamp: 639261026695058547
+  - key: fx_fur_1
+    path: Assets/Sprites/FX/Burn/regular/pieces/fx_fur_1.png
+    sprite: {fileID: 21300000, guid: d27b091933a5d4359bf1e7694c45dfd8, type: 3}
+    content:
+      serializedVersion: 2
+      x: 0.14893617
+      y: 0.08510638
+      width: 0.70212764
+      height: 0.84042555
+    stamp: 639261978503186314
+  - key: fx_fur_2
+    path: Assets/Sprites/FX/Burn/regular/pieces/fx_fur_2.png
+    sprite: {fileID: 21300000, guid: 27f7bf0859e4e4769af0cc6826999725, type: 3}
+    content:
+      serializedVersion: 2
+      x: 0.18421052
+      y: 0.10526316
+      width: 0.6184211
+      height: 0.81578946
+    stamp: 639261978502905122
+  - key: fx_fur_3
+    path: Assets/Sprites/FX/Burn/regular/pieces/fx_fur_3.png
+    sprite: {fileID: 21300000, guid: 501132a36102241bb9d93f035daa7139, type: 3}
+    content:
+      serializedVersion: 2
+      x: 0.07608695
+      y: 0.08695652
+      width: 0.84782606
+      height: 0.8369565
+    stamp: 639261978502740002
+  - key: fx_fur_4
+    path: Assets/Sprites/FX/Burn/regular/pieces/fx_fur_4.png
+    sprite: {fileID: 21300000, guid: 24867b44574a14f46a186e734b877dc7, type: 3}
+    content:
+      serializedVersion: 2
+      x: 0.07
+      y: 0.22
+      width: 0.86
+      height: 0.56
+    stamp: 639261978503386396
+  - key: fx_heart
+    path: Assets/Sprites/FX/Burn/regular/pieces/fx_heart.png
+    sprite: {fileID: 21300000, guid: e2a0c800a7e4d4a2188feb1073abb581, type: 3}
+    content:
+      serializedVersion: 2
+      x: 0.07608695
+      y: 0.1521739
+      width: 0.84782606
+      height: 0.70652175
+    stamp: 639261978504295252
+  - key: fx_paw
+    path: Assets/Sprites/FX/Burn/regular/pieces/fx_paw.png
+    sprite: {fileID: 21300000, guid: 0b82413cd195844ff9ab1bad5dbc29f1, type: 3}
+    content:
+      serializedVersion: 2
+      x: 0.072916664
+      y: 0.114583336
+      width: 0.8541667
+      height: 0.78125
+    stamp: 639261978503749182
+  - key: bomb_flash
+    path: Assets/Sprites/FX/Burn/Bomb/bomb_flash.png
+    sprite: {fileID: 21300000, guid: e339181c1ca5c4d6d80a387e6a30144e, type: 3}
+    content:
+      serializedVersion: 2
+      x: 0.05859375
+      y: 0.05859375
+      width: 0.8828125
+      height: 0.8828125
+    stamp: 639261978434760660
+  - key: bomb_rays
+    path: Assets/Sprites/FX/Burn/Bomb/bomb_rays.png
+    sprite: {fileID: 21300000, guid: a563a878247524836b6b275e148aae15, type: 3}
+    content:
+      serializedVersion: 2
+      x: 0.04296875
+      y: 0.0390625
+      width: 0.9140625
+      height: 0.921875
+    stamp: 639261978441393580
+  - key: bomb_ring
+    path: Assets/Sprites/FX/Burn/Bomb/bomb_ring.png
+    sprite: {fileID: 21300000, guid: 2429f79fb72a24e579d0458ef5186eeb, type: 3}
+    content:
+      serializedVersion: 2
+      x: 0.04296875
+      y: 0.0390625
+      width: 0.91796875
+      height: 0.921875
+    stamp: 639261978438163609
+  - key: bomb_fireball
+    path: Assets/Sprites/FX/Burn/Bomb/bomb_fireball.png
+    sprite: {fileID: 21300000, guid: d89f9c56f1db94585a1136608458afce, type: 3}
+    content:
+      serializedVersion: 2
+      x: 0.0390625
+      y: 0.05859375
+      width: 0.92578125
+      height: 0.88671875
+    stamp: 639261978432071050
+  - key: bomb_scorch
+    path: Assets/Sprites/FX/Burn/Bomb/bomb_scorch.png
+    sprite: {fileID: 21300000, guid: c81ee8597036b45189632bd55e37d45f, type: 3}
+    content:
+      serializedVersion: 2
+      x: 0.05859375
+      y: 0.0390625
+      width: 0.87890625
+      height: 0.92578125
+    stamp: 639261978429059047
+  - key: bomb_smoke_1
+    path: Assets/Sprites/FX/Burn/Bomb/bomb_smoke_1.png
+    sprite: {fileID: 21300000, guid: 677476315456e4ec59f6cc4b2c960548, type: 3}
+    content:
+      serializedVersion: 2
+      x: 0.046875
+      y: 0.09765625
+      width: 0.91015625
+      height: 0.8046875
+    stamp: 639261277348731988
+  - key: bomb_smoke_2
+    path: Assets/Sprites/FX/Burn/Bomb/bomb_smoke_2.png
+    sprite: {fileID: 21300000, guid: a6b37e70521b347d490e383562fd1c5b, type: 3}
+    content:
+      serializedVersion: 2
+      x: 0.046875
+      y: 0.0859375
+      width: 0.91015625
+      height: 0.83203125
+    stamp: 639261277354544402
+  - key: bomb_smoke_3
+    path: Assets/Sprites/FX/Burn/Bomb/bomb_smoke_3.png
+    sprite: {fileID: 21300000, guid: 26c8dffcefdc84f02a4df037774240f4, type: 3}
+    content:
+      serializedVersion: 2
+      x: 0.046875
+      y: 0.08203125
+      width: 0.91015625
+      height: 0.8359375
+    stamp: 639261277360010766
+  - key: bomb_smoke_4
+    path: Assets/Sprites/FX/Burn/Bomb/bomb_smoke_4.png
+    sprite: {fileID: 21300000, guid: 5be9cad5bfe5b49d4a82013f1b283e6e, type: 3}
+    content:
+      serializedVersion: 2
+      x: 0.046875
+      y: 0.0859375
+      width: 0.91015625
+      height: 0.83203125
+    stamp: 639261277366414067
+  - key: bomb_ember_1
+    path: Assets/Sprites/FX/Burn/Bomb/bomb_ember_1.png
+    sprite: {fileID: 21300000, guid: f97025dc3d9594456bb4be792e7ebb58, type: 3}
+    content:
+      serializedVersion: 2
+      x: 0.09375
+      y: 0.0859375
+      width: 0.8125
+      height: 0.828125
+    stamp: 639261277371955540
+  - key: bomb_ember_2
+    path: Assets/Sprites/FX/Burn/Bomb/bomb_ember_2.png
+    sprite: {fileID: 21300000, guid: 1daa4559fd74e41f4a1fea3cf5bc7d05, type: 3}
+    content:
+      serializedVersion: 2
+      x: 0.140625
+      y: 0.140625
+      width: 0.71875
+      height: 0.71875
+    stamp: 639261277377509231
+  - key: bomb_ember_3
+    path: Assets/Sprites/FX/Burn/Bomb/bomb_ember_3.png
+    sprite: {fileID: 21300000, guid: d6bc36b8ceca248c0a29047b099d634d, type: 3}
+    content:
+      serializedVersion: 2
+      x: 0.109375
+      y: 0.1171875
+      width: 0.71875
+      height: 0.6953125
+    stamp: 639261277382545570
+  - key: bomb_ember_4
+    path: Assets/Sprites/FX/Burn/Bomb/bomb_ember_4.png
+    sprite: {fileID: 21300000, guid: fb1ea35430d1c4e589e290df40cb1e0b, type: 3}
+    content:
+      serializedVersion: 2
+      x: 0.0859375
+      y: 0.09375
+      width: 0.8359375
+      height: 0.8046875
+    stamp: 639261277387444800
+  - key: rainbow_swirl
+    path: Assets/Sprites/FX/Burn/Rainbow/rainbow_swirl.png
+    sprite: {fileID: 21300000, guid: 1f2c591d1337248ac9a7606a3fd7915c, type: 3}
+    content:
+      serializedVersion: 2
+      x: 0.046875
+      y: 0.04296875
+      width: 0.90625
+      height: 0.9140625
+    stamp: 639261978480968504
+  - key: rainbow_orb
+    path: Assets/Sprites/FX/Burn/Rainbow/rainbow_orb.png
+    sprite: {fileID: 21300000, guid: 4501b1c089dbd49fda00ef8e030d0aa2, type: 3}
+    content:
+      serializedVersion: 2
+      x: 0.09765625
+      y: 0.09375
+      width: 0.80859375
+      height: 0.80859375
+    stamp: 639261978486479673
+  - key: rainbow_target
+    path: Assets/Sprites/FX/Burn/Rainbow/rainbow_target.png
+    sprite: {fileID: 21300000, guid: 92b9ea447191f460faa8711e6c521873, type: 3}
+    content:
+      serializedVersion: 2
+      x: 0.0546875
+      y: 0.04296875
+      width: 0.89453125
+      height: 0.9140625
+    stamp: 639261978477528142
+  - key: rainbow_wave
+    path: Assets/Sprites/FX/Burn/Rainbow/rainbow_wave.png
+    sprite: {fileID: 21300000, guid: 2541353d8a52f49b6b736ca4814c6773, type: 3}
+    content:
+      serializedVersion: 2
+      x: 0.04296875
+      y: 0.04296875
+      width: 0.91796875
+      height: 0.91796875
+    stamp: 639261978491304369
+  - key: rainbow_trail
+    path: Assets/Sprites/FX/Burn/Rainbow/rainbow_trail.png
+    sprite: {fileID: 21300000, guid: 49c0429378f5f4cb8baf435e28f68bf9, type: 3}
+    content:
+      serializedVersion: 2
+      x: 0
+      y: 0.15625
+      width: 1
+      height: 0.6875
+    stamp: 639261978491965437
+  - key: rainbow_glitter_1
+    path: Assets/Sprites/FX/Burn/Rainbow/rainbow_glitter_1.png
+    sprite: {fileID: 21300000, guid: 943c06958cf32405f8f70b4337c23db3, type: 3}
+    content:
+      serializedVersion: 2
+      x: 0.1171875
+      y: 0.1640625
+      width: 0.765625
+      height: 0.6796875
+    stamp: 639261284505062998
+  - key: rainbow_glitter_2
+    path: Assets/Sprites/FX/Burn/Rainbow/rainbow_glitter_2.png
+    sprite: {fileID: 21300000, guid: 8ef2c5610b28345109ffdbc29727d59e, type: 3}
+    content:
+      serializedVersion: 2
+      x: 0.125
+      y: 0.125
+      width: 0.7578125
+      height: 0.75
+    stamp: 639261284510314962
+  - key: rainbow_glitter_3
+    path: Assets/Sprites/FX/Burn/Rainbow/rainbow_glitter_3.png
+    sprite: {fileID: 21300000, guid: e4464869f7917410fac73ed41cac85ff, type: 3}
+    content:
+      serializedVersion: 2
+      x: 0.09375
+      y: 0.078125
+      width: 0.8125
+      height: 0.8359375
+    stamp: 639261284515301589
+  - key: rainbow_glitter_4
+    path: Assets/Sprites/FX/Burn/Rainbow/rainbow_glitter_4.png
+    sprite: {fileID: 21300000, guid: ddb261b6713e4484c9e434da360e4548, type: 3}
+    content:
+      serializedVersion: 2
+      x: 0.171875
+      y: 0.109375
+      width: 0.6484375
+      height: 0.78125
+    stamp: 639261284521527554
+  - key: hunter_horn
+    path: Assets/Sprites/FX/Burn/Hunter/hunter_horn.png
+    sprite: {fileID: 21300000, guid: 2ba27c9df1c8a479c85395fb099d7899, type: 3}
+    content:
+      serializedVersion: 2
+      x: 0.484375
+      y: 0.21875
+      width: 0.49609375
+      height: 0.5546875
+    stamp: 639261978415658722
+  - key: hunter_compass
+    path: Assets/Sprites/FX/Burn/Hunter/hunter_compass.png
+    sprite: {fileID: 21300000, guid: 95b607d99767248379fa1457d5ae8963, type: 3}
+    content:
+      serializedVersion: 2
+      x: 0.04296875
+      y: 0.04296875
+      width: 0.9140625
+      height: 0.9140625
+    stamp: 639261978427334026
+  - key: hunter_needle
+    path: Assets/Sprites/FX/Burn/Hunter/hunter_needle.png
+    sprite: {fileID: 21300000, guid: f922858a486024b32b7e1b4e888c0c76, type: 3}
+    content:
+      serializedVersion: 2
+      x: 0.0234375
+      y: 0.39453125
+      width: 0.95703125
+      height: 0.21484375
+    stamp: 639261978417396976
+  - key: hunter_crosshair
+    path: Assets/Sprites/FX/Burn/Hunter/hunter_crosshair.png
+    sprite: {fileID: 21300000, guid: 3e8639efd74c14edcbac391395ecede0, type: 3}
+    content:
+      serializedVersion: 2
+      x: 0.04296875
+      y: 0.04296875
+      width: 0.9140625
+      height: 0.9140625
+    stamp: 639261978422771682
+  - key: hunter_hit
+    path: Assets/Sprites/FX/Burn/Hunter/hunter_hit.png
+    sprite: {fileID: 21300000, guid: 9172ea8c4831c4e46bd453962ebf1ec6, type: 3}
+    content:
+      serializedVersion: 2
+      x: 0.04296875
+      y: 0.0546875
+      width: 0.91796875
+      height: 0.89453125
+    stamp: 639261978420753609
+  - key: hunter_trail
+    path: Assets/Sprites/FX/Burn/Hunter/hunter_trail.png
+    sprite: {fileID: 21300000, guid: 2394aabe6445548d4a701d5d791fe2a8, type: 3}
+    content:
+      serializedVersion: 2
+      x: 0.0078125
+      y: 0.08695652
+      width: 0.90234375
+      height: 0.84782606
+    stamp: 639261978418036272
+  - key: hunter_arrow
+    path: Assets/Sprites/FX/Burn/Hunter/hunter_arrow.png
+    sprite: {fileID: 21300000, guid: 749d83e21e86644e88de42d2b9ec1e6f, type: 3}
+    content:
+      serializedVersion: 2
+      x: 0.01953125
+      y: 0.12
+      width: 0.9609375
+      height: 0.76
+    stamp: 639261978416104415
+  - key: hunter_feather_1
+    path: Assets/Sprites/FX/Burn/Hunter/hunter_feather_1.png
+    sprite: {fileID: 21300000, guid: d3f76b798729d4a1691e2d40a1ff4fba, type: 3}
+    content:
+      serializedVersion: 2
+      x: 0.359375
+      y: 0.0546875
+      width: 0.2890625
+      height: 0.890625
+    stamp: 639261322508744570
+  - key: hunter_feather_2
+    path: Assets/Sprites/FX/Burn/Hunter/hunter_feather_2.png
+    sprite: {fileID: 21300000, guid: ee4456fb5ab064819ae90d0d54d2c1ee, type: 3}
+    content:
+      serializedVersion: 2
+      x: 0.1484375
+      y: 0.0625
+      width: 0.703125
+      height: 0.8828125
+    stamp: 639261322514028038
+  - key: hunter_feather_3
+    path: Assets/Sprites/FX/Burn/Hunter/hunter_feather_3.png
+    sprite: {fileID: 21300000, guid: 5c004195bf56f4f89a3b8fafbb44047e, type: 3}
+    content:
+      serializedVersion: 2
+      x: 0.1015625
+      y: 0.0625
+      width: 0.8046875
+      height: 0.875
+    stamp: 639261322521400376
+  - key: hunter_feather_4
+    path: Assets/Sprites/FX/Burn/Hunter/hunter_feather_4.png
+    sprite: {fileID: 21300000, guid: 7a0ad8d9a4e1e44e0be6783252135783, type: 3}
+    content:
+      serializedVersion: 2
+      x: 0.171875
+      y: 0.0546875
+      width: 0.65625
+      height: 0.8828125
+    stamp: 639261322527619486
+  - key: booster_paw
+    path: Assets/Sprites/FX/Burn/Boosters/booster_paw.png
+    sprite: {fileID: 21300000, guid: a1edbd92692b742b883c1c879950bc77, type: 3}
+    content:
+      serializedVersion: 2
+      x: 0.11328125
+      y: 0.0390625
+      width: 0.7734375
+      height: 0.92578125
+    stamp: 639261978447412956
+  - key: booster_bomb
+    path: Assets/Sprites/FX/Burn/Boosters/booster_bomb.png
+    sprite: {fileID: 21300000, guid: 788c74d5367924a5db968afda6d7ad31, type: 3}
+    content:
+      serializedVersion: 2
+      x: 0.12109375
+      y: 0.0390625
+      width: 0.7578125
+      height: 0.92578125
+    stamp: 639261978460179961
+  - key: booster_wand
+    path: Assets/Sprites/FX/Burn/Boosters/booster_wand.png
+    sprite: {fileID: 21300000, guid: 3517b3f34fdcf4e86beff47fc08f3137, type: 3}
+    content:
+      serializedVersion: 2
+      x: 0.05859375
+      y: 0.0390625
+      width: 0.87109375
+      height: 0.92578125
+    stamp: 639261978453824318
+  - key: booster_slap
+    path: Assets/Sprites/FX/Burn/Boosters/booster_slap.png
+    sprite: {fileID: 21300000, guid: fcc09da84a1344583b1529ecf3a37278, type: 3}
+    content:
+      serializedVersion: 2
+      x: 0.0390625
+      y: 0.0390625
+      width: 0.921875
+      height: 0.92578125
+    stamp: 639261978455561905
+  - key: booster_starburst
+    path: Assets/Sprites/FX/Burn/Boosters/booster_starburst.png
+    sprite: {fileID: 21300000, guid: c38044abbf32d450287ee63f31bf1b09, type: 3}
+    content:
+      serializedVersion: 2
+      x: 0.06640625
+      y: 0.06640625
+      width: 0.8828125
+      height: 0.875
+    stamp: 639261978443411672
+  - key: booster_magic_circle
+    path: Assets/Sprites/FX/Burn/Boosters/booster_magic_circle.png
+    sprite: {fileID: 21300000, guid: 8423a7c88b7d144ed9b0cad72b997265, type: 3}
+    content:
+      serializedVersion: 2
+      x: 0.046875
+      y: 0.046875
+      width: 0.90625
+      height: 0.90625
+    stamp: 639261978452455410
+  - key: line_charge
+    path: Assets/Sprites/FX/Burn/Line/line_charge.png
+    sprite: {fileID: 21300000, guid: 8b54bbd8107db436e82e47e1a9837022, type: 3}
+    content:
+      serializedVersion: 2
+      x: 0.16015625
+      y: 0.12109375
+      width: 0.6796875
+      height: 0.76171875
+    stamp: 639261978467891781
+  - key: line_beam
+    path: Assets/Sprites/FX/Burn/Line/line_beam.png
+    sprite: {fileID: 21300000, guid: 1f1fc0e57ba3e494e8ac8b7ca5156984, type: 3}
+    content:
+      serializedVersion: 2
+      x: 0
+      y: 0.171875
+      width: 1
+      height: 0.671875
+    stamp: 639261266719537179
+  - key: line_head
+    path: Assets/Sprites/FX/Burn/Line/line_head.png
+    sprite: {fileID: 21300000, guid: 673a26789c3644a3293e9a62fddc008e, type: 3}
+    content:
+      serializedVersion: 2
+      x: 0.0859375
+      y: 0.18359375
+      width: 0.85546875
+      height: 0.63671875
+    stamp: 639261978463140340
+  - key: line_claws
+    path: Assets/Sprites/FX/Burn/Line/line_claws.png
+    sprite: {fileID: 21300000, guid: 406c98aca78d24e7fad91fd382ed3731, type: 3}
+    content:
+      serializedVersion: 2
+      x: 0.05078125
+      y: 0.06640625
+      width: 0.91015625
+      height: 0.859375
+    stamp: 639261978466097533
+  - key: line_spark_1
+    path: Assets/Sprites/FX/Burn/Line/line_spark_1.png
+    sprite: {fileID: 21300000, guid: c9fe28c45d34c4afaad2f9e9b23e238c, type: 3}
+    content:
+      serializedVersion: 2
+      x: 0.3828125
+      y: 0.078125
+      width: 0.234375
+      height: 0.85546875
+    stamp: 639261978471003826
+  - key: line_spark_2
+    path: Assets/Sprites/FX/Burn/Line/line_spark_2.png
+    sprite: {fileID: 21300000, guid: d1a0e681f91ea4c23ad0c1dc3118e15d, type: 3}
+    content:
+      serializedVersion: 2
+      x: 0.09765625
+      y: 0.078125
+      width: 0.8125
+      height: 0.84375
+    stamp: 639261978473277728
+  - key: line_spark_3
+    path: Assets/Sprites/FX/Burn/Line/line_spark_3.png
+    sprite: {fileID: 21300000, guid: 7ea582e9fd9c94c1a9aebef46d0b8b99, type: 3}
+    content:
+      serializedVersion: 2
+      x: 0.1875
+      y: 0.078125
+      width: 0.62890625
+      height: 0.8515625
+    stamp: 639261978475014003
+  - key: line_spark_4
+    path: Assets/Sprites/FX/Burn/Line/line_spark_4.png
+    sprite: {fileID: 21300000, guid: cb9e078d9515047e797d5d678de5943e, type: 3}
+    content:
+      serializedVersion: 2
+      x: 0.07421875
+      y: 0.37890625
+      width: 0.84765625
+      height: 0.2421875
+    stamp: 639261978469573159
+  - key: bg_pattern
+    path: Assets/Sprites/Background/bg_pattern_tile.png
+    sprite: {fileID: 21300000, guid: 676cc6eb785dd4d7dbf8b3b556fb712e, type: 3}
+    content:
+      serializedVersion: 2
+      x: 0
+      y: 0.03125
+      width: 1
+      height: 0.9277344
+    stamp: 639260404286472899
+  - key: bg_bokeh
+    path: Assets/Sprites/Background/bg_bokeh.png
+    sprite: {fileID: 21300000, guid: dd1f27e0f4ff64e81be6744d78025f95, type: 3}
+    content:
+      serializedVersion: 2
+      x: 0
+      y: 0.50625
+      width: 1
+      height: 0.48333332
+    stamp: 639260404293873810
+  - key: bokeh_dot
+    path: Assets/Sprites/Background/bokeh_dot.png
+    sprite: {fileID: 21300000, guid: 84136a05d193e4835a57eb8df715af5e, type: 3}
+    content:
+      serializedVersion: 2
+      x: 0.0390625
+      y: 0.0390625
+      width: 0.9296875
+      height: 0.9296875
+    stamp: 639260404300043099
+  - key: splash
+    path: Assets/Sprites/splash.png
+    sprite: {fileID: 21300000, guid: bbc0e43cf9992438ba0bc14bb33b7fbe, type: 3}
+    content:
+      serializedVersion: 2
+      x: 0
+      y: 0
+      width: 1
+      height: 1
+    stamp: 639259444768786750
+  - key: splash_blur
+    path: Assets/Sprites/splash_blur.png
+    sprite: {fileID: 21300000, guid: 1383433a89210499e93496223e0c4f41, type: 3}
+    content:
+      serializedVersion: 2
+      x: 0
+      y: 0
+      width: 1
+      height: 1
+    stamp: 639261927136043022
+  - key: ui_play_big
+    path: Assets/ui/play_big.png
+    sprite: {fileID: 21300000, guid: 90cb4314af76149b98d6a19a99fcf322, type: 3}
+    content:
+      serializedVersion: 2
+      x: 0.0175
+      y: 0.016129032
+      width: 0.9775
+      height: 0.9677419
+    stamp: 639261978086217174
+  - key: ui_play_big_pressed
+    path: Assets/ui/play_big_pressed.png
+    sprite: {fileID: 21300000, guid: 61f30fe61bb00406c8347cc5e42a4f2f, type: 3}
+    content:
+      serializedVersion: 2
+      x: 0.0075
+      y: 0.07526882
+      width: 0.9475
+      height: 0.88709676
+    stamp: 639261977922067530
+  clips:
+  - key: Combo
+    clip: {fileID: 8300000, guid: 4d2e18cfc492d48a481af7b591992a8e, type: 3}
+  - key: Game
+    clip: {fileID: 8300000, guid: 1312a0ed27fe5434081ee750fbef0e9a, type: 3}
+  - key: Hit
+    clip: {fileID: 8300000, guid: 0679048e402b041ec8f7e0ec3b2eb89f, type: 3}
+  - key: Line-Pop
+    clip: {fileID: 8300000, guid: 9922e7c614cf5467db4daa7f914ca360, type: 3}
+  - key: balance
+    clip: {fileID: 8300000, guid: 13e755ff80035407e91abf4959953bfe, type: 3}
+  - key: click
+    clip: {fileID: 8300000, guid: e513b3f60bee849659c558ea1f3f8aeb, type: 3}
+  - key: explosion
+    clip: {fileID: 8300000, guid: 9060a00d81aa44723b7beefcdf0f0179, type: 3}
+  - key: freez
+    clip: {fileID: 8300000, guid: b1742dbb397f74239ad725b6ef812e01, type: 3}
+  - key: hummer
+    clip: {fileID: 8300000, guid: df12d13fd8a6f4547bb89ab3e26e91f7, type: 3}
+  - key: lost
+    clip: {fileID: 8300000, guid: c81b2dbf2a700477797681c16c1ae07a, type: 3}
+  - key: menu
+    clip: {fileID: 8300000, guid: 65735b344687341d18da3d71aaa5c0cc, type: 3}
+  - key: rainbow
+    clip: {fileID: 8300000, guid: 8f6d441dd1e8e41e3ba963729d921540, type: 3}
+  - key: win
+    clip: {fileID: 8300000, guid: c4f68693ae3814739b2ec30ec5b19d43, type: 3}
+  - key: soap_1
+    clip: {fileID: 8300000, guid: 6233345b051834ae096c63a100c7cda5, type: 3}
+  - key: soap_2
+    clip: {fileID: 8300000, guid: 2ae947b252afa4e55b224e604f3828fd, type: 3}
+  - key: soap_3
+    clip: {fileID: 8300000, guid: 47e2baee3befe4c04aa6e53ab49611b7, type: 3}
+  - key: milk_spill
+    clip: {fileID: 8300000, guid: 184219883f74f4651b3257727fcab097, type: 3}
+  - key: milk_lap
+    clip: {fileID: 8300000, guid: b952fdc2ff0a44fd4a5a154bb10cb69c, type: 3}
+  - key: mouse_hop
+    clip: {fileID: 8300000, guid: 6bc8f37729c9a48a1b1ecf3d0f87a821, type: 3}
+  - key: mouse_steal
+    clip: {fileID: 8300000, guid: 6220af53ee2e747be8eb8243f2fd6904, type: 3}
+  - key: mouse_caught
+    clip: {fileID: 8300000, guid: 2d9e7802b3dfa4393b0cd85fc6abda0c, type: 3}
+  - key: mouse_run
+    clip: {fileID: 8300000, guid: a3d4f2c3fa2364aee9d614c4045a3872, type: 3}
+  - key: chest_tap
+    clip: {fileID: 8300000, guid: 0962aacf59aa74abebdbfd366bfbadfc, type: 3}
+  - key: chest_open
+    clip: {fileID: 8300000, guid: eaf97bf053f9840a28d6d2049f3e25a0, type: 3}
+  - key: meet_card
+    clip: {fileID: 8300000, guid: 5d0951e51c82e4024a468e608e126935, type: 3}
+  - key: hunter
+    clip: {fileID: 8300000, guid: 277b2f04baceb4c4f87f407ebd67292d, type: 3}
+  - key: nope
+    clip: {fileID: 8300000, guid: baf9689e641f547f6b02549945baa647, type: 3}
+  - key: vase
+    clip: {fileID: 8300000, guid: ea033e9ba4f4d4514a68e83cf8436b1b, type: 3}
+  - key: mint_off
+    clip: {fileID: 8300000, guid: b169456fd3265435ba7ad6b2bda84749, type: 3}
+  - key: swap_1
+    clip: {fileID: 8300000, guid: 1c6155d02f4f744b5889ca9cd4533e6d, type: 3}
+  - key: swap_2
+    clip: {fileID: 8300000, guid: 97772caa27eb84026b7d9c603cd4d875, type: 3}
+  - key: swap_3
+    clip: {fileID: 8300000, guid: 1873b4631e8ee40cfb8108e858dc6fd7, type: 3}
+  displayFont: {fileID: 12800000, guid: ded95414f33d94edcbc914cb0ca7bbdc, type: 3}
+  numberFont: {fileID: 12800000, guid: a80d61aab8f8e49ac9b6ab5f20512ee2, type: 3}

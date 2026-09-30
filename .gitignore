@@ -1,0 +1,40 @@
+# Unity: generated / per-machine folders
+/[Ll]ibrary/
+/[Tt]emp/
+/[Oo]bj/
+/[Bb]uild/
+/[Bb]uilds/
+/[Ll]ogs/
+/[Uu]ser[Ss]ettings/
+/[Mm]emoryCaptures/
+/[Rr]ecordings/
+*_BurstDebugInformation_DoNotShip/
+
+# IDE / OS
+.vs/
+.vscode/
+.idea/
+*.csproj
+*.sln
+*.slnx
+*.suo
+*.user
+*.pidb
+*.booproj
+*.svd
+*.pdb
+*.mdb
+*.opendb
+*.VC.db
+.DS_Store
+.utmp/
+mono_crash.*.json
+
+# builds
+*.apk
+*.aab
+*.unitypackage
+
+# work folders (screenshots, simulation logs, full-size art backups)
+/_claude_tmp/
+/_art_originals/

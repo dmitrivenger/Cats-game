@@ -1,0 +1,245 @@
+using System;
+using System.Collections;
+using UnityEngine;
+using UnityEngine.EventSystems;
+using UnityEngine.InputSystem.UI;
+using UnityEngine.UI;
+
+// Procedural uGUI factory: everything on screen is built from code with the art in GameArt, so
+// the scenes stay empty and nothing has to be wired by hand. Reference resolution 1080x1920.
+public static class UIKit
+{
+    public static readonly Color Navy = new Color(0.13f, 0.18f, 0.36f);
+    public static readonly Color Gold = new Color(1f, 0.78f, 0.25f);
+    public static readonly Color Sky = new Color(0.55f, 0.8f, 1f);
+
+    public static Canvas CreateCanvas(string name, int order)
+    {
+        var go = new GameObject(name);
+        var c = go.AddComponent<Canvas>();
+        // Camera-space so the UI and the 2D world share one camera (layout never depends on the
+        // Editor's Screen size, and fly-to-HUD effects can use world positions directly).
+        // World-space canvas glued to the camera: its size comes only from the camera (aspect /
+        // ortho size), never from Screen, so layout is identical on device and in the Editor.
+        var cam = Camera.main;
+        if (cam != null) { c.renderMode = RenderMode.WorldSpace; c.worldCamera = cam; }
+        else c.renderMode = RenderMode.ScreenSpaceOverlay;
+        c.sortingOrder = order;
+        go.AddComponent<CameraScaler>();
+        go.AddComponent<GraphicRaycaster>();
+        return c;
+    }
+
+    public static void EnsureEventSystem()
+    {
+        if (UnityEngine.Object.FindFirstObjectByType<EventSystem>() != null) return;
+        var go = new GameObject("EventSystem");
+        go.AddComponent<EventSystem>();
+        go.AddComponent<InputSystemUIInputModule>();
+    }
+
+    // Root that respects the phone's safe area (notch / home bar).
+    public static RectTransform SafeRoot(Canvas canvas)
+    {
+        var rt = Rect("Safe", canvas.transform);
+        Stretch(rt);
+        var sa = rt.gameObject.AddComponent<SafeArea>();
+        sa.Apply();
+        return rt;
+    }
+
+    public static RectTransform Rect(string name, Transform parent)
+    {
+        var go = new GameObject(name, typeof(RectTransform));
+        go.transform.SetParent(parent, false);
+        return (RectTransform)go.transform;
+    }
+
+    public static void Stretch(RectTransform rt)
+    {
+        rt.anchorMin = Vector2.zero; rt.anchorMax = Vector2.one; rt.offsetMin = Vector2.zero; rt.offsetMax = Vector2.zero;
+    }
+
+    public static RectTransform Place(RectTransform rt, Vector2 anchor, Vector2 pos, Vector2 size)
+    {
+        rt.anchorMin = rt.anchorMax = anchor;
+        rt.pivot = new Vector2(0.5f, 0.5f);
+        rt.anchoredPosition = pos;
+        rt.sizeDelta = size;
+        return rt;
+    }
+
+    public static Image Image(Transform parent, string key, Vector2 anchor, Vector2 pos, Vector2 size, bool preserve = true)
+    {
+        var rt = Place(Rect(key ?? "img", parent), anchor, pos, size);
+        var img = rt.gameObject.AddComponent<Image>();
+        img.sprite = GameArt.I.S(key);
+        img.preserveAspect = preserve;
+        img.raycastTarget = false;
+        if (img.sprite == null) img.color = new Color(1, 1, 1, 0);
+        return img;
+    }
+
+    public static Image Panel(Transform parent, Vector2 anchor, Vector2 pos, Vector2 size, Color color, int radius = 40)
+    {
+        var rt = Place(Rect("panel", parent), anchor, pos, size);
+        var img = rt.gameObject.AddComponent<Image>();
+        img.sprite = Kit.RoundedRect(128, radius);
+        img.type = UnityEngine.UI.Image.Type.Sliced;
+        img.color = color;
+        img.raycastTarget = false;
+        return img;
+    }
+
+    public static Text Label(Transform parent, string text, int size, Color color, Vector2 anchor, Vector2 pos, Vector2 box, bool numbers = false, TextAnchor align = TextAnchor.MiddleCenter)
+    {
+        var rt = Place(Rect("text", parent), anchor, pos, box);
+        var t = rt.gameObject.AddComponent<Text>();
+        t.font = numbers ? GameArt.I.Number : GameArt.I.Display;
+        t.fontSize = size;
+        t.color = color;
+        t.alignment = align;
+        t.text = text;
+        t.horizontalOverflow = HorizontalWrapMode.Overflow;
+        t.verticalOverflow = VerticalWrapMode.Overflow;
+        t.raycastTarget = false;
+        var o = rt.gameObject.AddComponent<Outline>();
+        o.effectColor = new Color(0.1f, 0.12f, 0.3f, 0.85f);
+        o.effectDistance = new Vector2(2.5f, -2.5f);
+        return t;
+    }
+
+    // Art button (pressed-state sprite swap when "<key>_p" exists) with a squishy press.
+    public static Button ArtButton(Transform parent, string key, Vector2 anchor, Vector2 pos, float size, Action onClick, string fallbackText = null)
+    {
+        var rt = Place(Rect("btn_" + key, parent), anchor, pos, new Vector2(size, size));
+        var img = rt.gameObject.AddComponent<Image>();
+        img.sprite = GameArt.I.S(key);
+        img.preserveAspect = true;
+        var b = rt.gameObject.AddComponent<Button>();
+        if (img.sprite == null)
+        {
+            img.sprite = Kit.RoundedRect(128, 60);
+            img.type = UnityEngine.UI.Image.Type.Sliced;
+            img.color = Sky;
+            Label(rt, fallbackText ?? "?", (int)(size * 0.32f), Color.white, new Vector2(0.5f, 0.5f), Vector2.zero, new Vector2(size, size));
+        }
+        var pressed = GameArt.I.S(key + "_p");
+        if (pressed != null)
+        {
+            b.transition = Selectable.Transition.SpriteSwap;
+            b.spriteState = new SpriteState { pressedSprite = pressed, highlightedSprite = img.sprite, selectedSprite = img.sprite };
+        }
+        else b.transition = Selectable.Transition.None;
+        rt.gameObject.AddComponent<Squish>();
+        b.onClick.AddListener(() => { AudioManager.PlayClick(); onClick?.Invoke(); });
+        return b;
+    }
+
+    public static Button TextButton(Transform parent, string text, Vector2 anchor, Vector2 pos, Vector2 size, Color color, Action onClick)
+    {
+        var rt = Place(Rect("btn_" + text, parent), anchor, pos, size);
+        var img = rt.gameObject.AddComponent<Image>();
+        img.sprite = Kit.RoundedRect(128, 50);
+        img.type = UnityEngine.UI.Image.Type.Sliced;
+        img.color = Navy;                                   // the outline; the coloured face sits inside it
+        var b = rt.gameObject.AddComponent<Button>();
+        b.transition = Selectable.Transition.ColorTint;
+        var face = Panel(rt, new Vector2(0.5f, 0.5f), Vector2.zero, size - new Vector2(12, 12), color, 45);
+        face.raycastTarget = false;
+        Label(rt, text, (int)(size.y * 0.42f), Color.white, new Vector2(0.5f, 0.5f), Vector2.zero, size, true);
+        rt.gameObject.AddComponent<Squish>();
+        b.onClick.AddListener(() => { AudioManager.PlayClick(); onClick?.Invoke(); });
+        return b;
+    }
+
+    public static Slider MakeSlider(Transform parent, Vector2 anchor, Vector2 pos, float width, float value, Action<float> onChange)
+    {
+        var rt = Place(Rect("slider", parent), anchor, pos, new Vector2(width, 60));
+        var bg = Panel(rt, new Vector2(0.5f, 0.5f), Vector2.zero, new Vector2(width, 26), new Color(0.1f, 0.15f, 0.35f, 0.5f), 13);
+        var fillArea = Rect("fillArea", rt); Stretch(fillArea); fillArea.offsetMin = new Vector2(0, 17); fillArea.offsetMax = new Vector2(0, -17);
+        var fill = Rect("fill", fillArea); Stretch(fill);
+        var fi = fill.gameObject.AddComponent<Image>(); fi.sprite = Kit.RoundedRect(128, 13); fi.type = UnityEngine.UI.Image.Type.Sliced; fi.color = Gold;
+        var handleArea = Rect("handleArea", rt); Stretch(handleArea); handleArea.offsetMin = new Vector2(30, 0); handleArea.offsetMax = new Vector2(-30, 0);   // the coin stays within the track at both ends
+        var handle = Rect("handle", handleArea); handle.sizeDelta = new Vector2(64, 64);
+        var hi = handle.gameObject.AddComponent<Image>(); hi.sprite = GameArt.I.S("ui_balance") ?? Kit.SoftCircle(64); hi.preserveAspect = true;
+        var s = rt.gameObject.AddComponent<Slider>();
+        s.fillRect = fill; s.handleRect = handle; s.targetGraphic = hi;
+        s.minValue = 0; s.maxValue = 1; s.value = value;
+        s.onValueChanged.AddListener(v => onChange?.Invoke(v));
+        return s;
+    }
+
+    public static IEnumerator PopIn(Transform t, float dur = 0.3f)
+    {
+        t.localScale = Vector3.zero;
+        yield return Kit.Tween(dur, k => { if (t != null) t.localScale = Vector3.one * Kit.EaseOutBack(k); });
+    }
+}
+
+// Scales a button down a touch while pressed.
+public class Squish : MonoBehaviour, IPointerDownHandler, IPointerUpHandler
+{
+    public void OnPointerDown(PointerEventData e) { transform.localScale = Vector3.one * 0.92f; }
+    public void OnPointerUp(PointerEventData e) { transform.localScale = Vector3.one; }
+}
+
+// Same maths as CanvasScaler "Scale With Screen Size" in Expand mode (1080x1920), computed from the
+// camera's pixel size; sizes and places the world-space canvas so it exactly covers the view.
+[ExecuteAlways]
+public class CameraScaler : MonoBehaviour
+{
+    public Vector2 reference = new Vector2(1080, 1920);
+    public float match = 0.35f;
+    Canvas canvas;
+    void OnEnable() { canvas = GetComponent<Canvas>(); Apply(); }
+    void LateUpdate() { Apply(); }
+    public void Apply()
+    {
+        if (canvas == null) canvas = GetComponent<Canvas>();
+        var cam = canvas.worldCamera;
+        if (cam == null || canvas.renderMode != RenderMode.WorldSpace) return;
+        float w = cam.pixelWidth, h = cam.pixelHeight;
+        if (w <= 0 || h <= 0) return;
+        // "Expand": the canvas is never narrower than 1080 nor shorter than 1920 reference px,
+        // so nothing gets clipped on tall/narrow phones (extra height just goes to the board).
+        float f = Mathf.Min(w / reference.x, h / reference.y);
+        var rt = (RectTransform)transform;
+        Vector2 size = new Vector2(w / f, h / f);
+        if (rt.sizeDelta != size) rt.sizeDelta = size;
+        float worldH = cam.orthographicSize * 2f;
+        float s = worldH / size.y;
+        rt.localScale = new Vector3(s, s, 1f);
+        rt.position = new Vector3(cam.transform.position.x, cam.transform.position.y, 0f);
+        rt.rotation = Quaternion.identity;
+    }
+}
+
+public class SafeArea : MonoBehaviour
+{
+    Rect last;
+    public void Apply()
+    {
+        var rt = (RectTransform)transform;
+        Rect sa = Screen.safeArea;
+        last = sa;
+        var cam = Camera.main;
+        bool valid = Screen.width > 0 && Screen.height > 0 && sa.width > 0 && sa.height > 0
+                     && sa.xMax <= Screen.width + 1 && sa.yMax <= Screen.height + 1
+                     && sa.width >= Screen.width * 0.9f && sa.height >= Screen.height * 0.8f   // Editor Game view reports unscaled device insets
+                     && (cam == null || (Mathf.Abs(cam.pixelWidth - Screen.width) < 2 && Mathf.Abs(cam.pixelHeight - Screen.height) < 2));
+        if (!valid) { rt.anchorMin = Vector2.zero; rt.anchorMax = Vector2.one; }
+        else
+        {
+            rt.anchorMin = new Vector2(sa.xMin / Screen.width, sa.yMin / Screen.height);
+            rt.anchorMax = new Vector2(sa.xMax / Screen.width, sa.yMax / Screen.height);
+        }
+        rt.offsetMin = rt.offsetMax = Vector2.zero;
+    }
+    Vector2Int lastScreen;
+    void Update()
+    {
+        var sc = new Vector2Int(Screen.width, Screen.height);
+        if (Screen.safeArea != last || sc != lastScreen) { lastScreen = sc; Apply(); }
+    }
+}
