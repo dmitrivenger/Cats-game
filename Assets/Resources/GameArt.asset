@@ -18,21 +18,21 @@ MonoBehaviour:
     sprite: {fileID: 21300000, guid: 78c60a54112404f9a82a68ddb708115c, type: 3}
     content:
       serializedVersion: 2
-      x: 0.0234375
-      y: 0.016806724
-      width: 0.9375
-      height: 0.9579832
-    stamp: 639261979309732335
+      x: 0.01171875
+      y: 0.015625
+      width: 0.98046875
+      height: 0.97265625
+    stamp: 639268238242691841
   - key: cat_0_an
     path: Assets/Sprites/red-an.png
     sprite: {fileID: 21300000, guid: 36784503a155a4c3ab07bd71f58c1ac7, type: 3}
     content:
       serializedVersion: 2
-      x: 0.03125
-      y: 0.008403362
-      width: 0.92578125
-      height: 0.96638656
-    stamp: 639261979286359995
+      x: 0.01171875
+      y: 0.01171875
+      width: 0.9765625
+      height: 0.9765625
+    stamp: 639268238253415621
   - key: cat_1
     path: Assets/Sprites/white.png
     sprite: {fileID: 21300000, guid: 2e9b67b8e49a6475bb74e90dd8d0fca1, type: 3}
@@ -118,81 +118,451 @@ MonoBehaviour:
     sprite: {fileID: 21300000, guid: cb73ec647097f4db78aa805a6630d8b8, type: 3}
     content:
       serializedVersion: 2
-      x: 0.01953125
-      y: 0.046875
-      width: 0.9609375
-      height: 0.91015625
-    stamp: 639261979273537035
+      x: 0.01171875
+      y: 0.015625
+      width: 0.9765625
+      height: 0.96875
+    stamp: 639268257929276695
   - key: mint_face_1
     path: Assets/Sprites/mint_face_white.png
     sprite: {fileID: 21300000, guid: 2484b6bf7e55c4001a8e683ea8370519, type: 3}
     content:
       serializedVersion: 2
-      x: 0.01953125
-      y: 0.04296875
-      width: 0.9609375
-      height: 0.91796875
-    stamp: 639261979279295610
+      x: 0.01171875
+      y: 0.01953125
+      width: 0.98046875
+      height: 0.96484375
+    stamp: 639268257939899268
   - key: mint_face_2
     path: Assets/Sprites/mint_face_grey.png
     sprite: {fileID: 21300000, guid: 7d8a61059095a4b2680f86d64789688b, type: 3}
     content:
       serializedVersion: 2
-      x: 0.01953125
-      y: 0.02734375
-      width: 0.9609375
-      height: 0.94921875
-    stamp: 639261979281438114
+      x: 0.01171875
+      y: 0.01171875
+      width: 0.9765625
+      height: 0.98046875
+    stamp: 639268257951418301
   - key: mint_face_3
     path: Assets/Sprites/mint_face_black.png
     sprite: {fileID: 21300000, guid: 71639744db8e94aadb14c62dce27d091, type: 3}
     content:
       serializedVersion: 2
-      x: 0.01953125
-      y: 0.02734375
-      width: 0.9609375
-      height: 0.94921875
-    stamp: 639261979297700694
+      x: 0.01171875
+      y: 0.015625
+      width: 0.9765625
+      height: 0.97265625
+    stamp: 639268257959706976
   - key: mint_face_4
     path: Assets/Sprites/mint_face_yellow.png
     sprite: {fileID: 21300000, guid: bc121dcf79bcd4d81a6752feb71bcc9e, type: 3}
     content:
       serializedVersion: 2
-      x: 0.04296875
-      y: 0.01953125
-      width: 0.9140625
-      height: 0.9609375
-    stamp: 639261979275655382
+      x: 0.01171875
+      y: 0.01171875
+      width: 0.98046875
+      height: 0.9765625
+    stamp: 639268257968710270
   - key: special_line
     path: Assets/Sprites/cat-cross.png
     sprite: {fileID: 21300000, guid: a5d4c930c7cea44e9b07f16dea50da42, type: 3}
     content:
       serializedVersion: 2
-      x: 0
-      y: 0.015625
-      width: 1
-      height: 0.984375
-    stamp: 639261979287857288
+      x: 0.01953125
+      y: 0.01171875
+      width: 0.96484375
+      height: 0.98046875
+    stamp: 639268238308913020
+  - key: special_line_an
+    path: Assets/Sprites/cat-cross-an.png
+    sprite: {fileID: 21300000, guid: 693f775b6124f418d86512ce12702fdc, type: 3}
+    content:
+      serializedVersion: 2
+      x: 0.01953125
+      y: 0.01171875
+      width: 0.9609375
+      height: 0.98046875
+    stamp: 639268238318203768
   - key: special_bomb
     path: Assets/Sprites/cat-bomb.png
     sprite: {fileID: 21300000, guid: 18cf825039feb44838d65d9b4db375c2, type: 3}
     content:
       serializedVersion: 2
-      x: 0.02734375
+      x: 0.046875
+      y: 0.01171875
+      width: 0.91015625
+      height: 0.9765625
+    stamp: 639268238275346120
+  - key: special_bomb_an
+    path: Assets/Sprites/cat-bomb-an.png
+    sprite: {fileID: 21300000, guid: 98fd58d280c77410cbb1ce40440095ed, type: 3}
+    content:
+      serializedVersion: 2
+      x: 0.046875
+      y: 0.01171875
+      width: 0.9453125
+      height: 0.97265625
+    stamp: 639268238283111249
+  - key: compass_rose
+    path: Assets/Sprites/compass_rose.png
+    sprite: {fileID: 21300000, guid: 4ccac0963cba34445a504e265184183a, type: 3}
+    content:
+      serializedVersion: 2
+      x: 0.01171875
+      y: 0.0078125
+      width: 0.98046875
+      height: 0.984375
+    stamp: 639269139592322076
+  - key: tile_icon_1
+    path: Assets/Sprites/FX/TileIcons/tile_icon_1.png
+    sprite: {fileID: 21300000, guid: 25bdaffc42066486bb44a358ca929450, type: 3}
+    content:
+      serializedVersion: 2
+      x: 0.046875
+      y: 0.25
+      width: 0.921875
+      height: 0.5
+    stamp: 639269163968890705
+  - key: tile_icon_2
+    path: Assets/Sprites/FX/TileIcons/tile_icon_2.png
+    sprite: {fileID: 21300000, guid: eb9ec04bc4ac341fb8ebef5e5f9dd20d, type: 3}
+    content:
+      serializedVersion: 2
+      x: 0.046875
+      y: 0.15625
+      width: 0.921875
+      height: 0.6875
+    stamp: 639269163973816542
+  - key: tile_icon_3
+    path: Assets/Sprites/FX/TileIcons/tile_icon_3.png
+    sprite: {fileID: 21300000, guid: 5abbf1b6ac2354bcdb63e34ae69c7127, type: 3}
+    content:
+      serializedVersion: 2
+      x: 0.0625
+      y: 0.046875
+      width: 0.875
+      height: 0.921875
+    stamp: 639269163978657385
+  - key: tile_icon_4
+    path: Assets/Sprites/FX/TileIcons/tile_icon_4.png
+    sprite: {fileID: 21300000, guid: 2ecc4c6b41ded4b319368c5cc5827a86, type: 3}
+    content:
+      serializedVersion: 2
+      x: 0.109375
+      y: 0.046875
+      width: 0.78125
+      height: 0.921875
+    stamp: 639269163984208986
+  - key: tile_icon_5
+    path: Assets/Sprites/FX/TileIcons/tile_icon_5.png
+    sprite: {fileID: 21300000, guid: ea1371b7a2be0490ab0b8c077a96f38e, type: 3}
+    content:
+      serializedVersion: 2
+      x: 0.078125
+      y: 0.046875
+      width: 0.84375
+      height: 0.921875
+    stamp: 639269163989707025
+  - key: tile_icon_6
+    path: Assets/Sprites/FX/TileIcons/tile_icon_6.png
+    sprite: {fileID: 21300000, guid: d06b4ef33ce1047508f079530325ab41, type: 3}
+    content:
+      serializedVersion: 2
+      x: 0.046875
+      y: 0.15625
+      width: 0.921875
+      height: 0.703125
+    stamp: 639269163996598123
+  - key: tile_icon_7
+    path: Assets/Sprites/FX/TileIcons/tile_icon_7.png
+    sprite: {fileID: 21300000, guid: 9436ee0f393234ad2b7116ad718dd348, type: 3}
+    content:
+      serializedVersion: 2
+      x: 0.046875
+      y: 0.1875
+      width: 0.921875
+      height: 0.640625
+    stamp: 639269164002640369
+  - key: tile_icon_8
+    path: Assets/Sprites/FX/TileIcons/tile_icon_8.png
+    sprite: {fileID: 21300000, guid: 73566b88cce8942059e5e47560ca3334, type: 3}
+    content:
+      serializedVersion: 2
+      x: 0.03125
+      y: 0.234375
+      width: 0.9375
+      height: 0.546875
+    stamp: 639269164007704423
+  - key: ui_hand
+    path: Assets/ui/ui_hand.png
+    sprite: {fileID: 21300000, guid: 847fac86c46c84ca59287d378fb45498, type: 3}
+    content:
+      serializedVersion: 2
+      x: 0.0234375
+      y: 0.0625
+      width: 0.9609375
+      height: 0.875
+    stamp: 639269173203292310
+  - key: daily_kitten
+    path: Assets/ui/daily_kitten.png
+    sprite: {fileID: 21300000, guid: 7bb00cdb1d596450f9f44e986a83ed5e, type: 3}
+    content:
+      serializedVersion: 2
+      x: 0.004716981
+      y: 0.00390625
+      width: 0.995283
+      height: 0.99609375
+    stamp: 639270976901306695
+  - key: celebrate_banner
+    path: Assets/ui/celebrate_banner.png
+    sprite: {fileID: 21300000, guid: 41846bedd6a134680b4347e3ced079dd, type: 3}
+    content:
+      serializedVersion: 2
+      x: 0
       y: 0
-      width: 0.97265625
+      width: 1
       height: 1
-    stamp: 639261979295082925
+    stamp: 639271002343822190
+  - key: moves_low_banner
+    path: Assets/ui/moves_low_banner.png
+    sprite: {fileID: 21300000, guid: 3c82560e892b24423bf4f3dc20462c82, type: 3}
+    content:
+      serializedVersion: 2
+      x: 0
+      y: 0.03301887
+      width: 1
+      height: 0.9669811
+    stamp: 639272731340128177
+  - key: ui_help
+    path: Assets/ui/ui_help.png
+    sprite: {fileID: 21300000, guid: 49fc1de4b9b84424f9581bc7e8acdc15, type: 3}
+    content:
+      serializedVersion: 2
+      x: 0.015625
+      y: 0.00390625
+      width: 0.97265625
+      height: 0.9921875
+    stamp: 639271826175988304
+  - key: map_cloud_1
+    path: Assets/ui/Map/map_cloud_1.png
+    sprite: {fileID: 21300000, guid: c91d97098c29e4bfeb596c6c21afd46e, type: 3}
+    content:
+      serializedVersion: 2
+      x: 0.017094018
+      y: 0.028571429
+      width: 0.96866095
+      height: 0.94285715
+    stamp: 639272692425680308
+  - key: map_cloud_2
+    path: Assets/ui/Map/map_cloud_2.png
+    sprite: {fileID: 21300000, guid: 9885b3a0dc8624442a7f46b6c2c7f14b, type: 3}
+    content:
+      serializedVersion: 2
+      x: 0.00390625
+      y: 0.010928961
+      width: 0.9921875
+      height: 0.9836066
+    stamp: 639272692431341722
+  - key: map_cloud_3
+    path: Assets/ui/Map/map_cloud_3.png
+    sprite: {fileID: 21300000, guid: 3dd442c988c604b25a2eb15a35352e38, type: 3}
+    content:
+      serializedVersion: 2
+      x: 0.0078125
+      y: 0.016260162
+      width: 0.98828125
+      height: 0.9756098
+    stamp: 639272692437111723
+  - key: map_cloud_4
+    path: Assets/ui/Map/map_cloud_4.png
+    sprite: {fileID: 21300000, guid: 1bb3171c10a2c4f6094235bb58794513, type: 3}
+    content:
+      serializedVersion: 2
+      x: 0.0078125
+      y: 0.009501188
+      width: 0.98828125
+      height: 0.9833729
+    stamp: 639272692443779665
+  - key: ui_streak_off
+    path: Assets/ui/streak_off.png
+    sprite: {fileID: 21300000, guid: 58612791738104fb1a6512ea16695cef, type: 3}
+    content:
+      serializedVersion: 2
+      x: 0.03125
+      y: 0.03125
+      width: 0.9479167
+      height: 0.9479167
+    stamp: 639269173210052578
+  - key: ui_streak_on
+    path: Assets/ui/streak_on.png
+    sprite: {fileID: 21300000, guid: a62d8451195c54ab1bc6a114d34a731a, type: 3}
+    content:
+      serializedVersion: 2
+      x: 0.041666668
+      y: 0.03125
+      width: 0.9375
+      height: 0.9375
+    stamp: 639269173219319852
+  - key: ui_streak_gift
+    path: Assets/ui/streak_gift.png
+    sprite: {fileID: 21300000, guid: 7005d72d784be4189b3d0ae300c2d6d1, type: 3}
+    content:
+      serializedVersion: 2
+      x: 0.03125
+      y: 0.03125
+      width: 0.9375
+      height: 0.9479167
+    stamp: 639269173228529184
+  - key: combo_bb
+    path: Assets/Combos/Emblems/combo_bb.png
+    sprite: {fileID: 21300000, guid: 30a23083e941b4460af27f43647f16dd, type: 3}
+    content:
+      serializedVersion: 2
+      x: 0.088541664
+      y: 0.015625
+      width: 0.828125
+      height: 0.96875
+    stamp: 639269173236347122
+  - key: combo_ll
+    path: Assets/Combos/Emblems/combo_ll.png
+    sprite: {fileID: 21300000, guid: 8bed9c9849b97480986f18ca4a16582f, type: 3}
+    content:
+      serializedVersion: 2
+      x: 0.015625
+      y: 0.09375
+      width: 0.96875
+      height: 0.8177083
+    stamp: 639269173243666994
+  - key: combo_lb
+    path: Assets/Combos/Emblems/combo_lb.png
+    sprite: {fileID: 21300000, guid: b40187b2344b345fbac8b56ce03c1ec2, type: 3}
+    content:
+      serializedVersion: 2
+      x: 0.036458332
+      y: 0.015625
+      width: 0.9270833
+      height: 0.96875
+    stamp: 639269173253645629
+  - key: combo_hh
+    path: Assets/Combos/Emblems/combo_hh.png
+    sprite: {fileID: 21300000, guid: f7a48910e372949819c08c4d55b47e54, type: 3}
+    content:
+      serializedVersion: 2
+      x: 0.03125
+      y: 0.020833334
+      width: 0.9375
+      height: 0.9635417
+    stamp: 639270926409802323
+  - key: combo_hb
+    path: Assets/Combos/Emblems/combo_hb.png
+    sprite: {fileID: 21300000, guid: 1dc7e9e33c4664fb392052b2fd9a71b6, type: 3}
+    content:
+      serializedVersion: 2
+      x: 0.15625
+      y: 0.083333336
+      width: 0.828125
+      height: 0.8385417
+    stamp: 639270926417387097
+  - key: combo_hl
+    path: Assets/Combos/Emblems/combo_hl.png
+    sprite: {fileID: 21300000, guid: 34a1e94031756462188c1a07b7d78163, type: 3}
+    content:
+      serializedVersion: 2
+      x: 0.020833334
+      y: 0.020833334
+      width: 0.9583333
+      height: 0.9635417
+    stamp: 639270926424709968
+  - key: combo_hr
+    path: Assets/Combos/Emblems/combo_hr.png
+    sprite: {fileID: 21300000, guid: 2289d919c7cde4a37a0f5976ed9c6b19, type: 3}
+    content:
+      serializedVersion: 2
+      x: 0.020833334
+      y: 0.036458332
+      width: 0.9635417
+      height: 0.9270833
+    stamp: 639270926432877485
+  - key: combo_rr
+    path: Assets/Combos/Emblems/combo_rr.png
+    sprite: {fileID: 21300000, guid: b6b97f3e2028941418038eef4056a0ef, type: 3}
+    content:
+      serializedVersion: 2
+      x: 0.015625
+      y: 0.036458332
+      width: 0.96875
+      height: 0.9270833
+    stamp: 639269173262400765
+  - key: combo_rb
+    path: Assets/Combos/Emblems/combo_rb.png
+    sprite: {fileID: 21300000, guid: deed31e7c3cbc4f78aa0d05d2c11e8e9, type: 3}
+    content:
+      serializedVersion: 2
+      x: 0.140625
+      y: 0.015625
+      width: 0.71875
+      height: 0.96875
+    stamp: 639269173267609084
+  - key: combo_rl
+    path: Assets/Combos/Emblems/combo_rl.png
+    sprite: {fileID: 21300000, guid: f7bf1e8dc77754f0a89ec4d3284a79d4, type: 3}
+    content:
+      serializedVersion: 2
+      x: 0.020833334
+      y: 0.015625
+      width: 0.9583333
+      height: 0.96875
+    stamp: 639269173274569722
+  - key: ui_badge_check
+    path: Assets/ui/badge_check.png
+    sprite: {fileID: 21300000, guid: ee2b96f40e97e46afb487e14aa6b8ed8, type: 3}
+    content:
+      serializedVersion: 2
+      x: 0.03125
+      y: 0.0234375
+      width: 0.9453125
+      height: 0.9609375
+    stamp: 639269154853788287
+  - key: ui_badge_count
+    path: Assets/ui/badge_count.png
+    sprite: {fileID: 21300000, guid: e8f0ce54992564eb8af740ee9fe1219d, type: 3}
+    content:
+      serializedVersion: 2
+      x: 0.03125
+      y: 0.0234375
+      width: 0.9453125
+      height: 0.9609375
+    stamp: 639269154858971077
+  - key: sleep_z
+    path: Assets/Sprites/sleep_z.png
+    sprite: {fileID: 21300000, guid: cee38e61c16a84137a1494e1ccf08662, type: 3}
+    content:
+      serializedVersion: 2
+      x: 0.1875
+      y: 0.171875
+      width: 0.625
+      height: 0.703125
+    stamp: 639268257988694414
   - key: special_rainbow
     path: Assets/Sprites/cat-rainbow.png
     sprite: {fileID: 21300000, guid: 3c2551b642510440b867213cd01e20c1, type: 3}
     content:
       serializedVersion: 2
-      x: 0.015625
+      x: 0.05859375
       y: 0.01171875
-      width: 0.984375
-      height: 0.97265625
-    stamp: 639261979284945363
+      width: 0.88671875
+      height: 0.98046875
+    stamp: 639268257976670623
+  - key: special_rainbow_an
+    path: Assets/Sprites/cat-rainbow-an.png
+    sprite: {fileID: 21300000, guid: 763425ebf6891455cb0b4ecb54d6b6ad, type: 3}
+    content:
+      serializedVersion: 2
+      x: 0.0546875
+      y: 0.01171875
+      width: 0.890625
+      height: 0.9765625
+    stamp: 639268257984582550
   - key: special_hunter
     path: Assets/Sprites/Cat-hunter.png
     sprite: {fileID: 21300000, guid: 451cd599a0311408e8257179f3501590, type: 3}
@@ -218,71 +588,51 @@ MonoBehaviour:
     sprite: {fileID: 21300000, guid: 6f31abedd7ac745ddb8d960be0c79e90, type: 3}
     content:
       serializedVersion: 2
-      x: 0.00390625
-      y: 0.0625
-      width: 0.99609375
-      height: 0.59375
-    stamp: 639261979339854322
+      x: 0.01171875
+      y: 0.1796875
+      width: 0.9765625
+      height: 0.64453125
+    stamp: 639270942089612624
   - key: box_damaged
     path: Assets/Sprites/Cat-blockers/box_damaged.png
     sprite: {fileID: 21300000, guid: fa70ca62d007241688f8eb9a09e82a1b, type: 3}
     content:
       serializedVersion: 2
-      x: 0.03125
-      y: 0.0625
-      width: 0.96875
-      height: 0.59375
-    stamp: 639261979321490380
-  - key: box_full_back
-    path: Assets/Sprites/Cat-blockers/split/box_full_back.png
-    sprite: {fileID: 21300000, guid: 5bdd28cfdd9ba40c389066992d700117, type: 3}
-    content:
-      serializedVersion: 2
-      x: 0.00390625
-      y: 0.44140625
-      width: 0.99609375
-      height: 0.21484375
-    stamp: 639261979344994492
-  - key: box_full_front
-    path: Assets/Sprites/Cat-blockers/split/box_full_front.png
-    sprite: {fileID: 21300000, guid: 0309a4d12c16040bcafc42708e423952, type: 3}
-    content:
-      serializedVersion: 2
-      x: 0.0859375
-      y: 0.0625
-      width: 0.828125
-      height: 0.37890625
-    stamp: 639261979342415243
-  - key: box_damaged_back
-    path: Assets/Sprites/Cat-blockers/split/box_damaged_back.png
-    sprite: {fileID: 21300000, guid: c137e14f6a24e47e6b5c7d8d44b92f4f, type: 3}
-    content:
-      serializedVersion: 2
-      x: 0.12890625
-      y: 0.44140625
-      width: 0.87109375
-      height: 0.21484375
-    stamp: 639261979343531804
-  - key: box_damaged_front
-    path: Assets/Sprites/Cat-blockers/split/box_damaged_front.png
-    sprite: {fileID: 21300000, guid: 6b6d9188b9f9a490e886e3e1128e6708, type: 3}
-    content:
-      serializedVersion: 2
-      x: 0.03125
-      y: 0.0625
-      width: 0.88671875
-      height: 0.37890625
-    stamp: 639261979346303808
+      x: 0.01171875
+      y: 0.1796875
+      width: 0.9765625
+      height: 0.64453125
+    stamp: 639270942094248178
   - key: yarn_wrap
     path: Assets/Sprites/Cat-blockers/yarn_wrap.png
     sprite: {fileID: 21300000, guid: 9b9f4819511a64310bb2e71a036aae48, type: 3}
     content:
       serializedVersion: 2
-      x: 0.08203125
-      y: 0.07421875
-      width: 0.8359375
-      height: 0.84375
-    stamp: 639261979334207834
+      x: 0.01171875
+      y: 0.21875
+      width: 0.98046875
+      height: 0.56640625
+    stamp: 639270945649579397
+  - key: yarn_wrap_front
+    path: Assets/Sprites/Cat-blockers/yarn_wrap_front.png
+    sprite: {fileID: 21300000, guid: 5e9aceff15d86487e97520382b849ed1, type: 3}
+    content:
+      serializedVersion: 2
+      x: 0.01171875
+      y: 0.21875
+      width: 0.9765625
+      height: 0.28515625
+    stamp: 639270945657607159
+  - key: yarn_wrap_back
+    path: Assets/Sprites/Cat-blockers/yarn_wrap_back.png
+    sprite: {fileID: 21300000, guid: ddcffa3b5a9c140729b6493c5b0c29cc, type: 3}
+    content:
+      serializedVersion: 2
+      x: 0.01171875
+      y: 0.48828125
+      width: 0.98046875
+      height: 0.296875
+    stamp: 639270945663060085
   - key: yarn_ball
     path: Assets/Sprites/Cat-blockers/yarn_ball.png
     sprite: {fileID: 21300000, guid: fe2d279428a3e4132a7f8e5083388174, type: 3}
@@ -293,16 +643,6 @@ MonoBehaviour:
       width: 0.74609375
       height: 0.62109375
     stamp: 639261979311405426
-  - key: mint_wreath
-    path: Assets/Sprites/Cat-blockers/mint_wreath.png
-    sprite: {fileID: 21300000, guid: 6077a5fcb3dad4ad5b38cc9a27f71b9a, type: 3}
-    content:
-      serializedVersion: 2
-      x: 0.01953125
-      y: 0.03515625
-      width: 0.9609375
-      height: 0.9296875
-    stamp: 639261979331165058
   - key: chest_closed
     path: Assets/ui/Chest/chest_closed.png
     sprite: {fileID: 21300000, guid: a32d904d1030d489da5c173e5217eea2, type: 3}
@@ -363,6 +703,56 @@ MonoBehaviour:
       width: 0.98828125
       height: 0.98828125
     stamp: 639263697843160703
+  - key: daily_icon_done
+    path: Assets/ui/Daily/daily_icon_done.png
+    sprite: {fileID: 21300000, guid: 45e4e50014875465eb560ba385dd0cb5, type: 3}
+    content:
+      serializedVersion: 2
+      x: 0.0078125
+      y: 0.0078125
+      width: 0.98828125
+      height: 0.98828125
+    stamp: 639267919332643303
+  - key: daily_mat
+    path: Assets/ui/Daily/daily_mat.png
+    sprite: {fileID: 21300000, guid: 346d576416a044c1b994a8016fbb9b60, type: 3}
+    content:
+      serializedVersion: 2
+      x: 0
+      y: 0.116883114
+      width: 0.97265625
+      height: 0.8831169
+    stamp: 639267919314904615
+  - key: daily_small
+    path: Assets/ui/Daily/daily_small.png
+    sprite: {fileID: 21300000, guid: 7bf15f0ae74104ba8bc81945a8f8b866, type: 3}
+    content:
+      serializedVersion: 2
+      x: 0
+      y: 0.0060975607
+      width: 1
+      height: 0.99390244
+    stamp: 639267919324265190
+  - key: ui_star
+    path: Assets/ui/star.png
+    sprite: {fileID: 21300000, guid: dffc1ec9ec4f548179ea808be9ab9f88, type: 3}
+    content:
+      serializedVersion: 2
+      x: 0
+      y: 0.015625
+      width: 1
+      height: 0.96875
+    stamp: 639267919301034705
+  - key: streak_flame
+    path: Assets/ui/streak_flame.png
+    sprite: {fileID: 21300000, guid: 888110e327c8c458385691f779248f5a, type: 3}
+    content:
+      serializedVersion: 2
+      x: 0.0625
+      y: 0
+      width: 0.8828125
+      height: 1
+    stamp: 639267919306763386
   - key: milk_x2
     path: Assets/Sprites/Milk/milk_x2.png
     sprite: {fileID: 21300000, guid: e40862e04eaba4969be5c38e375f854e, type: 3}
@@ -373,36 +763,146 @@ MonoBehaviour:
       width: 0.9921875
       height: 0.96575344
     stamp: 639263697848339698
+  - key: fx_merge_swirl
+    path: Assets/Sprites/FX/Merge/merge_swirl.png
+    sprite: {fileID: 21300000, guid: 345a9d2371da948ea99da356b728aa92, type: 3}
+    content:
+      serializedVersion: 2
+      x: 0.05078125
+      y: 0.05859375
+      width: 0.90625
+      height: 0.9140625
+    stamp: 639267534539171861
+  - key: fx_merge_star
+    path: Assets/Sprites/FX/Merge/merge_star.png
+    sprite: {fileID: 21300000, guid: e8e5f115c81454a539a37e112a3b5310, type: 3}
+    content:
+      serializedVersion: 2
+      x: 0.01953125
+      y: 0.0234375
+      width: 0.9609375
+      height: 0.9609375
+    stamp: 639267534530650999
   - key: mouse_idle
     path: Assets/Sprites/Mouse/mouse_idle.png
     sprite: {fileID: 21300000, guid: e6b222fc6dda7450eb07824d6672c49a, type: 3}
     content:
       serializedVersion: 2
-      x: 0.0091743115
-      y: 0.00390625
-      width: 0.98623854
-      height: 0.9921875
-    stamp: 639263712903022786
+      x: 0.006666667
+      y: 0.0074766357
+      width: 0.99
+      height: 0.9869159
+    stamp: 639270963761837849
+  - key: mouse_run_1
+    path: Assets/Sprites/Mouse/mouse_run_1.png
+    sprite: {fileID: 21300000, guid: 107fcaa1c08224b288c23b9afe823d56, type: 3}
+    content:
+      serializedVersion: 2
+      x: 0.025974026
+      y: 0.0070546735
+      width: 0.96428573
+      height: 0.9382716
+    stamp: 639270963785613345
+  - key: mouse_run_2
+    path: Assets/Sprites/Mouse/mouse_run_2.png
+    sprite: {fileID: 21300000, guid: e01778afb5dd84d29a4743ab76ce9ded, type: 3}
+    content:
+      serializedVersion: 2
+      x: 0.07467532
+      y: 0.0070546735
+      width: 0.8766234
+      height: 0.984127
+    stamp: 639270963798983166
+  - key: mouse_run_3
+    path: Assets/Sprites/Mouse/mouse_run_3.png
+    sprite: {fileID: 21300000, guid: cffdd2ae75c0a4923b3e8005a7665c92, type: 3}
+    content:
+      serializedVersion: 2
+      x: 0.012987013
+      y: 0.0070546735
+      width: 0.9577922
+      height: 0.9171076
+    stamp: 639270963807198553
+  - key: mouse_run_4
+    path: Assets/Sprites/Mouse/mouse_run_4.png
+    sprite: {fileID: 21300000, guid: a03c8caaa4abd4fe98c69f2cde9ed22f, type: 3}
+    content:
+      serializedVersion: 2
+      x: 0.07467532
+      y: 0.0070546735
+      width: 0.8766234
+      height: 0.9559083
+    stamp: 639270963815282523
+  - key: cheese_1
+    path: Assets/Sprites/Mouse/cheese_1.png
+    sprite: {fileID: 21300000, guid: c888ec16cb37048bd80bde28a3284016, type: 3}
+    content:
+      serializedVersion: 2
+      x: 0
+      y: 0
+      width: 1
+      height: 1
+    stamp: 639270963819084470
+  - key: cheese_2
+    path: Assets/Sprites/Mouse/cheese_2.png
+    sprite: {fileID: 21300000, guid: e885bfd81d20c4630bb1ac4ed17e17c5, type: 3}
+    content:
+      serializedVersion: 2
+      x: 0.015625
+      y: 0.016129032
+      width: 0.984375
+      height: 0.983871
+    stamp: 639270963825602886
+  - key: cheese_3
+    path: Assets/Sprites/Mouse/cheese_3.png
+    sprite: {fileID: 21300000, guid: 5f3af3315cae34fe38b9f85426bb21dc, type: 3}
+    content:
+      serializedVersion: 2
+      x: 0.015625
+      y: 0.02
+      width: 0.984375
+      height: 0.98
+    stamp: 639270963832364514
+  - key: net_empty
+    path: Assets/Sprites/Mouse/net_empty.png
+    sprite: {fileID: 21300000, guid: dc318cda22fb444509eca5c23203b252, type: 3}
+    content:
+      serializedVersion: 2
+      x: 0.00390625
+      y: 0.003968254
+      width: 0.9921875
+      height: 0.99603176
+    stamp: 639270963839291714
+  - key: net_caught
+    path: Assets/Sprites/Mouse/net_caught.png
+    sprite: {fileID: 21300000, guid: e27f29c39aae7493ba319860f967467b, type: 3}
+    content:
+      serializedVersion: 2
+      x: 0.00390625
+      y: 0.004201681
+      width: 0.99609375
+      height: 0.9957983
+    stamp: 639270963847755169
   - key: mouse_run
     path: Assets/Sprites/Mouse/mouse_run.png
     sprite: {fileID: 21300000, guid: 1d3d5df9afc684896b3390f86e9dee08, type: 3}
     content:
       serializedVersion: 2
-      x: 0.0078125
-      y: 0.008403362
-      width: 0.98828125
-      height: 0.9873949
-    stamp: 639263712909149244
+      x: 0.025974026
+      y: 0.0070546735
+      width: 0.96428573
+      height: 0.9382716
+    stamp: 639270963777840805
   - key: mouse_caught
     path: Assets/Sprites/Mouse/mouse_caught.png
     sprite: {fileID: 21300000, guid: e50c2545124bf4cf39fdef778d802733, type: 3}
     content:
       serializedVersion: 2
-      x: 0.00390625
-      y: 0.00390625
-      width: 0.99609375
-      height: 0.9921875
-    stamp: 639263712919592060
+      x: 0.006993007
+      y: 0.005873715
+      width: 0.9895105
+      height: 0.989721
+    stamp: 639270963770161610
   - key: caught_sack
     path: Assets/Sprites/Mouse/caught_sack.png
     sprite: {fileID: 21300000, guid: e51b3ff9e657a40e7900e3aaddad98ff, type: 3}
@@ -423,16 +923,6 @@ MonoBehaviour:
       width: 0.99609375
       height: 0.98333335
     stamp: 639263712933747926
-  - key: caught_paw
-    path: Assets/Combos/Caught/caught_paw.png
-    sprite: {fileID: 21300000, guid: fbf5893638ef74209b3505a90e8fea3a, type: 3}
-    content:
-      serializedVersion: 2
-      x: 0.007352941
-      y: 0.00390625
-      width: 0.9877451
-      height: 0.99609375
-    stamp: 639263712943613403
   - key: badge_meet
     path: Assets/ui/badge_meet.png
     sprite: {fileID: 21300000, guid: be1cbe6c47c8e4fb2ae273c7df9cc7da, type: 3}
@@ -593,26 +1083,6 @@ MonoBehaviour:
       width: 0.9259259
       height: 0.9245283
     stamp: 639263596360457730
-  - key: bubble_4
-    path: Assets/Sprites/FX/Foam/bubble_4.png
-    sprite: {fileID: 21300000, guid: c5046f12350ea4a9dbba6bc49ea4a2cb, type: 3}
-    content:
-      serializedVersion: 2
-      x: 0.0234375
-      y: 0.024590164
-      width: 0.9609375
-      height: 0.9590164
-    stamp: 639263596367789549
-  - key: bubble_5
-    path: Assets/Sprites/FX/Foam/bubble_5.png
-    sprite: {fileID: 21300000, guid: c498da1f4fe434bcd91b37e99790b750, type: 3}
-    content:
-      serializedVersion: 2
-      x: 0.03125
-      y: 0.017857144
-      width: 0.953125
-      height: 0.95535713
-    stamp: 639263596375820736
   - key: bubble_6
     path: Assets/Sprites/FX/Foam/bubble_6.png
     sprite: {fileID: 21300000, guid: 9f6dcd37d103d41cfb5e64c37fae346b, type: 3}
@@ -653,16 +1123,6 @@ MonoBehaviour:
       width: 0.6875
       height: 0.95703125
     stamp: 639261979317330417
-  - key: dizzy_stars
-    path: Assets/Sprites/Cat-blockers/dizzy_stars.png
-    sprite: {fileID: 21300000, guid: 6e2b3bea087684d86baa1f80bacb09cc, type: 3}
-    content:
-      serializedVersion: 2
-      x: 0.01953125
-      y: 0.203125
-      width: 0.9609375
-      height: 0.59765625
-    stamp: 639261979335304016
   - key: vase
     path: Assets/Sprites/Cat-blockers/vase.png
     sprite: {fileID: 21300000, guid: 3cce0fe492ecc4cf08005ffd75471670, type: 3}
@@ -673,16 +1133,6 @@ MonoBehaviour:
       width: 0.609375
       height: 0.9609375
     stamp: 639261979329697876
-  - key: vase_cracked
-    path: Assets/Sprites/Cat-blockers/vase_cracked.png
-    sprite: {fileID: 21300000, guid: af9880a414ac7444d8d95bb1e0959862, type: 3}
-    content:
-      serializedVersion: 2
-      x: 0.05859375
-      y: 0.01953125
-      width: 0.8828125
-      height: 0.9453125
-    stamp: 639261979327320239
   - key: fish_bowl
     path: Assets/Sprites/Cat-blockers/fish_bowl.png
     sprite: {fileID: 21300000, guid: ff58414904b934c9bbebc56465c8ea39, type: 3}
@@ -703,6 +1153,66 @@ MonoBehaviour:
       width: 0.9609375
       height: 0.6953125
     stamp: 639261979341101316
+  - key: fish_bowl_empty
+    path: Assets/Sprites/Cat-blockers/FishAnim/fish_bowl_empty.png
+    sprite: {fileID: 21300000, guid: a53f42e89ab6646349dcb8aaac036bb9, type: 3}
+    content:
+      serializedVersion: 2
+      x: 0.01953125
+      y: 0.046875
+      width: 0.9609375
+      height: 0.88671875
+    stamp: 639274857160611180
+  - key: fish_part_body
+    path: Assets/Sprites/Cat-blockers/FishAnim/fish_body.png
+    sprite: {fileID: 21300000, guid: f4e62ad3df66e4f98bdcc5ed77204127, type: 3}
+    content:
+      serializedVersion: 2
+      x: 0.3984375
+      y: 0.3359375
+      width: 0.58203125
+      height: 0.3828125
+    stamp: 639274857200364965
+  - key: fish_part_tail
+    path: Assets/Sprites/Cat-blockers/FishAnim/fish_tail.png
+    sprite: {fileID: 21300000, guid: a60633f88302442f4bfe7632e496619e, type: 3}
+    content:
+      serializedVersion: 2
+      x: 0.01953125
+      y: 0.2578125
+      width: 0.40625
+      height: 0.53515625
+    stamp: 639274857167084828
+  - key: fish_part_dorsal
+    path: Assets/Sprites/Cat-blockers/FishAnim/fish_dorsal.png
+    sprite: {fileID: 21300000, guid: 089a7cf612e4d4c2ea395d0f50476547, type: 3}
+    content:
+      serializedVersion: 2
+      x: 0.4296875
+      y: 0.609375
+      width: 0.26171875
+      height: 0.23828125
+    stamp: 639274857175091466
+  - key: fish_part_fins
+    path: Assets/Sprites/Cat-blockers/FishAnim/fish_fins.png
+    sprite: {fileID: 21300000, guid: 2a2aa7f4f56de49cc9bc5a153056a987, type: 3}
+    content:
+      serializedVersion: 2
+      x: 0.3984375
+      y: 0.15234375
+      width: 0.33984375
+      height: 0.32421875
+    stamp: 639274857183849934
+  - key: fish_part_side
+    path: Assets/Sprites/Cat-blockers/FishAnim/fish_side.png
+    sprite: {fileID: 21300000, guid: 2cce1dd8c56184545b087ecaa0376719, type: 3}
+    content:
+      serializedVersion: 2
+      x: 0.76953125
+      y: 0.28125
+      width: 0.1171875
+      height: 0.12109375
+    stamp: 639274857192386720
   - key: bowl_exit
     path: Assets/Sprites/Cat-blockers/bowl_exit.png
     sprite: {fileID: 21300000, guid: f5e71617b6a7d419496d9b228206660c, type: 3}
@@ -718,31 +1228,31 @@ MonoBehaviour:
     sprite: {fileID: 21300000, guid: 33c61f9e7c8324bb581e9eb0448528bc, type: 3}
     content:
       serializedVersion: 2
-      x: 0.01171875
-      y: 0.016129032
-      width: 0.98046875
-      height: 0.9677419
-    stamp: 639261978404929627
+      x: 0.0375
+      y: 0.225
+      width: 0.925
+      height: 0.55
+    stamp: 639270933698595993
   - key: box_piece_2
     path: Assets/Sprites/FX/box_piece_2.png
     sprite: {fileID: 21300000, guid: 426562f1b68524676b41e2f289ebbb5d, type: 3}
     content:
       serializedVersion: 2
-      x: 0.027777778
-      y: 0.030303031
-      width: 0.9513889
-      height: 0.9469697
-    stamp: 639261978403141023
+      x: 0.0375
+      y: 0.3125
+      width: 0.925
+      height: 0.3875
+    stamp: 639270933704144777
   - key: box_piece_3
     path: Assets/Sprites/FX/box_piece_3.png
     sprite: {fileID: 21300000, guid: 450dbc21f314146a49b02735746c6b50, type: 3}
     content:
       serializedVersion: 2
-      x: 0.014851485
-      y: 0.017391304
-      width: 0.97029704
-      height: 0.9695652
-    stamp: 639261978402672527
+      x: 0.0375
+      y: 0.1375
+      width: 0.925
+      height: 0.7375
+    stamp: 639270933709220154
   - key: vase_shard_1
     path: Assets/Sprites/FX/vase_shard_1.png
     sprite: {fileID: 21300000, guid: 594cbfc606c694bd98a44cd6553531a9, type: 3}
@@ -803,16 +1313,6 @@ MonoBehaviour:
       width: 0.9583333
       height: 0.96428573
     stamp: 639261978409423438
-  - key: petal_4
-    path: Assets/Sprites/FX/petal_4.png
-    sprite: {fileID: 21300000, guid: ca1de579ea2654bd481d1ef07fe9a446, type: 3}
-    content:
-      serializedVersion: 2
-      x: 0.016853932
-      y: 0.023255814
-      width: 0.96629214
-      height: 0.9593023
-    stamp: 639261978403673802
   - key: water_drop_1
     path: Assets/Sprites/FX/water_drop_1.png
     sprite: {fileID: 21300000, guid: eb6b02cacd78e488abf5abddf21d1f71, type: 3}
@@ -848,21 +1348,41 @@ MonoBehaviour:
     sprite: {fileID: 21300000, guid: 6b16b8ced24b04db7918608e87cb56c2, type: 3}
     content:
       serializedVersion: 2
-      x: 0.01171875
-      y: 0.017699115
-      width: 0.9765625
-      height: 0.96902657
-    stamp: 639261978406236130
+      x: 0
+      y: 0
+      width: 1
+      height: 1
+    stamp: 639268309267834277
   - key: yarn_thread_2
     path: Assets/Sprites/FX/yarn_thread_2.png
     sprite: {fileID: 21300000, guid: 83990f8b43e8a46c683832860aca9e00, type: 3}
     content:
       serializedVersion: 2
-      x: 0.01171875
-      y: 0.017391304
-      width: 0.9765625
-      height: 0.9695652
-    stamp: 639261978408605521
+      x: 0
+      y: 0
+      width: 1
+      height: 1
+    stamp: 639268309273108702
+  - key: yarn_thread_3
+    path: Assets/Sprites/FX/yarn_thread_3.png
+    sprite: {fileID: 21300000, guid: 4d07b208310c64b779fd61c8ffb654a9, type: 3}
+    content:
+      serializedVersion: 2
+      x: 0
+      y: 0
+      width: 1
+      height: 0.95
+    stamp: 639268309282044407
+  - key: yarn_thread_4
+    path: Assets/Sprites/FX/yarn_thread_4.png
+    sprite: {fileID: 21300000, guid: 10202eacd4fe4464abff402e55834aec, type: 3}
+    content:
+      serializedVersion: 2
+      x: 0
+      y: 0
+      width: 1
+      height: 1
+    stamp: 639268309286190369
   - key: pu_paw
     path: Assets/Sprites/power-ups/power-up-paw.png
     sprite: {fileID: 21300000, guid: caa066ad7ba44415b86737e9b50612e9, type: 3}
@@ -873,6 +1393,16 @@ MonoBehaviour:
       width: 0.921875
       height: 0.90625
     stamp: 639261979354554807
+  - key: pu_swap
+    path: Assets/Sprites/power-ups/power-up-swap.png
+    sprite: {fileID: 21300000, guid: 7f4b314da13f3457ebf7d68cae87e40f, type: 3}
+    content:
+      serializedVersion: 2
+      x: 0.0625
+      y: 0
+      width: 0.875
+      height: 1
+    stamp: 639271300889535425
   - key: pu_bomb
     path: Assets/Sprites/power-ups/power-up-bomb.png
     sprite: {fileID: 21300000, guid: 1adbf9922e392421983088c16b93feb8, type: 3}
@@ -903,46 +1433,6 @@ MonoBehaviour:
       width: 0.89453125
       height: 0.91796875
     stamp: 639261979152526186
-  - key: combo_1
-    path: Assets/Combos/soft/Combo.png
-    sprite: {fileID: 21300000, guid: 038c4a931c9634ba796d0b8b059dc5ec, type: 3}
-    content:
-      serializedVersion: 2
-      x: 0.0546875
-      y: 0.055555556
-      width: 0.90625
-      height: 0.9152047
-    stamp: 639261978249426539
-  - key: combo_2
-    path: Assets/Combos/soft/super_kombo.png
-    sprite: {fileID: 21300000, guid: 42520d82574564b8c87eca801c8e5e60, type: 3}
-    content:
-      serializedVersion: 2
-      x: 0
-      y: 0
-      width: 0.9902344
-      height: 0.9609375
-    stamp: 639261978274299742
-  - key: combo_3
-    path: Assets/Combos/soft/mega_kombo.png
-    sprite: {fileID: 21300000, guid: 489317903047c4e898730607924eb40b, type: 3}
-    content:
-      serializedVersion: 2
-      x: 0.00984252
-      y: 0.037109375
-      width: 0.96259844
-      height: 0.94140625
-    stamp: 639261978287097289
-  - key: combo_4
-    path: Assets/Combos/soft/monster_kombo.png
-    sprite: {fileID: 21300000, guid: ee57a2dd71aea43948ca8afe865f2f35, type: 3}
-    content:
-      serializedVersion: 2
-      x: 0
-      y: 0
-      width: 0.9824219
-      height: 0.96875
-    stamp: 639261978262472465
   - key: ui_panel
     path: Assets/ui/hud_panel3.png
     sprite: {fileID: 21300000, guid: eb9a896a2d7924340ab26f44c586d8c5, type: 3}
@@ -1108,11 +1598,11 @@ MonoBehaviour:
     sprite: {fileID: 21300000, guid: cb7b96ffb5ccd4e358a4ce71d75d8524, type: 3}
     content:
       serializedVersion: 2
-      x: 0.014234875
-      y: 0.00997151
-      width: 0.9839858
-      height: 0.9900285
-    stamp: 639261978004751260
+      x: 0
+      y: 0
+      width: 1
+      height: 1
+    stamp: 639271367738862023
   - key: ui_close
     path: Assets/ui/Close.png
     sprite: {fileID: 21300000, guid: 4c134dce9006e4e4eaf8f8b39b0773ca, type: 3}
@@ -1213,236 +1703,1736 @@ MonoBehaviour:
       width: 0.8515625
       height: 0.92578125
     stamp: 639261363026515100
-  - key: map_marker
-    path: Assets/Level-menu/map_marker.png
-    sprite: {fileID: 21300000, guid: 9dc0214ddc4dc46ca966c9f8038e5d12, type: 3}
+  - key: world_1_floor
+    path: Assets/Level-menu/Worlds/1/floor.png
+    sprite: {fileID: 21300000, guid: f4d2f349853ed4d0cada79fd064acd6a, type: 3}
     content:
       serializedVersion: 2
-      x: 0.05859375
-      y: 0.03515625
-      width: 0.8828125
-      height: 0.9296875
-    stamp: 639261362988455438
-  - key: map_decor_1
-    path: Assets/Level-menu/map_decor_1.png
-    sprite: {fileID: 21300000, guid: e09c382643feb408587e036218e2c0c2, type: 3}
+      x: 0
+      y: 0
+      width: 1
+      height: 1
+    stamp: 639267930833017947
+  - key: world_1_gate
+    path: Assets/Level-menu/Worlds/1/gate.png
+    sprite: {fileID: 21300000, guid: bf8d5b7a4789243b9838f46f26ded61f, type: 3}
     content:
       serializedVersion: 2
-      x: 0.04375
-      y: 0.0875
-      width: 0.9125
-      height: 0.83125
-    stamp: 639261362777112751
-  - key: map_decor_2
-    path: Assets/Level-menu/map_decor_2.png
-    sprite: {fileID: 21300000, guid: ec34f318129b34dfc965ce7ca6394983, type: 3}
+      x: 0.0060728746
+      y: 0.003875969
+      width: 0.98987854
+      height: 0.99224806
+    stamp: 639267930848076253
+  - key: world_1_prop_1
+    path: Assets/Level-menu/Worlds/1/prop_1.png
+    sprite: {fileID: 21300000, guid: c6cb34a695aab487990a1afe7c65ea2f, type: 3}
     content:
       serializedVersion: 2
-      x: 0.04375
-      y: 0.2125
-      width: 0.9125
-      height: 0.58125
-    stamp: 639261362849134538
-  - key: map_decor_3
-    path: Assets/Level-menu/map_decor_3.png
-    sprite: {fileID: 21300000, guid: 88d504ff6a16c441b8dca8424a1844b2, type: 3}
+      x: 0.009803922
+      y: 0.012658228
+      width: 0.98039216
+      height: 0.9746835
+    stamp: 639267930858138346
+  - key: world_1_prop_2
+    path: Assets/Level-menu/Worlds/1/prop_2.png
+    sprite: {fileID: 21300000, guid: 11aebc0f1792040b2b5a5c8468806f12, type: 3}
     content:
       serializedVersion: 2
-      x: 0.04375
-      y: 0.13125
-      width: 0.9125
-      height: 0.74375
-    stamp: 639261362858023387
-  - key: map_decor_4
-    path: Assets/Level-menu/map_decor_4.png
-    sprite: {fileID: 21300000, guid: c108f736ec1f64104b815aff08e9978c, type: 3}
+      x: 0.009803922
+      y: 0.01764706
+      width: 0.98039216
+      height: 0.9705882
+    stamp: 639267930869993095
+  - key: world_1_prop_3
+    path: Assets/Level-menu/Worlds/1/prop_3.png
+    sprite: {fileID: 21300000, guid: e2d7c8d4b668a47ceaaadb4f7bc53cce, type: 3}
     content:
       serializedVersion: 2
-      x: 0.04375
-      y: 0.16875
-      width: 0.9125
-      height: 0.6625
-    stamp: 639261362867602844
-  - key: map_decor_5
-    path: Assets/Level-menu/map_decor_5.png
-    sprite: {fileID: 21300000, guid: 234ffed3fe84b48c89daa0bbd8f15573, type: 3}
+      x: 0.022727273
+      y: 0.009803922
+      width: 0.9621212
+      height: 0.98039216
+    stamp: 639267930879455778
+  - key: world_1_prop_4
+    path: Assets/Level-menu/Worlds/1/prop_4.png
+    sprite: {fileID: 21300000, guid: 72a6fbc0ff9cd46a8b79cf6635b617de, type: 3}
     content:
       serializedVersion: 2
-      x: 0.04375
-      y: 0.18125
-      width: 0.9125
-      height: 0.64375
-    stamp: 639261362875915983
-  - key: map_decor_6
-    path: Assets/Level-menu/map_decor_6.png
-    sprite: {fileID: 21300000, guid: a8d60339bb6384cd38ac1d6047855183, type: 3}
+      x: 0.023809524
+      y: 0.009803922
+      width: 0.96031743
+      height: 0.98039216
+    stamp: 639267930887114014
+  - key: world_1_prop_5
+    path: Assets/Level-menu/Worlds/1/prop_5.png
+    sprite: {fileID: 21300000, guid: 6456c9d5005aa4f7fa76036fde1246e7, type: 3}
     content:
       serializedVersion: 2
-      x: 0.04375
-      y: 0.1625
-      width: 0.9125
-      height: 0.68125
-    stamp: 639261362887557768
-  - key: map_decor_7
-    path: Assets/Level-menu/map_decor_7.png
-    sprite: {fileID: 21300000, guid: c394a3ab27f6d4655b5042d927195154, type: 3}
+      x: 0.009803922
+      y: 0.016129032
+      width: 0.98039216
+      height: 0.9731183
+    stamp: 639267930894136494
+  - key: world_1_prop_6
+    path: Assets/Level-menu/Worlds/1/prop_6.png
+    sprite: {fileID: 21300000, guid: 2fdbd35f3d08547f6be078e722cd7a34, type: 3}
     content:
       serializedVersion: 2
-      x: 0.04375
-      y: 0.16875
-      width: 0.9125
-      height: 0.66875
-    stamp: 639261362897009010
-  - key: map_decor_8
-    path: Assets/Level-menu/map_decor_8.png
-    sprite: {fileID: 21300000, guid: 7c2d730ad2b004dbea23ebab9cb25f68, type: 3}
+      x: 0.009803922
+      y: 0.010989011
+      width: 0.98039216
+      height: 0.978022
+    stamp: 639267930904105962
+  - key: world_1_prop_7
+    path: Assets/Level-menu/Worlds/1/prop_7.png
+    sprite: {fileID: 21300000, guid: df258ab9a3160437eb339462b93e04d0, type: 3}
     content:
       serializedVersion: 2
-      x: 0.1125
-      y: 0.04375
-      width: 0.78125
-      height: 0.9125
-    stamp: 639261362922989856
-  - key: map_decor_9
-    path: Assets/Level-menu/map_decor_9.png
-    sprite: {fileID: 21300000, guid: 273273751d50e43b39f5d877dff9b608, type: 3}
+      x: 0.020833334
+      y: 0.009803922
+      width: 0.9652778
+      height: 0.98039216
+    stamp: 639267932344688738
+  - key: world_1_small_1
+    path: Assets/Level-menu/Worlds/1/small_1.png
+    sprite: {fileID: 21300000, guid: 4986c67f759994a70b10126f6c208f9e, type: 3}
     content:
       serializedVersion: 2
-      x: 0.15
-      y: 0.04375
-      width: 0.7
-      height: 0.9125
-    stamp: 639261362933497533
-  - key: map_decor_10
-    path: Assets/Level-menu/map_decor_10.png
-    sprite: {fileID: 21300000, guid: e3d63320b151e4482818294989cb3d29, type: 3}
+      x: 0.015151516
+      y: 0.022727273
+      width: 0.969697
+      height: 0.9621212
+    stamp: 639267930925969558
+  - key: world_1_small_2
+    path: Assets/Level-menu/Worlds/1/small_2.png
+    sprite: {fileID: 21300000, guid: a6181e286df7f4a96b5bf1a3af527307, type: 3}
     content:
       serializedVersion: 2
-      x: 0.0875
-      y: 0.04375
-      width: 0.83125
-      height: 0.9125
-    stamp: 639261362784350006
-  - key: map_decor_11
-    path: Assets/Level-menu/map_decor_11.png
-    sprite: {fileID: 21300000, guid: f843446399c5f4fdeb6874eee9cf8ec3, type: 3}
+      x: 0.015151516
+      y: 0.024193548
+      width: 0.969697
+      height: 0.9596774
+    stamp: 639267930934031137
+  - key: world_1_small_3
+    path: Assets/Level-menu/Worlds/1/small_3.png
+    sprite: {fileID: 21300000, guid: 661d9bd51625b4cd1b86e1c0cf4432c1, type: 3}
     content:
       serializedVersion: 2
-      x: 0.06875
-      y: 0.04375
-      width: 0.86875
-      height: 0.9125
-    stamp: 639261362791704885
-  - key: map_decor_12
-    path: Assets/Level-menu/map_decor_12.png
-    sprite: {fileID: 21300000, guid: 6c5e5953883704b00ae9cf5fd91379fc, type: 3}
+      x: 0.015151516
+      y: 0.0234375
+      width: 0.969697
+      height: 0.9609375
+    stamp: 639267930939867244
+  - key: world_1_small_4
+    path: Assets/Level-menu/Worlds/1/small_4.png
+    sprite: {fileID: 21300000, guid: 29711b020a5724b44a132fa9731b3dee, type: 3}
     content:
       serializedVersion: 2
-      x: 0.08125
-      y: 0.04375
-      width: 0.8375
-      height: 0.9125
-    stamp: 639261362799874826
-  - key: map_decor_13
-    path: Assets/Level-menu/map_decor_13.png
-    sprite: {fileID: 21300000, guid: b8a9e55a43270457ea059e6d05a560c1, type: 3}
+      x: 0.015151516
+      y: 0.018181818
+      width: 0.969697
+      height: 0.96363634
+    stamp: 639267930947677672
+  - key: world_2_floor
+    path: Assets/Level-menu/Worlds/2/floor.png
+    sprite: {fileID: 21300000, guid: 78c22b58ddba248be8eaf528c55f36ee, type: 3}
     content:
       serializedVersion: 2
-      x: 0.05625
-      y: 0.04375
-      width: 0.8875
-      height: 0.9125
-    stamp: 639261362806579259
-  - key: map_decor_14
-    path: Assets/Level-menu/map_decor_14.png
-    sprite: {fileID: 21300000, guid: 15b097f27d0694148a20af90bc13be6f, type: 3}
+      x: 0
+      y: 0
+      width: 1
+      height: 1
+    stamp: 639267962287116159
+  - key: world_2_gate
+    path: Assets/Level-menu/Worlds/2/gate.png
+    sprite: {fileID: 21300000, guid: 0ab8d6ec1f2c44a2bbbf1030f7cff12d, type: 3}
     content:
       serializedVersion: 2
-      x: 0.04375
-      y: 0.09375
-      width: 0.9125
-      height: 0.8125
-    stamp: 639261362813862730
-  - key: map_decor_15
-    path: Assets/Level-menu/map_decor_15.png
-    sprite: {fileID: 21300000, guid: 63a17f157e8884c04942da848da1e198, type: 3}
+      x: 0.003875969
+      y: 0.005586592
+      width: 0.99224806
+      height: 0.9888268
+    stamp: 639267962298527468
+  - key: world_2_prop_1
+    path: Assets/Level-menu/Worlds/2/prop_1.png
+    sprite: {fileID: 21300000, guid: 660b107f218204742807afa5457d6218, type: 3}
     content:
       serializedVersion: 2
-      x: 0.04375
-      y: 0.075
-      width: 0.9125
-      height: 0.85625
-    stamp: 639261362824208867
-  - key: map_decor_16
-    path: Assets/Level-menu/map_decor_16.png
-    sprite: {fileID: 21300000, guid: 0d3f54ead34e14907bea87df91839a78, type: 3}
+      x: 0.015625
+      y: 0.009803922
+      width: 0.96875
+      height: 0.98039216
+    stamp: 639267962307231773
+  - key: world_2_prop_2
+    path: Assets/Level-menu/Worlds/2/prop_2.png
+    sprite: {fileID: 21300000, guid: a75c88cf8627246a9b0fb34be6a0e2b8, type: 3}
     content:
       serializedVersion: 2
-      x: 0.04375
-      y: 0.09375
-      width: 0.9125
-      height: 0.81875
-    stamp: 639261362835562466
-  - key: map_flower_1
-    path: Assets/Level-menu/map_flower_1.png
-    sprite: {fileID: 21300000, guid: 65e5a6463b18640b39980afd5002308f, type: 3}
+      x: 0.009803922
+      y: 0.01875
+      width: 0.98039216
+      height: 0.96875
+    stamp: 639267962317146011
+  - key: world_2_prop_3
+    path: Assets/Level-menu/Worlds/2/prop_3.png
+    sprite: {fileID: 21300000, guid: 84b7e64f245e942578e3c501aaf56963, type: 3}
     content:
       serializedVersion: 2
-      x: 0.0625
-      y: 0.16666667
-      width: 0.875
-      height: 0.6875
-    stamp: 639261362939750620
-  - key: map_flower_2
-    path: Assets/Level-menu/map_flower_2.png
-    sprite: {fileID: 21300000, guid: ac47745c07a7742ff9641e0ba8895934, type: 3}
+      x: 0.018518519
+      y: 0.009803922
+      width: 0.962963
+      height: 0.98039216
+    stamp: 639267962324309793
+  - key: world_2_prop_4
+    path: Assets/Level-menu/Worlds/2/prop_4.png
+    sprite: {fileID: 21300000, guid: 13bceba00568e4deab95b79207e8e4b0, type: 3}
     content:
       serializedVersion: 2
-      x: 0.1875
-      y: 0.0625
-      width: 0.625
-      height: 0.875
-    stamp: 639261362946183412
-  - key: map_flower_3
-    path: Assets/Level-menu/map_flower_3.png
-    sprite: {fileID: 21300000, guid: 6bc45943e4a1a43b790c4f7c30eeee1c, type: 3}
+      x: 0.009803922
+      y: 0.018292682
+      width: 0.98039216
+      height: 0.9695122
+    stamp: 639267962329708687
+  - key: world_2_prop_5
+    path: Assets/Level-menu/Worlds/2/prop_5.png
+    sprite: {fileID: 21300000, guid: c793551eac0264358aaf58ccdb588a21, type: 3}
     content:
       serializedVersion: 2
-      x: 0.125
-      y: 0.0625
-      width: 0.75
-      height: 0.875
-    stamp: 639261362952247850
-  - key: map_flower_4
-    path: Assets/Level-menu/map_flower_4.png
-    sprite: {fileID: 21300000, guid: bcd785a2fec32452a8c719536f97a148, type: 3}
+      x: 0.016304348
+      y: 0.009803922
+      width: 0.9673913
+      height: 0.98039216
+    stamp: 639267962338638695
+  - key: world_2_prop_6
+    path: Assets/Level-menu/Worlds/2/prop_6.png
+    sprite: {fileID: 21300000, guid: 78f75a51837024cd59b784044a1c4b9e, type: 3}
     content:
       serializedVersion: 2
-      x: 0.0625
-      y: 0.125
-      width: 0.875
-      height: 0.7708333
-    stamp: 639261362958211808
-  - key: map_flower_5
-    path: Assets/Level-menu/map_flower_5.png
-    sprite: {fileID: 21300000, guid: b9694c31b602d4affa6098cd5e54d316, type: 3}
+      x: 0.0125
+      y: 0.009803922
+      width: 0.975
+      height: 0.98039216
+    stamp: 639267962345898306
+  - key: world_2_small_1
+    path: Assets/Level-menu/Worlds/2/small_1.png
+    sprite: {fileID: 21300000, guid: 7f4ccd06f558c4ab2a3a286301944924, type: 3}
     content:
       serializedVersion: 2
-      x: 0.104166664
-      y: 0.0625
-      width: 0.7916667
-      height: 0.875
-    stamp: 639261362963851263
-  - key: map_flower_6
-    path: Assets/Level-menu/map_flower_6.png
-    sprite: {fileID: 21300000, guid: 791637f138dc4450c90eec4a56152ccb, type: 3}
+      x: 0.015151516
+      y: 0.022727273
+      width: 0.969697
+      height: 0.9621212
+    stamp: 639267962353619666
+  - key: world_2_small_2
+    path: Assets/Level-menu/Worlds/2/small_2.png
+    sprite: {fileID: 21300000, guid: 8e9e1a47d52ad4fa49f84161cd904243, type: 3}
     content:
       serializedVersion: 2
-      x: 0.16666667
-      y: 0.0625
-      width: 0.6875
-      height: 0.875
-    stamp: 639261362969442907
+      x: 0.03
+      y: 0.015151516
+      width: 0.95
+      height: 0.969697
+    stamp: 639267962360280551
+  - key: world_2_small_3
+    path: Assets/Level-menu/Worlds/2/small_3.png
+    sprite: {fileID: 21300000, guid: b7b76e0b89a3749c0a87c6972900013d, type: 3}
+    content:
+      serializedVersion: 2
+      x: 0.046875
+      y: 0.015151516
+      width: 0.90625
+      height: 0.969697
+    stamp: 639267962368429256
+  - key: world_2_small_4
+    path: Assets/Level-menu/Worlds/2/small_4.png
+    sprite: {fileID: 21300000, guid: 5e9690d648d154ff8b53e618e2050995, type: 3}
+    content:
+      serializedVersion: 2
+      x: 0.015151516
+      y: 0.015151516
+      width: 0.969697
+      height: 0.969697
+    stamp: 639267962372512365
+  - key: world_3_floor
+    path: Assets/Level-menu/Worlds/3/floor.png
+    sprite: {fileID: 21300000, guid: 7ac4cafad6852492bbc44cc20ab37f7f, type: 3}
+    content:
+      serializedVersion: 2
+      x: 0
+      y: 0
+      width: 1
+      height: 1
+    stamp: 639267963778072252
+  - key: world_3_gate
+    path: Assets/Level-menu/Worlds/3/gate.png
+    sprite: {fileID: 21300000, guid: b39a0f882c322491788bce4ff7618fee, type: 3}
+    content:
+      serializedVersion: 2
+      x: 0.003968254
+      y: 0.003875969
+      width: 0.99206346
+      height: 0.99224806
+    stamp: 639267963791269385
+  - key: world_3_prop_1
+    path: Assets/Level-menu/Worlds/3/prop_1.png
+    sprite: {fileID: 21300000, guid: 1f0b7071fe7f844c8a730c8aac60c7cc, type: 3}
+    content:
+      serializedVersion: 2
+      x: 0.012658228
+      y: 0.009803922
+      width: 0.9746835
+      height: 0.98039216
+    stamp: 639267963798785451
+  - key: world_3_prop_2
+    path: Assets/Level-menu/Worlds/3/prop_2.png
+    sprite: {fileID: 21300000, guid: ec3734860359147d893b98a0025bd25a, type: 3}
+    content:
+      serializedVersion: 2
+      x: 0.009803922
+      y: 0.016483517
+      width: 0.98039216
+      height: 0.97252744
+    stamp: 639267963806109622
+  - key: world_3_prop_3
+    path: Assets/Level-menu/Worlds/3/prop_3.png
+    sprite: {fileID: 21300000, guid: 3ae05cf5d00c24cb193a3e3720424b8c, type: 3}
+    content:
+      serializedVersion: 2
+      x: 0.018518519
+      y: 0.009803922
+      width: 0.9691358
+      height: 0.98039216
+    stamp: 639267963811823385
+  - key: world_3_prop_4
+    path: Assets/Level-menu/Worlds/3/prop_4.png
+    sprite: {fileID: 21300000, guid: ad06d814461cb4562b6b4c7ca70fe16f, type: 3}
+    content:
+      serializedVersion: 2
+      x: 0.009803922
+      y: 0.016129032
+      width: 0.98039216
+      height: 0.9731183
+    stamp: 639267963817466766
+  - key: world_3_prop_5
+    path: Assets/Level-menu/Worlds/3/prop_5.png
+    sprite: {fileID: 21300000, guid: 0e137b44567ae47199f59b3568c85b2f, type: 3}
+    content:
+      serializedVersion: 2
+      x: 0.017441861
+      y: 0.009803922
+      width: 0.96511626
+      height: 0.98039216
+    stamp: 639267963825033683
+  - key: world_3_prop_6
+    path: Assets/Level-menu/Worlds/3/prop_6.png
+    sprite: {fileID: 21300000, guid: ffe5b44ab71c74a47a370cc5484ca63f, type: 3}
+    content:
+      serializedVersion: 2
+      x: 0.02027027
+      y: 0.009803922
+      width: 0.9594595
+      height: 0.98039216
+    stamp: 639267963833740528
+  - key: world_3_small_1
+    path: Assets/Level-menu/Worlds/3/small_1.png
+    sprite: {fileID: 21300000, guid: dc9fa928b3a464408ad3ec05ec3b6f4f, type: 3}
+    content:
+      serializedVersion: 2
+      x: 0.036585364
+      y: 0.015151516
+      width: 0.9268293
+      height: 0.969697
+    stamp: 639267963841036740
+  - key: world_3_small_2
+    path: Assets/Level-menu/Worlds/3/small_2.png
+    sprite: {fileID: 21300000, guid: 9d36562c653794ff6b0a31ae6ebebd6d, type: 3}
+    content:
+      serializedVersion: 2
+      x: 0.026785715
+      y: 0.015151516
+      width: 0.9464286
+      height: 0.969697
+    stamp: 639267963846229160
+  - key: world_3_small_3
+    path: Assets/Level-menu/Worlds/3/small_3.png
+    sprite: {fileID: 21300000, guid: d236b4db24c094d4ebe3fb87f434c1d3, type: 3}
+    content:
+      serializedVersion: 2
+      x: 0.022727273
+      y: 0.015151516
+      width: 0.95454544
+      height: 0.969697
+    stamp: 639267963852455786
+  - key: world_3_small_4
+    path: Assets/Level-menu/Worlds/3/small_4.png
+    sprite: {fileID: 21300000, guid: 0eb0a7b9437c14445accef6cc6ae82f8, type: 3}
+    content:
+      serializedVersion: 2
+      x: 0.018518519
+      y: 0.015151516
+      width: 0.962963
+      height: 0.969697
+    stamp: 639267963863919376
+  - key: world_4_floor
+    path: Assets/Level-menu/Worlds/4/floor.png
+    sprite: {fileID: 21300000, guid: 7ea3766f256064a9baab0c88ee98e0f6, type: 3}
+    content:
+      serializedVersion: 2
+      x: 0
+      y: 0
+      width: 1
+      height: 1
+    stamp: 639267962383566608
+  - key: world_4_gate
+    path: Assets/Level-menu/Worlds/4/gate.png
+    sprite: {fileID: 21300000, guid: 2d4d900813270495393fa6a5ec00de68, type: 3}
+    content:
+      serializedVersion: 2
+      x: 0.003875969
+      y: 0.005905512
+      width: 0.99224806
+      height: 0.9901575
+    stamp: 639267962397263464
+  - key: world_4_prop_1
+    path: Assets/Level-menu/Worlds/4/prop_1.png
+    sprite: {fileID: 21300000, guid: a8f8323913d6b482fb50f5fa4097cbbb, type: 3}
+    content:
+      serializedVersion: 2
+      x: 0.015151516
+      y: 0.009803922
+      width: 0.9747475
+      height: 0.98039216
+    stamp: 639267962404729043
+  - key: world_4_prop_2
+    path: Assets/Level-menu/Worlds/4/prop_2.png
+    sprite: {fileID: 21300000, guid: 45b26025240d54a84b9ecbba7a109880, type: 3}
+    content:
+      serializedVersion: 2
+      x: 0.009803922
+      y: 0.016483517
+      width: 0.98039216
+      height: 0.97252744
+    stamp: 639267962412367032
+  - key: world_4_prop_3
+    path: Assets/Level-menu/Worlds/4/prop_3.png
+    sprite: {fileID: 21300000, guid: e4cfb85d61d5f4e65931ab48e27473b3, type: 3}
+    content:
+      serializedVersion: 2
+      x: 0.009803922
+      y: 0.009803922
+      width: 0.98039216
+      height: 0.98039216
+    stamp: 639267962422715796
+  - key: world_4_prop_4
+    path: Assets/Level-menu/Worlds/4/prop_4.png
+    sprite: {fileID: 21300000, guid: 911a516866df94176b7448023a1d9489, type: 3}
+    content:
+      serializedVersion: 2
+      x: 0.009803922
+      y: 0.013157895
+      width: 0.98039216
+      height: 0.9736842
+    stamp: 639267962431200784
+  - key: world_4_prop_5
+    path: Assets/Level-menu/Worlds/4/prop_5.png
+    sprite: {fileID: 21300000, guid: d64d0f6ea1457467fadd637d2d8aa9aa, type: 3}
+    content:
+      serializedVersion: 2
+      x: 0.009803922
+      y: 0.009803922
+      width: 0.98039216
+      height: 0.98039216
+    stamp: 639267962439523437
+  - key: world_4_prop_6
+    path: Assets/Level-menu/Worlds/4/prop_6.png
+    sprite: {fileID: 21300000, guid: 70529381d93a6488d8caa8b03c3bab10, type: 3}
+    content:
+      serializedVersion: 2
+      x: 0.019736841
+      y: 0.009803922
+      width: 0.96710527
+      height: 0.98039216
+    stamp: 639267962446671548
+  - key: world_4_prop_7
+    path: Assets/Level-menu/Worlds/4/prop_7.png
+    sprite: {fileID: 21300000, guid: a4c577df8d4c443c8a50f9888fd27623, type: 3}
+    content:
+      serializedVersion: 2
+      x: 0.009803922
+      y: 0.009803922
+      width: 0.98039216
+      height: 0.98039216
+    stamp: 639267962453992623
+  - key: world_4_small_1
+    path: Assets/Level-menu/Worlds/4/small_1.png
+    sprite: {fileID: 21300000, guid: 65fcb7a3f77ed4c8ab5b09dda120cf17, type: 3}
+    content:
+      serializedVersion: 2
+      x: 0.015151516
+      y: 0.016949153
+      width: 0.969697
+      height: 0.9661017
+    stamp: 639267962458963738
+  - key: world_4_small_2
+    path: Assets/Level-menu/Worlds/4/small_2.png
+    sprite: {fileID: 21300000, guid: 78fc71e7347244a92843793b213753d4, type: 3}
+    content:
+      serializedVersion: 2
+      x: 0.015151516
+      y: 0.022727273
+      width: 0.969697
+      height: 0.9621212
+    stamp: 639267962465931304
+  - key: world_4_small_3
+    path: Assets/Level-menu/Worlds/4/small_3.png
+    sprite: {fileID: 21300000, guid: f821ef9cf5fc14c47b0971ad7392b263, type: 3}
+    content:
+      serializedVersion: 2
+      x: 0.015151516
+      y: 0.01923077
+      width: 0.969697
+      height: 0.96153843
+    stamp: 639267962474434857
+  - key: world_4_small_4
+    path: Assets/Level-menu/Worlds/4/small_4.png
+    sprite: {fileID: 21300000, guid: 94054d80d53164cb09f2961fe59a9e9e, type: 3}
+    content:
+      serializedVersion: 2
+      x: 0.041666668
+      y: 0.015151516
+      width: 0.9166667
+      height: 0.969697
+    stamp: 639267962480259626
+  - key: world_5_floor
+    path: Assets/Level-menu/Worlds/5/floor.png
+    sprite: {fileID: 21300000, guid: a0079df052a4d4aa5b98212b6b8f8659, type: 3}
+    content:
+      serializedVersion: 2
+      x: 0
+      y: 0
+      width: 1
+      height: 1
+    stamp: 639267963874305003
+  - key: world_5_gate
+    path: Assets/Level-menu/Worlds/5/gate.png
+    sprite: {fileID: 21300000, guid: f5f89dfa73f7a46e0a9d9833f4940f72, type: 3}
+    content:
+      serializedVersion: 2
+      x: 0.003875969
+      y: 0.009036144
+      width: 0.99224806
+      height: 0.98493975
+    stamp: 639267963882813355
+  - key: world_5_prop_1
+    path: Assets/Level-menu/Worlds/5/prop_1.png
+    sprite: {fileID: 21300000, guid: 80b87a9a327774e448f51b79c5df6850, type: 3}
+    content:
+      serializedVersion: 2
+      x: 0.009803922
+      y: 0.017441861
+      width: 0.98039216
+      height: 0.9709302
+    stamp: 639267963890386005
+  - key: world_5_prop_2
+    path: Assets/Level-menu/Worlds/5/prop_2.png
+    sprite: {fileID: 21300000, guid: a841cfb1b24ec4ba8bdd9f11a4882fec, type: 3}
+    content:
+      serializedVersion: 2
+      x: 0.009803922
+      y: 0.016853932
+      width: 0.98039216
+      height: 0.9719101
+    stamp: 639267963898520116
+  - key: world_5_prop_3
+    path: Assets/Level-menu/Worlds/5/prop_3.png
+    sprite: {fileID: 21300000, guid: a5015f3ef389d4fe6a4168248d5a89eb, type: 3}
+    content:
+      serializedVersion: 2
+      x: 0.009803922
+      y: 0.014851485
+      width: 0.98039216
+      height: 0.9752475
+    stamp: 639267963906963574
+  - key: world_5_prop_4
+    path: Assets/Level-menu/Worlds/5/prop_4.png
+    sprite: {fileID: 21300000, guid: ed06b2e86a91f48a68d244b81659936a, type: 3}
+    content:
+      serializedVersion: 2
+      x: 0.014492754
+      y: 0.009803922
+      width: 0.9710145
+      height: 0.98039216
+    stamp: 639267963915453937
+  - key: world_5_prop_5
+    path: Assets/Level-menu/Worlds/5/prop_5.png
+    sprite: {fileID: 21300000, guid: 119a78169b47d4e53b747dc916df4099, type: 3}
+    content:
+      serializedVersion: 2
+      x: 0.026785715
+      y: 0.009803922
+      width: 0.9464286
+      height: 0.98039216
+    stamp: 639267963922730520
+  - key: world_5_prop_6
+    path: Assets/Level-menu/Worlds/5/prop_6.png
+    sprite: {fileID: 21300000, guid: 91f4ab3d71b9745928abe9801edb68b9, type: 3}
+    content:
+      serializedVersion: 2
+      x: 0.018518519
+      y: 0.009803922
+      width: 0.962963
+      height: 0.98039216
+    stamp: 639267963932806239
+  - key: world_5_small_1
+    path: Assets/Level-menu/Worlds/5/small_1.png
+    sprite: {fileID: 21300000, guid: d8435493d68344da4930ac7c6aa2877c, type: 3}
+    content:
+      serializedVersion: 2
+      x: 0.015151516
+      y: 0.015625
+      width: 0.969697
+      height: 0.96875
+    stamp: 639267963937924877
+  - key: world_5_small_2
+    path: Assets/Level-menu/Worlds/5/small_2.png
+    sprite: {fileID: 21300000, guid: 1e16e994a88004d8ab234e03f584e205, type: 3}
+    content:
+      serializedVersion: 2
+      x: 0.015151516
+      y: 0.015151516
+      width: 0.969697
+      height: 0.969697
+    stamp: 639267963945489706
+  - key: world_5_small_3
+    path: Assets/Level-menu/Worlds/5/small_3.png
+    sprite: {fileID: 21300000, guid: aba33d9f4682e48dd9d1f691fde51752, type: 3}
+    content:
+      serializedVersion: 2
+      x: 0.015151516
+      y: 0.015151516
+      width: 0.969697
+      height: 0.969697
+    stamp: 639267963951881447
+  - key: world_5_small_4
+    path: Assets/Level-menu/Worlds/5/small_4.png
+    sprite: {fileID: 21300000, guid: 5e47b178280d74c759a342b96da09b0d, type: 3}
+    content:
+      serializedVersion: 2
+      x: 0.015151516
+      y: 0.039473683
+      width: 0.969697
+      height: 0.93421054
+    stamp: 639267963959484367
+  - key: world_5_small_5
+    path: Assets/Level-menu/Worlds/5/small_5.png
+    sprite: {fileID: 21300000, guid: 335025b802a374a62b30dd66e3518877, type: 3}
+    content:
+      serializedVersion: 2
+      x: 0.02173913
+      y: 0.015151516
+      width: 0.95652175
+      height: 0.969697
+    stamp: 639267963964611911
+  - key: world_6_floor
+    path: Assets/Level-menu/Worlds/6/floor.png
+    sprite: {fileID: 21300000, guid: 7530c9f24b97f4756b5e3920971cf3f4, type: 3}
+    content:
+      serializedVersion: 2
+      x: 0
+      y: 0
+      width: 1
+      height: 1
+    stamp: 639267963976212230
+  - key: world_6_gate
+    path: Assets/Level-menu/Worlds/6/gate.png
+    sprite: {fileID: 21300000, guid: 499155531bd814bad9b1d401c52aa17c, type: 3}
+    content:
+      serializedVersion: 2
+      x: 0.003875969
+      y: 0.006024096
+      width: 0.99224806
+      height: 0.98995984
+    stamp: 639267963988403389
+  - key: world_6_prop_1
+    path: Assets/Level-menu/Worlds/6/prop_1.png
+    sprite: {fileID: 21300000, guid: 9db8676b320264bf08bda8019247d1b5, type: 3}
+    content:
+      serializedVersion: 2
+      x: 0.021428572
+      y: 0.009803922
+      width: 0.95714283
+      height: 0.98039216
+    stamp: 639267963993740733
+  - key: world_6_prop_2
+    path: Assets/Level-menu/Worlds/6/prop_2.png
+    sprite: {fileID: 21300000, guid: 133f3ac37d9574fa19bb341110e0306b, type: 3}
+    content:
+      serializedVersion: 2
+      x: 0.019736841
+      y: 0.009803922
+      width: 0.96710527
+      height: 0.98039216
+    stamp: 639267964001166506
+  - key: world_6_prop_3
+    path: Assets/Level-menu/Worlds/6/prop_3.png
+    sprite: {fileID: 21300000, guid: b3399d12078d74a8397ea7bbcce52919, type: 3}
+    content:
+      serializedVersion: 2
+      x: 0.009803922
+      y: 0.021428572
+      width: 0.98039216
+      height: 0.96428573
+    stamp: 639267964010493739
+  - key: world_6_prop_4
+    path: Assets/Level-menu/Worlds/6/prop_4.png
+    sprite: {fileID: 21300000, guid: a5a557c794b1444ccab939def9ed6a90, type: 3}
+    content:
+      serializedVersion: 2
+      x: 0.009803922
+      y: 0.0154639175
+      width: 0.98039216
+      height: 0.97422683
+    stamp: 639267964019374903
+  - key: world_6_prop_5
+    path: Assets/Level-menu/Worlds/6/prop_5.png
+    sprite: {fileID: 21300000, guid: edeee5660105742038c33c1f087d422e, type: 3}
+    content:
+      serializedVersion: 2
+      x: 0.027027028
+      y: 0.009803922
+      width: 0.9459459
+      height: 0.98039216
+    stamp: 639267964024193542
+  - key: world_6_prop_6
+    path: Assets/Level-menu/Worlds/6/prop_6.png
+    sprite: {fileID: 21300000, guid: 93589bcda355a439b9587b00c1132950, type: 3}
+    content:
+      serializedVersion: 2
+      x: 0.015789473
+      y: 0.009803922
+      width: 0.9736842
+      height: 0.98039216
+    stamp: 639267964031821572
+  - key: world_6_prop_7
+    path: Assets/Level-menu/Worlds/6/prop_7.png
+    sprite: {fileID: 21300000, guid: 6f99cb6e434fb4311963fa33f987d447, type: 3}
+    content:
+      serializedVersion: 2
+      x: 0.016129032
+      y: 0.009803922
+      width: 0.9677419
+      height: 0.98039216
+    stamp: 639267964040648610
+  - key: world_6_prop_8
+    path: Assets/Level-menu/Worlds/6/prop_8.png
+    sprite: {fileID: 21300000, guid: 8983cf49a3e3240b68d20365c0c884f9, type: 3}
+    content:
+      serializedVersion: 2
+      x: 0.010309278
+      y: 0.009803922
+      width: 0.97938144
+      height: 0.98039216
+    stamp: 639267964047345325
+  - key: world_6_small_1
+    path: Assets/Level-menu/Worlds/6/small_1.png
+    sprite: {fileID: 21300000, guid: 0bc16c91e2b2d4bc7af1b31283f71dfd, type: 3}
+    content:
+      serializedVersion: 2
+      x: 0.016949153
+      y: 0.015151516
+      width: 0.9661017
+      height: 0.969697
+    stamp: 639267964055143665
+  - key: world_6_small_2
+    path: Assets/Level-menu/Worlds/6/small_2.png
+    sprite: {fileID: 21300000, guid: 00edc2fad53304ce988da343c13215d3, type: 3}
+    content:
+      serializedVersion: 2
+      x: 0.01724138
+      y: 0.015151516
+      width: 0.9655172
+      height: 0.969697
+    stamp: 639267964061929030
+  - key: world_6_small_3
+    path: Assets/Level-menu/Worlds/6/small_3.png
+    sprite: {fileID: 21300000, guid: 6a644bfa2a89742058eb6a244f434402, type: 3}
+    content:
+      serializedVersion: 2
+      x: 0.02173913
+      y: 0.015151516
+      width: 0.95652175
+      height: 0.969697
+    stamp: 639267964068363555
+  - key: world_7_floor
+    path: Assets/Level-menu/Worlds/7/floor.png
+    sprite: {fileID: 21300000, guid: 3b6beadcf9d474b24aacd202d27cb364, type: 3}
+    content:
+      serializedVersion: 2
+      x: 0
+      y: 0
+      width: 1
+      height: 1
+    stamp: 639267964078220888
+  - key: world_7_gate
+    path: Assets/Level-menu/Worlds/7/gate.png
+    sprite: {fileID: 21300000, guid: 7cbb87d8a7c1d40ca88cda78439ff70e, type: 3}
+    content:
+      serializedVersion: 2
+      x: 0.006329114
+      y: 0.003875969
+      width: 0.98945147
+      height: 0.99224806
+    stamp: 639267964088936790
+  - key: world_7_prop_1
+    path: Assets/Level-menu/Worlds/7/prop_1.png
+    sprite: {fileID: 21300000, guid: 1ce06e9826b0e481891cc3bd648b5a0c, type: 3}
+    content:
+      serializedVersion: 2
+      x: 0.012820513
+      y: 0.009803922
+      width: 0.974359
+      height: 0.98039216
+    stamp: 639267964097232213
+  - key: world_7_prop_2
+    path: Assets/Level-menu/Worlds/7/prop_2.png
+    sprite: {fileID: 21300000, guid: a5d5d0b92f3e744f19780d09baaea636, type: 3}
+    content:
+      serializedVersion: 2
+      x: 0.015625
+      y: 0.009803922
+      width: 0.96875
+      height: 0.98039216
+    stamp: 639267964103568144
+  - key: world_7_prop_3
+    path: Assets/Level-menu/Worlds/7/prop_3.png
+    sprite: {fileID: 21300000, guid: 4436b3f2f44ac48129ee2c324b5dca32, type: 3}
+    content:
+      serializedVersion: 2
+      x: 0.016129032
+      y: 0.009803922
+      width: 0.9677419
+      height: 0.98039216
+    stamp: 639267964110013823
+  - key: world_7_prop_4
+    path: Assets/Level-menu/Worlds/7/prop_4.png
+    sprite: {fileID: 21300000, guid: d06aa5a0978f04c798947cbf2b80524d, type: 3}
+    content:
+      serializedVersion: 2
+      x: 0.024193548
+      y: 0.009803922
+      width: 0.9516129
+      height: 0.98039216
+    stamp: 639267964117436331
+  - key: world_7_prop_5
+    path: Assets/Level-menu/Worlds/7/prop_5.png
+    sprite: {fileID: 21300000, guid: dcf773aba484340768e92c8f8ed15e46, type: 3}
+    content:
+      serializedVersion: 2
+      x: 0.01898734
+      y: 0.009803922
+      width: 0.9683544
+      height: 0.98039216
+    stamp: 639267964122425965
+  - key: world_7_prop_6
+    path: Assets/Level-menu/Worlds/7/prop_6.png
+    sprite: {fileID: 21300000, guid: f164510eda5f54c8a8825f3aee5f9d65, type: 3}
+    content:
+      serializedVersion: 2
+      x: 0.028846154
+      y: 0.009803922
+      width: 0.9423077
+      height: 0.98039216
+    stamp: 639267964136110968
+  - key: world_7_small_1
+    path: Assets/Level-menu/Worlds/7/small_1.png
+    sprite: {fileID: 21300000, guid: a69c54dba9c044c62884c84108d19130, type: 3}
+    content:
+      serializedVersion: 2
+      x: 0.015151516
+      y: 0.022727273
+      width: 0.969697
+      height: 0.9621212
+    stamp: 639267964144072582
+  - key: world_7_small_2
+    path: Assets/Level-menu/Worlds/7/small_2.png
+    sprite: {fileID: 21300000, guid: ef0e0544d226d45f7b72863934636a8f, type: 3}
+    content:
+      serializedVersion: 2
+      x: 0.023076924
+      y: 0.015151516
+      width: 0.95384616
+      height: 0.969697
+    stamp: 639267964151825322
+  - key: world_7_small_3
+    path: Assets/Level-menu/Worlds/7/small_3.png
+    sprite: {fileID: 21300000, guid: 55f64f8116d6349b9bd5cb8dde3c0cc9, type: 3}
+    content:
+      serializedVersion: 2
+      x: 0.016666668
+      y: 0.015151516
+      width: 0.96666664
+      height: 0.969697
+    stamp: 639267964161201182
+  - key: world_7_small_4
+    path: Assets/Level-menu/Worlds/7/small_4.png
+    sprite: {fileID: 21300000, guid: 4316dbbe7d2904bbc813f5c9edea5c06, type: 3}
+    content:
+      serializedVersion: 2
+      x: 0.016393442
+      y: 0.015151516
+      width: 0.9672131
+      height: 0.969697
+    stamp: 639267964167412105
+  - key: world_8_floor
+    path: Assets/Level-menu/Worlds/8/floor.png
+    sprite: {fileID: 21300000, guid: 754d157d8637f4b28a7d1323fc16024c, type: 3}
+    content:
+      serializedVersion: 2
+      x: 0
+      y: 0
+      width: 1
+      height: 1
+    stamp: 639267964182888954
+  - key: world_8_gate
+    path: Assets/Level-menu/Worlds/8/gate.png
+    sprite: {fileID: 21300000, guid: d903a210a90484dc89a8b3b78ce252ca, type: 3}
+    content:
+      serializedVersion: 2
+      x: 0.003875969
+      y: 0.00949367
+      width: 0.99224806
+      height: 0.98417723
+    stamp: 639267964192052701
+  - key: world_8_prop_1
+    path: Assets/Level-menu/Worlds/8/prop_1.png
+    sprite: {fileID: 21300000, guid: 6172e3ac6ef7747ba8b1d409bfafbc43, type: 3}
+    content:
+      serializedVersion: 2
+      x: 0.009803922
+      y: 0.016129032
+      width: 0.98039216
+      height: 0.9731183
+    stamp: 639267964200540101
+  - key: world_8_prop_2
+    path: Assets/Level-menu/Worlds/8/prop_2.png
+    sprite: {fileID: 21300000, guid: 38dbd6f0aa94f42e284dc0e3ebe50fa5, type: 3}
+    content:
+      serializedVersion: 2
+      x: 0.0121951215
+      y: 0.009803922
+      width: 0.9756098
+      height: 0.98039216
+    stamp: 639267964207412918
+  - key: world_8_prop_3
+    path: Assets/Level-menu/Worlds/8/prop_3.png
+    sprite: {fileID: 21300000, guid: 2860e43c713244504a30ff00eeb29e0f, type: 3}
+    content:
+      serializedVersion: 2
+      x: 0.010638298
+      y: 0.009803922
+      width: 0.9787234
+      height: 0.98039216
+    stamp: 639267964218372432
+  - key: world_8_prop_4
+    path: Assets/Level-menu/Worlds/8/prop_4.png
+    sprite: {fileID: 21300000, guid: b9e27c23d61c8491fbde9ae430dd846a, type: 3}
+    content:
+      serializedVersion: 2
+      x: 0.010526316
+      y: 0.009803922
+      width: 0.97894734
+      height: 0.98039216
+    stamp: 639267964227541374
+  - key: world_8_prop_5
+    path: Assets/Level-menu/Worlds/8/prop_5.png
+    sprite: {fileID: 21300000, guid: 54aa23cc4da654139a7fdfa6d3792bc6, type: 3}
+    content:
+      serializedVersion: 2
+      x: 0.016666668
+      y: 0.009803922
+      width: 0.9722222
+      height: 0.98039216
+    stamp: 639267964235686124
+  - key: world_8_prop_6
+    path: Assets/Level-menu/Worlds/8/prop_6.png
+    sprite: {fileID: 21300000, guid: 4ab2e6794c2824190ac126ba34be2028, type: 3}
+    content:
+      serializedVersion: 2
+      x: 0.0121951215
+      y: 0.009803922
+      width: 0.9756098
+      height: 0.98039216
+    stamp: 639267964243665653
+  - key: world_8_prop_7
+    path: Assets/Level-menu/Worlds/8/prop_7.png
+    sprite: {fileID: 21300000, guid: 39e2373c8e99842a1a5b33723bab90d9, type: 3}
+    content:
+      serializedVersion: 2
+      x: 0.011363637
+      y: 0.009803922
+      width: 0.97727275
+      height: 0.98039216
+    stamp: 639267964252776919
+  - key: world_8_small_1
+    path: Assets/Level-menu/Worlds/8/small_1.png
+    sprite: {fileID: 21300000, guid: ce8e040b5c2cb4d80b099e502e3f1404, type: 3}
+    content:
+      serializedVersion: 2
+      x: 0.015151516
+      y: 0.026785715
+      width: 0.969697
+      height: 0.95535713
+    stamp: 639267964258078897
+  - key: world_8_small_2
+    path: Assets/Level-menu/Worlds/8/small_2.png
+    sprite: {fileID: 21300000, guid: f1486f387c6ff48f6b8ded09e9d96810, type: 3}
+    content:
+      serializedVersion: 2
+      x: 0.015151516
+      y: 0.023809524
+      width: 0.969697
+      height: 0.96031743
+    stamp: 639267964264145395
+  - key: world_8_small_3
+    path: Assets/Level-menu/Worlds/8/small_3.png
+    sprite: {fileID: 21300000, guid: 81bd9a8b502264b30bdce5c1a604f53b, type: 3}
+    content:
+      serializedVersion: 2
+      x: 0.015151516
+      y: 0.023809524
+      width: 0.969697
+      height: 0.96031743
+    stamp: 639267964273391566
+  - key: world_8_small_4
+    path: Assets/Level-menu/Worlds/8/small_4.png
+    sprite: {fileID: 21300000, guid: 98cbf5d7f14424fe29ab2ef7a8ae02b9, type: 3}
+    content:
+      serializedVersion: 2
+      x: 0.016129032
+      y: 0.015151516
+      width: 0.9677419
+      height: 0.969697
+    stamp: 639267964280309513
+  - key: world_9_floor
+    path: Assets/Level-menu/Worlds/9/floor.png
+    sprite: {fileID: 21300000, guid: aef1bdf97bfcd4e4eaee65fb0eff4cc5, type: 3}
+    content:
+      serializedVersion: 2
+      x: 0
+      y: 0
+      width: 1
+      height: 1
+    stamp: 639274999831663725
+  - key: world_9_gate
+    path: Assets/Level-menu/Worlds/9/gate.png
+    sprite: {fileID: 21300000, guid: 252bf63a710f542e28d64bb5946a01b5, type: 3}
+    content:
+      serializedVersion: 2
+      x: 0.003875969
+      y: 0.004784689
+      width: 0.99418604
+      height: 0.99282295
+    stamp: 639274999844496665
+  - key: world_9_prop_1
+    path: Assets/Level-menu/Worlds/9/prop_1.png
+    sprite: {fileID: 21300000, guid: 1c0a8646646224d95ad8a7b15e3d966a, type: 3}
+    content:
+      serializedVersion: 2
+      x: 0.014705882
+      y: 0.015424165
+      width: 0.9705882
+      height: 0.97172236
+    stamp: 639274999853219467
+  - key: world_9_prop_2
+    path: Assets/Level-menu/Worlds/9/prop_2.png
+    sprite: {fileID: 21300000, guid: cc1afe1cefe994f14a6fc73bfcb17afa, type: 3}
+    content:
+      serializedVersion: 2
+      x: 0.014962593
+      y: 0.014888338
+      width: 0.9725686
+      height: 0.9727047
+    stamp: 639274999861210750
+  - key: world_9_prop_3
+    path: Assets/Level-menu/Worlds/9/prop_3.png
+    sprite: {fileID: 21300000, guid: 000deae939c3f4481a8629545bab870b, type: 3}
+    content:
+      serializedVersion: 2
+      x: 0.017857144
+      y: 0.014705882
+      width: 0.96428573
+      height: 0.9705882
+    stamp: 639274999869742502
+  - key: world_9_prop_4
+    path: Assets/Level-menu/Worlds/9/prop_4.png
+    sprite: {fileID: 21300000, guid: b7799262bf62142549488036be20440d, type: 3}
+    content:
+      serializedVersion: 2
+      x: 0.014705882
+      y: 0.030303031
+      width: 0.9754902
+      height: 0.94949496
+    stamp: 639274999877736404
+  - key: world_9_prop_5
+    path: Assets/Level-menu/Worlds/9/prop_5.png
+    sprite: {fileID: 21300000, guid: 55d54dcd142364b2ba4c9f56b30371fb, type: 3}
+    content:
+      serializedVersion: 2
+      x: 0.014814815
+      y: 0.015189873
+      width: 0.97283953
+      height: 0.9721519
+    stamp: 639274999890781537
+  - key: world_9_prop_6
+    path: Assets/Level-menu/Worlds/9/prop_6.png
+    sprite: {fileID: 21300000, guid: b916268c1f29a4084a979ef903304428, type: 3}
+    content:
+      serializedVersion: 2
+      x: 0.015345269
+      y: 0.014705882
+      width: 0.971867
+      height: 0.9705882
+    stamp: 639274999898407265
+  - key: world_9_prop_7
+    path: Assets/Level-menu/Worlds/9/prop_7.png
+    sprite: {fileID: 21300000, guid: 93b7ebcf8e5574c12882215096414ae1, type: 3}
+    content:
+      serializedVersion: 2
+      x: 0.017191976
+      y: 0.01764706
+      width: 0.96848136
+      height: 0.9647059
+    stamp: 639274999906832967
+  - key: world_9_prop_8
+    path: Assets/Level-menu/Worlds/9/prop_8.png
+    sprite: {fileID: 21300000, guid: 4ef6df9c130034faca2ecc8faa8a7ed0, type: 3}
+    content:
+      serializedVersion: 2
+      x: 0.014705882
+      y: 0.020066889
+      width: 0.9705882
+      height: 0.9632107
+    stamp: 639274999914761624
+  - key: world_9_small_1
+    path: Assets/Level-menu/Worlds/9/small_1.png
+    sprite: {fileID: 21300000, guid: 1cf4fc5755d3d433caf9d5144dd091cf, type: 3}
+    content:
+      serializedVersion: 2
+      x: 0.022727273
+      y: 0.024793388
+      width: 0.9621212
+      height: 0.9586777
+    stamp: 639274999921028890
+  - key: world_9_small_2
+    path: Assets/Level-menu/Worlds/9/small_2.png
+    sprite: {fileID: 21300000, guid: c5c58e238e86f4522b5995b4d782f016, type: 3}
+    content:
+      serializedVersion: 2
+      x: 0.022813689
+      y: 0.022727273
+      width: 0.9581749
+      height: 0.9621212
+    stamp: 639274999927680337
+  - key: world_9_small_3
+    path: Assets/Level-menu/Worlds/9/small_3.png
+    sprite: {fileID: 21300000, guid: c1717b39983ef4467b49ce5df0707d24, type: 3}
+    content:
+      serializedVersion: 2
+      x: 0.022727273
+      y: 0.024896266
+      width: 0.9621212
+      height: 0.95435685
+    stamp: 639274999935691816
+  - key: world_9_small_4
+    path: Assets/Level-menu/Worlds/9/small_4.png
+    sprite: {fileID: 21300000, guid: 83630a1e9651648e48b46ff8efa759e4, type: 3}
+    content:
+      serializedVersion: 2
+      x: 0.015151516
+      y: 0.020618556
+      width: 0.969697
+      height: 0.9587629
+    stamp: 639274999942613598
+  - key: world_9_small_5
+    path: Assets/Level-menu/Worlds/9/small_5.png
+    sprite: {fileID: 21300000, guid: 362cd3582f579409398cf74b5b9baf6e, type: 3}
+    content:
+      serializedVersion: 2
+      x: 0.022727273
+      y: 0.022900764
+      width: 0.9621212
+      height: 0.96183205
+    stamp: 639274999953721874
+  - key: world_9_small_6
+    path: Assets/Level-menu/Worlds/9/small_6.png
+    sprite: {fileID: 21300000, guid: d21cf94390ef7404f9a1ed447b302e9a, type: 3}
+    content:
+      serializedVersion: 2
+      x: 0.01923077
+      y: 0.015151516
+      width: 0.96153843
+      height: 0.969697
+    stamp: 639274999962510533
+  - key: world_10_floor
+    path: Assets/Level-menu/Worlds/10/floor.png
+    sprite: {fileID: 21300000, guid: 7b30f8207f40b4812b99de4750260e00, type: 3}
+    content:
+      serializedVersion: 2
+      x: 0
+      y: 0
+      width: 1
+      height: 1
+    stamp: 639274999679954990
+  - key: world_10_gate
+    path: Assets/Level-menu/Worlds/10/gate.png
+    sprite: {fileID: 21300000, guid: 3bcd7219c642147eab5a949e31a87f79, type: 3}
+    content:
+      serializedVersion: 2
+      x: 0.003875969
+      y: 0.004950495
+      width: 0.99418604
+      height: 0.9925743
+    stamp: 639274999693288245
+  - key: world_10_prop_1
+    path: Assets/Level-menu/Worlds/10/prop_1.png
+    sprite: {fileID: 21300000, guid: 782c076f91daa468b8db7cb1fbf5fa9b, type: 3}
+    content:
+      serializedVersion: 2
+      x: 0.014705882
+      y: 0.018404908
+      width: 0.9754902
+      height: 0.9693251
+    stamp: 639274999702201477
+  - key: world_10_prop_2
+    path: Assets/Level-menu/Worlds/10/prop_2.png
+    sprite: {fileID: 21300000, guid: fcdf3f7231e09421198457d0b679802f, type: 3}
+    content:
+      serializedVersion: 2
+      x: 0.014925373
+      y: 0.014705882
+      width: 0.9701493
+      height: 0.9754902
+    stamp: 639274999710538146
+  - key: world_10_prop_3
+    path: Assets/Level-menu/Worlds/10/prop_3.png
+    sprite: {fileID: 21300000, guid: 6fe197406812d482b8d7b7302d07706e, type: 3}
+    content:
+      serializedVersion: 2
+      x: 0.014705882
+      y: 0.016216217
+      width: 0.9754902
+      height: 0.972973
+    stamp: 639274999720252677
+  - key: world_10_prop_4
+    path: Assets/Level-menu/Worlds/10/prop_4.png
+    sprite: {fileID: 21300000, guid: e41f6204c497b42df834f44ab579c996, type: 3}
+    content:
+      serializedVersion: 2
+      x: 0.014705882
+      y: 0.015345269
+      width: 0.9705882
+      height: 0.971867
+    stamp: 639274999728860566
+  - key: world_10_prop_5
+    path: Assets/Level-menu/Worlds/10/prop_5.png
+    sprite: {fileID: 21300000, guid: 42e159eeea04c4d4591446671d39a6da, type: 3}
+    content:
+      serializedVersion: 2
+      x: 0.014705882
+      y: 0.020689655
+      width: 0.9754902
+      height: 0.9655172
+    stamp: 639274999736517033
+  - key: world_10_prop_6
+    path: Assets/Level-menu/Worlds/10/prop_6.png
+    sprite: {fileID: 21300000, guid: 4fe7f2f54d286492c8f53eb6faf4acd5, type: 3}
+    content:
+      serializedVersion: 2
+      x: 0.014705882
+      y: 0.01910828
+      width: 0.9705882
+      height: 0.96178347
+    stamp: 639274999746568148
+  - key: world_10_prop_7
+    path: Assets/Level-menu/Worlds/10/prop_7.png
+    sprite: {fileID: 21300000, guid: 7b09184f2b79746faaeca776530c0b1f, type: 3}
+    content:
+      serializedVersion: 2
+      x: 0.020134227
+      y: 0.014705882
+      width: 0.9597315
+      height: 0.9754902
+    stamp: 639274999754949161
+  - key: world_10_prop_8
+    path: Assets/Level-menu/Worlds/10/prop_8.png
+    sprite: {fileID: 21300000, guid: 5203094ccdf8c443bbc378d5f49bcb14, type: 3}
+    content:
+      serializedVersion: 2
+      x: 0.03809524
+      y: 0.009803922
+      width: 0.93333334
+      height: 0.9852941
+    stamp: 639275003060769528
+  - key: world_10_small_1
+    path: Assets/Level-menu/Worlds/10/small_1.png
+    sprite: {fileID: 21300000, guid: a0d854b4239184e9db7058708398e6b5, type: 3}
+    content:
+      serializedVersion: 2
+      x: 0.022727273
+      y: 0.015686275
+      width: 0.9621212
+      height: 0.972549
+    stamp: 639274999762110978
+  - key: world_10_small_2
+    path: Assets/Level-menu/Worlds/10/small_2.png
+    sprite: {fileID: 21300000, guid: a137679c7ec344ae687597e8f1862e02, type: 3}
+    content:
+      serializedVersion: 2
+      x: 0.022727273
+      y: 0.023346303
+      width: 0.9621212
+      height: 0.95719844
+    stamp: 639274999769435103
+  - key: world_10_small_3
+    path: Assets/Level-menu/Worlds/10/small_3.png
+    sprite: {fileID: 21300000, guid: 1a6a3f13f11984dd5aeb5ee02ae20630, type: 3}
+    content:
+      serializedVersion: 2
+      x: 0.015151516
+      y: 0.016736401
+      width: 0.969697
+      height: 0.9623431
+    stamp: 639274999775623700
+  - key: world_10_small_4
+    path: Assets/Level-menu/Worlds/10/small_4.png
+    sprite: {fileID: 21300000, guid: 712ad27b0a41447bfad7acbad22c7390, type: 3}
+    content:
+      serializedVersion: 2
+      x: 0.017094018
+      y: 0.015151516
+      width: 0.96581197
+      height: 0.969697
+    stamp: 639274999781755493
+  - key: world_10_small_5
+    path: Assets/Level-menu/Worlds/10/small_5.png
+    sprite: {fileID: 21300000, guid: f48753c112ecb4c8bbf4ada4d7e74aa7, type: 3}
+    content:
+      serializedVersion: 2
+      x: 0.026548672
+      y: 0.022727273
+      width: 0.94690263
+      height: 0.95454544
+    stamp: 639274999796222976
+  - key: world_10_small_6
+    path: Assets/Level-menu/Worlds/10/small_6.png
+    sprite: {fileID: 21300000, guid: ec695a530622249749656546ea196f6e, type: 3}
+    content:
+      serializedVersion: 2
+      x: 0.023255814
+      y: 0.015151516
+      width: 0.9612403
+      height: 0.969697
+    stamp: 639274999809138593
+  - key: world_11_floor
+    path: Assets/Level-menu/Worlds/11/floor.png
+    sprite: {fileID: 21300000, guid: 462447d519465432bba3f5fb41913dfa, type: 3}
+    content:
+      serializedVersion: 2
+      x: 0
+      y: 0
+      width: 1
+      height: 1
+    stamp: 639274999996320199
+  - key: world_11_gate
+    path: Assets/Level-menu/Worlds/11/gate.png
+    sprite: {fileID: 21300000, guid: 4dfb5f091292e4353955196555aee5e1, type: 3}
+    content:
+      serializedVersion: 2
+      x: 0.003875969
+      y: 0.0050955415
+      width: 0.99418604
+      height: 0.9910828
+    stamp: 639275000005771628
+  - key: world_11_prop_1
+    path: Assets/Level-menu/Worlds/11/prop_1.png
+    sprite: {fileID: 21300000, guid: cb479b4af471e4a1e878634082d7f2db, type: 3}
+    content:
+      serializedVersion: 2
+      x: 0.009803922
+      y: 0.012738854
+      width: 0.98039216
+      height: 0.9745223
+    stamp: 639275000013596749
+  - key: world_11_prop_2
+    path: Assets/Level-menu/Worlds/11/prop_2.png
+    sprite: {fileID: 21300000, guid: 9fab07a7df35c4114bf1d7600b2e50e4, type: 3}
+    content:
+      serializedVersion: 2
+      x: 0.016393442
+      y: 0.009803922
+      width: 0.9672131
+      height: 0.98039216
+    stamp: 639275000022729887
+  - key: world_11_prop_3
+    path: Assets/Level-menu/Worlds/11/prop_3.png
+    sprite: {fileID: 21300000, guid: cbd361472b42d4be494cdfebe9628cfe, type: 3}
+    content:
+      serializedVersion: 2
+      x: 0.016666668
+      y: 0.01754386
+      width: 0.96666664
+      height: 0.9649123
+    stamp: 639275000031431766
+  - key: world_11_prop_4
+    path: Assets/Level-menu/Worlds/11/prop_4.png
+    sprite: {fileID: 21300000, guid: 5ea634ed0809946e5bd5aa8ccfbd9b68, type: 3}
+    content:
+      serializedVersion: 2
+      x: 0.016304348
+      y: 0.01734104
+      width: 0.9673913
+      height: 0.9653179
+    stamp: 639275000039471978
+  - key: world_11_prop_5
+    path: Assets/Level-menu/Worlds/11/prop_5.png
+    sprite: {fileID: 21300000, guid: d7aa856add75f4e069d3e21d037d6753, type: 3}
+    content:
+      serializedVersion: 2
+      x: 0.016393442
+      y: 0.014851485
+      width: 0.9672131
+      height: 0.97029704
+    stamp: 639275000060840655
+  - key: world_11_prop_6
+    path: Assets/Level-menu/Worlds/11/prop_6.png
+    sprite: {fileID: 21300000, guid: eee077e8de7444fee9a7d756ac6ab72a, type: 3}
+    content:
+      serializedVersion: 2
+      x: 0.016528925
+      y: 0.015267176
+      width: 0.9641873
+      height: 0.9720102
+    stamp: 639275000070023522
+  - key: world_11_prop_7
+    path: Assets/Level-menu/Worlds/11/prop_7.png
+    sprite: {fileID: 21300000, guid: 730b7f2036192440d92843f5e898c9af, type: 3}
+    content:
+      serializedVersion: 2
+      x: 0.02166065
+      y: 0.018126888
+      width: 0.9602888
+      height: 0.9667674
+    stamp: 639275000078648039
+  - key: world_11_prop_8
+    path: Assets/Level-menu/Worlds/11/prop_8.png
+    sprite: {fileID: 21300000, guid: 03e41f95807004ad6b1df2ad65dd4abc, type: 3}
+    content:
+      serializedVersion: 2
+      x: 0.014705882
+      y: 0.02097902
+      width: 0.9705882
+      height: 0.95804197
+    stamp: 639275000086873024
+  - key: world_11_small_1
+    path: Assets/Level-menu/Worlds/11/small_1.png
+    sprite: {fileID: 21300000, guid: 4f21fd3fb0b3a4f4286e20d4dc464f13, type: 3}
+    content:
+      serializedVersion: 2
+      x: 0.023076924
+      y: 0.022727273
+      width: 0.96153843
+      height: 0.9621212
+    stamp: 639275000094113899
+  - key: world_11_small_2
+    path: Assets/Level-menu/Worlds/11/small_2.png
+    sprite: {fileID: 21300000, guid: 3fbbf5c1caa6f42a7bfade94e2405fc6, type: 3}
+    content:
+      serializedVersion: 2
+      x: 0.022727273
+      y: 0.027027028
+      width: 0.9621212
+      height: 0.954955
+    stamp: 639275000101037997
+  - key: world_11_small_3
+    path: Assets/Level-menu/Worlds/11/small_3.png
+    sprite: {fileID: 21300000, guid: 63268a59abe424961bbcc40e71af369f, type: 3}
+    content:
+      serializedVersion: 2
+      x: 0.032432433
+      y: 0.015151516
+      width: 0.95135134
+      height: 0.969697
+    stamp: 639275000110092458
+  - key: world_11_small_4
+    path: Assets/Level-menu/Worlds/11/small_4.png
+    sprite: {fileID: 21300000, guid: ff4f16e23ce3c4b0696307013656c072, type: 3}
+    content:
+      serializedVersion: 2
+      x: 0.022727273
+      y: 0.03
+      width: 0.9621212
+      height: 0.95
+    stamp: 639275000117297515
+  - key: world_11_small_5
+    path: Assets/Level-menu/Worlds/11/small_5.png
+    sprite: {fileID: 21300000, guid: 0ffcbe7db37854389aaf672086d936a4, type: 3}
+    content:
+      serializedVersion: 2
+      x: 0.022727273
+      y: 0.023255814
+      width: 0.9621212
+      height: 0.95348835
+    stamp: 639275000123930834
+  - key: world_11_small_6
+    path: Assets/Level-menu/Worlds/11/small_6.png
+    sprite: {fileID: 21300000, guid: 32d59a752b9954a53862528e45d8b037, type: 3}
+    content:
+      serializedVersion: 2
+      x: 0.022727273
+      y: 0.024590164
+      width: 0.9621212
+      height: 0.9590164
+    stamp: 639275000130512656
+  - key: world_12_floor
+    path: Assets/Level-menu/Worlds/12/floor.png
+    sprite: {fileID: 21300000, guid: ea5fa94687cba4e01a3883b37d5bd2cd, type: 3}
+    content:
+      serializedVersion: 2
+      x: 0
+      y: 0
+      width: 1
+      height: 1
+    stamp: 639275000141343950
+  - key: world_12_gate
+    path: Assets/Level-menu/Worlds/12/gate.png
+    sprite: {fileID: 21300000, guid: d27f0b214601343af8ec4adb6c7ea7de, type: 3}
+    content:
+      serializedVersion: 2
+      x: 0.003875969
+      y: 0.0044198893
+      width: 0.99418604
+      height: 0.99226516
+    stamp: 639275000152335360
+  - key: world_12_prop_1
+    path: Assets/Level-menu/Worlds/12/prop_1.png
+    sprite: {fileID: 21300000, guid: 7b85aeb15dbbf4cc8918e751af232c47, type: 3}
+    content:
+      serializedVersion: 2
+      x: 0.014705882
+      y: 0.015228426
+      width: 0.9754902
+      height: 0.97461927
+    stamp: 639275000159775673
+  - key: world_12_prop_2
+    path: Assets/Level-menu/Worlds/12/prop_2.png
+    sprite: {fileID: 21300000, guid: 0c86064e3eea4493097333795a03ebfe, type: 3}
+    content:
+      serializedVersion: 2
+      x: 0.023622047
+      y: 0.014705882
+      width: 0.9527559
+      height: 0.9705882
+    stamp: 639275000167482966
+  - key: world_12_prop_3
+    path: Assets/Level-menu/Worlds/12/prop_3.png
+    sprite: {fileID: 21300000, guid: 3cae5c93cc88848ed839fb16d248a0a4, type: 3}
+    content:
+      serializedVersion: 2
+      x: 0.014705882
+      y: 0.01904762
+      width: 0.9754902
+      height: 0.96507937
+    stamp: 639275000175793092
+  - key: world_12_prop_4
+    path: Assets/Level-menu/Worlds/12/prop_4.png
+    sprite: {fileID: 21300000, guid: a272646d76d4541fd95d015aba7ef493, type: 3}
+    content:
+      serializedVersion: 2
+      x: 0.014705882
+      y: 0.022058824
+      width: 0.9754902
+      height: 0.9632353
+    stamp: 639275000184855408
+  - key: world_12_prop_5
+    path: Assets/Level-menu/Worlds/12/prop_5.png
+    sprite: {fileID: 21300000, guid: d368091f06e1e4df19ec140d871a0658, type: 3}
+    content:
+      serializedVersion: 2
+      x: 0.018126888
+      y: 0.014705882
+      width: 0.9667674
+      height: 0.9705882
+    stamp: 639275000195343680
+  - key: world_12_prop_6
+    path: Assets/Level-menu/Worlds/12/prop_6.png
+    sprite: {fileID: 21300000, guid: 66321bbf883354f5f9eadcd28b48537f, type: 3}
+    content:
+      serializedVersion: 2
+      x: 0.015831135
+      y: 0.014705882
+      width: 0.97097623
+      height: 0.9705882
+    stamp: 639275000207650282
+  - key: world_12_prop_7
+    path: Assets/Level-menu/Worlds/12/prop_7.png
+    sprite: {fileID: 21300000, guid: 97dafc88f45d9482e8e360e1b1e746ac, type: 3}
+    content:
+      serializedVersion: 2
+      x: 0.014705882
+      y: 0.02247191
+      width: 0.9754902
+      height: 0.9588015
+    stamp: 639275000217140277
+  - key: world_12_prop_8
+    path: Assets/Level-menu/Worlds/12/prop_8.png
+    sprite: {fileID: 21300000, guid: 34e31b8248fda42668f795ae9288a829, type: 3}
+    content:
+      serializedVersion: 2
+      x: 0.015267176
+      y: 0.01904762
+      width: 0.9720102
+      height: 0.96507937
+    stamp: 639275000224909174
+  - key: world_12_small_1
+    path: Assets/Level-menu/Worlds/12/small_1.png
+    sprite: {fileID: 21300000, guid: 5713e9a94695a4c168500034c220b7aa, type: 3}
+    content:
+      serializedVersion: 2
+      x: 0.022727273
+      y: 0.026431719
+      width: 0.9621212
+      height: 0.95154184
+    stamp: 639275000232691406
+  - key: world_12_small_2
+    path: Assets/Level-menu/Worlds/12/small_2.png
+    sprite: {fileID: 21300000, guid: 28bd9474b41c7404aba18ef0c59bbc92, type: 3}
+    content:
+      serializedVersion: 2
+      x: 0.02970297
+      y: 0.022727273
+      width: 0.9405941
+      height: 0.95454544
+    stamp: 639275000240455537
+  - key: world_12_small_3
+    path: Assets/Level-menu/Worlds/12/small_3.png
+    sprite: {fileID: 21300000, guid: 97f79b1f198344ee097052673279c6b9, type: 3}
+    content:
+      serializedVersion: 2
+      x: 0.027972028
+      y: 0.015151516
+      width: 0.951049
+      height: 0.97727275
+    stamp: 639275000252617479
+  - key: world_12_small_4
+    path: Assets/Level-menu/Worlds/12/small_4.png
+    sprite: {fileID: 21300000, guid: 33e94fa091b074e4287aa5686b8d5a9e, type: 3}
+    content:
+      serializedVersion: 2
+      x: 0.017021276
+      y: 0.015151516
+      width: 0.97021276
+      height: 0.969697
+    stamp: 639275000259527812
+  - key: world_12_small_5
+    path: Assets/Level-menu/Worlds/12/small_5.png
+    sprite: {fileID: 21300000, guid: ad2c5efe43e464bffb5cc003e8f940fe, type: 3}
+    content:
+      serializedVersion: 2
+      x: 0.015151516
+      y: 0.022727273
+      width: 0.969697
+      height: 0.95454544
+    stamp: 639275000267954301
+  - key: world_12_small_6
+    path: Assets/Level-menu/Worlds/12/small_6.png
+    sprite: {fileID: 21300000, guid: fbe4deb145f764530bf7e794807657c1, type: 3}
+    content:
+      serializedVersion: 2
+      x: 0.022727273
+      y: 0.027906977
+      width: 0.9621212
+      height: 0.9488372
+    stamp: 639275000276220179
+  - key: ui_find_btn
+    path: Assets/ui/find_btn.png
+    sprite: {fileID: 21300000, guid: b98edf389706e407fa2b8263d33a716c, type: 3}
+    content:
+      serializedVersion: 2
+      x: 0.010204081
+      y: 0.010204081
+      width: 0.97959185
+      height: 0.97959185
+    stamp: 639267974788845587
+  - key: ui_find_arrow
+    path: Assets/ui/find_arrow.png
+    sprite: {fileID: 21300000, guid: 58edda27b15894a77b25657c6f98a11e, type: 3}
+    content:
+      serializedVersion: 2
+      x: 0.02173913
+      y: 0.02
+      width: 0.95652175
+      height: 0.96
+    stamp: 639267974794110022
+  - key: ui_lock
+    path: Assets/ui/Gate/lock.png
+    sprite: {fileID: 21300000, guid: 266eedd6101ae4e0b857da838daa3b15, type: 3}
+    content:
+      serializedVersion: 2
+      x: 0.28125
+      y: 0
+      width: 0.71875
+      height: 1
+    stamp: 639267964303270934
+  - key: ui_lock_open
+    path: Assets/ui/Gate/lock_open.png
+    sprite: {fileID: 21300000, guid: 42cc2e74b5c0349cb82295ab23242ca1, type: 3}
+    content:
+      serializedVersion: 2
+      x: 0
+      y: 0
+      width: 1
+      height: 1
+    stamp: 639267964309619483
+  - key: ui_star_plate
+    path: Assets/ui/Gate/plate.png
+    sprite: {fileID: 21300000, guid: 82bed99de8c1944c499eba266cfd6464, type: 3}
+    content:
+      serializedVersion: 2
+      x: 0.005154639
+      y: 0.014705882
+      width: 0.9896907
+      height: 0.9754902
+    stamp: 639267964317739244
+  - key: ui_crown
+    path: Assets/ui/Gate/crown.png
+    sprite: {fileID: 21300000, guid: cb11d4a8979ad4612a8694c89f0f0a57, type: 3}
+    content:
+      serializedVersion: 2
+      x: 0.0076923077
+      y: 0.011764706
+      width: 0.9846154
+      height: 0.9764706
+    stamp: 639267964291590694
+  - key: ui_ribbon
+    path: Assets/ui/Gate/ribbon.png
+    sprite: {fileID: 21300000, guid: 1ff30c3be34094f1c9a557ca7398f475, type: 3}
+    content:
+      serializedVersion: 2
+      x: 0.003875969
+      y: 0.014492754
+      width: 0.99224806
+      height: 0.9710145
+    stamp: 639267964327570570
+  - key: ui_glow_ring
+    path: Assets/ui/Gate/glow_ring.png
+    sprite: {fileID: 21300000, guid: a1a9eb839e5bc4452a1b1b310ec310c6, type: 3}
+    content:
+      serializedVersion: 2
+      x: 0.01171875
+      y: 0.0390625
+      width: 0.95703125
+      height: 0.92578125
+    stamp: 639267964297015817
   - key: ui_booster_glow
     path: Assets/ui/booster_glow.png
     sprite: {fileID: 21300000, guid: 74bd12c78307949259b67318d089f8d5, type: 3}
@@ -1472,7 +3462,7 @@ MonoBehaviour:
       y: 0.0054347827
       width: 0.99609375
       height: 0.98913044
-    stamp: 639261978197902348
+    stamp: 639267502574729189
   - key: cmb_word_2
     path: Assets/Combos/Layers/combo_word_2.png
     sprite: {fileID: 21300000, guid: 4a7e6565f7eda45499ce5efba6bdeaa5, type: 3}
@@ -1482,7 +3472,7 @@ MonoBehaviour:
       y: 0.009009009
       width: 0.99609375
       height: 0.9864865
-    stamp: 639261978214646037
+    stamp: 639267502582924730
   - key: cmb_word_3
     path: Assets/Combos/Layers/combo_word_3.png
     sprite: {fileID: 21300000, guid: b83bba0376fe4432193a6b2848fddc3b, type: 3}
@@ -1492,17 +3482,17 @@ MonoBehaviour:
       y: 0.008928572
       width: 0.99609375
       height: 0.98660713
-    stamp: 639261978206288618
+    stamp: 639267502593895484
   - key: cmb_word_4
     path: Assets/Combos/Layers/combo_word_4.png
     sprite: {fileID: 21300000, guid: 07b7c95a9104b47799b2a80549fe4889, type: 3}
     content:
       serializedVersion: 2
-      x: 0.001953125
-      y: 0.009345794
-      width: 0.99609375
-      height: 0.9859813
-    stamp: 639261978189358409
+      x: 0.009765625
+      y: 0.08100559
+      width: 0.9765625
+      height: 0.8296089
+    stamp: 639267528393004092
   - key: cmb_paw
     path: Assets/Combos/Layers/combo_paw.png
     sprite: {fileID: 21300000, guid: 37406adf11e7a44a0b7a58926987f4f5, type: 3}
@@ -1678,11 +3668,11 @@ MonoBehaviour:
     sprite: {fileID: 21300000, guid: effccd4abe5fe41babe0b8e6cbb2d1ae, type: 3}
     content:
       serializedVersion: 2
-      x: 0.014285714
-      y: 0.010416667
-      width: 0.98285717
-      height: 0.9131944
-    stamp: 639261978127313644
+      x: 0
+      y: 0
+      width: 1
+      height: 1.0019802
+    stamp: 639272722965148283
   - key: res_lose_cloud
     path: Assets/ui/Result/lose_cloud.png
     sprite: {fileID: 21300000, guid: 7812e25e4ccb74c6a9db3e20504364dd, type: 3}
@@ -1718,11 +3708,11 @@ MonoBehaviour:
     sprite: {fileID: 21300000, guid: 92a09c038210048baaa47fbb9c3d3cce, type: 3}
     content:
       serializedVersion: 2
-      x: 0.058571428
+      x: 0
       y: 0
-      width: 0.93857145
-      height: 0.9944751
-    stamp: 639261903213786759
+      width: 1
+      height: 1.0016978
+    stamp: 639272722974983314
   - key: res_confetti_1
     path: Assets/ui/Result/win_confetti_1.png
     sprite: {fileID: 21300000, guid: b3745b6ac3432493b8aeb49858c05da9, type: 3}
@@ -2313,6 +4303,16 @@ MonoBehaviour:
       width: 1
       height: 0.671875
     stamp: 639261266719537179
+  - key: line_beam_x
+    path: Assets/Sprites/FX/Burn/Line/line_beam_x.png
+    sprite: {fileID: 21300000, guid: 508531f0ae6684e8c9b819c801ab9dee, type: 3}
+    content:
+      serializedVersion: 2
+      x: 0
+      y: 0.09375
+      width: 1
+      height: 0.8125
+    stamp: 639268266321311624
   - key: line_head
     path: Assets/Sprites/FX/Burn/Line/line_head.png
     sprite: {fileID: 21300000, guid: 673a26789c3644a3293e9a62fddc008e, type: 3}
@@ -2411,8 +4411,8 @@ MonoBehaviour:
       x: 0
       y: 0
       width: 1
-      height: 1
-    stamp: 639259444768786750
+      height: 1.0004165
+    stamp: 639271380187363390
   - key: splash_blur
     path: Assets/Sprites/splash_blur.png
     sprite: {fileID: 21300000, guid: 1383433a89210499e93496223e0c4f41, type: 3}
@@ -2422,7 +4422,7 @@ MonoBehaviour:
       y: 0
       width: 1
       height: 1
-    stamp: 639261927136043022
+    stamp: 639271380194776879
   - key: ui_play_big
     path: Assets/ui/play_big.png
     sprite: {fileID: 21300000, guid: 90cb4314af76149b98d6a19a99fcf322, type: 3}
@@ -2443,7 +4443,129 @@ MonoBehaviour:
       width: 0.9475
       height: 0.88709676
     stamp: 639261977922067530
+  - key: ui_play_big_en
+    path: Assets/ui/play_big_en.png
+    sprite: {fileID: 21300000, guid: 64e4421e15a274e5aa554f541473ce72, type: 3}
+    content:
+      serializedVersion: 2
+      x: 0
+      y: 0
+      width: 1
+      height: 1
+    stamp: 639267486723930401
+  - key: ui_play_big_pressed_en
+    path: Assets/ui/play_big_pressed_en.png
+    sprite: {fileID: 21300000, guid: 2e6304c26b7b3493ab0d753ff3521b96, type: 3}
+    content:
+      serializedVersion: 2
+      x: 0
+      y: 0
+      width: 1
+      height: 0.97282606
+    stamp: 639267486746167064
+  - key: banner_win_en
+    path: Assets/ui/win_en.png
+    sprite: {fileID: 21300000, guid: 62b00096f00274f8dac955d97cb79425, type: 3}
+    content:
+      serializedVersion: 2
+      x: 0.001953125
+      y: 0.0034246575
+      width: 0.9980469
+      height: 0.989726
+    stamp: 639267491246503288
+  - key: banner_lose_en
+    path: Assets/ui/lose_en.png
+    sprite: {fileID: 21300000, guid: 64e1248b375c54552ac90f480645d1c6, type: 3}
+    content:
+      serializedVersion: 2
+      x: 0
+      y: 0.003649635
+      width: 1
+      height: 0.99635035
+    stamp: 639267491265311500
+  - key: badge_meet_en
+    path: Assets/ui/badge_meet_en.png
+    sprite: {fileID: 21300000, guid: f4707339c48b04f3d9f6bf5b202a165d, type: 3}
+    content:
+      serializedVersion: 2
+      x: 0.00390625
+      y: 0.010526316
+      width: 0.9941406
+      height: 0.9894737
+    stamp: 639274836950684762
+  - key: caught_word_en
+    path: Assets/Combos/Caught/caught_word_en.png
+    sprite: {fileID: 21300000, guid: 022389392942c44a48b637426cf7c8db, type: 3}
+    content:
+      serializedVersion: 2
+      x: 0
+      y: 0.007575758
+      width: 1
+      height: 0.99242425
+    stamp: 639267491275103435
+  - key: cmb_word_1_en
+    path: Assets/Combos/Layers/combo_word_1_en.png
+    sprite: {fileID: 21300000, guid: 1cbdabf673ed749bd9bddd4103e5e4e4, type: 3}
+    content:
+      serializedVersion: 2
+      x: 0
+      y: 0
+      width: 1
+      height: 1
+    stamp: 639267524028753404
+  - key: cmb_word_2_en
+    path: Assets/Combos/Layers/combo_word_2_en.png
+    sprite: {fileID: 21300000, guid: ab08d4b88af064c8c9b4326c473a1828, type: 3}
+    content:
+      serializedVersion: 2
+      x: 0
+      y: 0.0045454544
+      width: 1
+      height: 0.99545455
+    stamp: 639267524039880373
+  - key: cmb_word_3_en
+    path: Assets/Combos/Layers/combo_word_3_en.png
+    sprite: {fileID: 21300000, guid: 815979be46faf41d082bde78034d3639, type: 3}
+    content:
+      serializedVersion: 2
+      x: 0.01171875
+      y: 0
+      width: 0.98828125
+      height: 1
+    stamp: 639267524047954267
+  - key: cmb_word_4_en
+    path: Assets/Combos/Layers/combo_word_4_en.png
+    sprite: {fileID: 21300000, guid: 9eb487ddadcd54cae97c5437e6132247, type: 3}
+    content:
+      serializedVersion: 2
+      x: 0
+      y: 0.0035211267
+      width: 1
+      height: 0.99647886
+    stamp: 639267524060217713
+  - key: ui_flag_ru
+    path: Assets/ui/flag_ru.png
+    sprite: {fileID: 21300000, guid: 6081bd7c0b6dd4f2b82fae74c7dbddcd, type: 3}
+    content:
+      serializedVersion: 2
+      x: 0.03125
+      y: 0.0234375
+      width: 0.9453125
+      height: 0.9609375
+    stamp: 639267486753831208
+  - key: ui_flag_en
+    path: Assets/ui/flag_en.png
+    sprite: {fileID: 21300000, guid: 91430b890d42d450dad7535cf16c1264, type: 3}
+    content:
+      serializedVersion: 2
+      x: 0.03125
+      y: 0.0234375
+      width: 0.9453125
+      height: 0.9609375
+    stamp: 639267486760958973
   clips:
+  - key: Chain
+    clip: {fileID: 8300000, guid: 0905f35f3f2d348fdbc8fe2fe832f1a3, type: 3}
   - key: Combo
     clip: {fileID: 8300000, guid: 4d2e18cfc492d48a481af7b591992a8e, type: 3}
   - key: Game
@@ -2452,6 +4574,8 @@ MonoBehaviour:
     clip: {fileID: 8300000, guid: 0679048e402b041ec8f7e0ec3b2eb89f, type: 3}
   - key: Line-Pop
     clip: {fileID: 8300000, guid: 9922e7c614cf5467db4daa7f914ca360, type: 3}
+  - key: Pop
+    clip: {fileID: 8300000, guid: 57e58ff5b50a7470bb8929f52cd35d65, type: 3}
   - key: balance
     clip: {fileID: 8300000, guid: 13e755ff80035407e91abf4959953bfe, type: 3}
   - key: click
@@ -2502,11 +4626,31 @@ MonoBehaviour:
     clip: {fileID: 8300000, guid: ea033e9ba4f4d4514a68e83cf8436b1b, type: 3}
   - key: mint_off
     clip: {fileID: 8300000, guid: b169456fd3265435ba7ad6b2bda84749, type: 3}
+  - key: no_win
+    clip: {fileID: 8300000, guid: 24afc821b48ef4c12b027fd42ecc61ff, type: 3}
+  - key: bowl_shuffle
+    clip: {fileID: 8300000, guid: 1cd103f2a96fd4ee4937a9fa3b9142d4, type: 3}
   - key: swap_1
     clip: {fileID: 8300000, guid: 1c6155d02f4f744b5889ca9cd4533e6d, type: 3}
   - key: swap_2
     clip: {fileID: 8300000, guid: 97772caa27eb84026b7d9c603cd4d875, type: 3}
   - key: swap_3
     clip: {fileID: 8300000, guid: 1873b4631e8ee40cfb8108e858dc6fd7, type: 3}
+  - key: fish_plop
+    clip: {fileID: 8300000, guid: ac4ea6ab5e1824309a46c821a8f200d2, type: 3}
+  - key: board_shuffle
+    clip: {fileID: 8300000, guid: 6ce2655506be648c78b37f7b3e51abd5, type: 3}
+  - key: cat_drop
+    clip: {fileID: 8300000, guid: f3ec12f87cb5a49b7ac48f128d5e5efb, type: 3}
+  - key: popup
+    clip: {fileID: 8300000, guid: f50e3bc8bb245467188b3fe432bdfbed, type: 3}
+  - key: celebrate
+    clip: {fileID: 8300000, guid: ffb5f7b8cf4e040119ce349384b4bdc3, type: 3}
+  - key: moves_low
+    clip: {fileID: 8300000, guid: 21f485e4a55dd4031b0b39531786ef74, type: 3}
+  - key: purchase
+    clip: {fileID: 8300000, guid: 50f89ce9002884b5fa1ce9d44133afac, type: 3}
+  - key: world_unlock
+    clip: {fileID: 8300000, guid: 16944dcdeda024890b75c99531861d5c, type: 3}
   displayFont: {fileID: 12800000, guid: ded95414f33d94edcbc914cb0ca7bbdc, type: 3}
   numberFont: {fileID: 12800000, guid: a80d61aab8f8e49ac9b6ab5f20512ee2, type: 3}

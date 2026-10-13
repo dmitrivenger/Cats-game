@@ -17,6 +17,7 @@ public class LevelDef
 {
     public int level;
     public int moves;
+    public int mercyMoves;               // part of `moves` that is a gift after losses (does not count towards stars)
     public int boxes, yarns, mints, vases, fish;
     public int foam, foamThick;
     public int milk;                     // milk buckets (a bonus, not a goal): tipped over they spill coin puddles
@@ -41,7 +42,7 @@ public static class LevelGen
     public const float Difficulty = 1.25f;
     // ...and the move budget is multiplied by this (1 = original). Goals alone barely bite because a
     // decent player finishes with ~12 moves spare, so "harder" also means fewer moves.
-    public const float MovesFactor = 0.84f;
+    public const float MovesFactor = 0.76f;      // about 10% fewer moves than the 0.84 before (25 -> 19, 23 -> 17)
 
     public const int Cols = 7;
     public const int Rows = 8;
@@ -120,13 +121,30 @@ public static class LevelGen
         return m;
     }
 
+    // ---- stars: how many moves were left at the win (see StarsFor).
+    // Moves given as mercy after losses are not counted, so a level can't be "three-starred" by losing first.
+    public const int Star3Moves = 6, Star2Moves = 3;
+    public static int StarsFor(LevelDef d, int movesLeft)
+    {
+        int clean = movesLeft - d.mercyMoves;
+        // fixed thresholds: 6 or more moves left -> 3 stars, 3-5 -> 2 stars, 0-2 -> 1 star
+        // (moves given after losses don't count)
+        if (clean >= Star3Moves) return 3;
+        if (clean >= Star2Moves) return 2;
+        return 1;
+    }
+
+    // two colour tasks at once: each asks for this share of what a single colour task would
+    public const float TwoColorShare = 0.72f;
+
     public static LevelDef Build(int level)
     {
         var d = new LevelDef { level = level, rest = IsRestLevel(level) };
         var rng = new System.Random(level * 104729 + 17);
         d.theme = (level - 1) % 6;
         // a gentle ramp: 25 moves early on, 23 from level 15 (fish levels get extra moves below)
-        d.moves = Mathf.RoundToInt((level < 15 ? 25 : 23) * MovesFactor) + MercyExtraMoves(level);
+        d.mercyMoves = MercyExtraMoves(level);
+        d.moves = Mathf.RoundToInt((level < 15 ? 25 : 23) * MovesFactor) + d.mercyMoves;
         d.mask = MaskFor(ShapeIndexFor(level), out d.shape);
         float area = d.LiveCells / (float)(Cols * Rows);   // smaller board -> fewer blockers, lower targets
 
@@ -183,7 +201,7 @@ public static class LevelGen
         d.vases = Mathf.RoundToInt(d.vases * m); d.mints = Mathf.Max(d.mints > 0 ? 1 : 0, Mathf.RoundToInt(d.mints * m));
         // mercy also softens foam and fish: less foam each loss, one fish fewer after 3 losses
         if (d.foam > 0) d.foam = Mathf.Max(2, Mathf.RoundToInt(d.foam * MercyBlockerMult(level)));
-        if (d.fish > 1 && LossStreak(level) >= 3) { d.fish--; d.moves += 3; }   // keep that fish's moves: the level must not get shorter
+        if (d.fish > 1 && LossStreak(level) >= 3) { d.fish--; d.moves += 3; d.mercyMoves += 3; }   // a gift: doesn't count towards stars   // keep that fish's moves: the level must not get shorter
         int maxTotal = Mathf.RoundToInt(d.LiveCells * 0.35f);
         while (d.BlockerTotal > maxTotal)
         {
@@ -206,18 +224,22 @@ public static class LevelGen
 
         float scale = Difficulty * WinRateMult(level) * MercyTargetMult(level) * Mathf.Lerp(0.55f, 1f, area);
         float blockerCost = 1f - 0.018f * d.BlockerTotal - 0.05f * d.fish - 0.01f * d.foam;
+        // Colour tasks fill the level up when there are few blockers (there are no score tasks: the player
+        // can't steer a score, but "collect 18 ginger cats" is something to play for).
+        // No blockers at all -> one or two colours; one blocker kind -> sometimes one colour.
+        int baseColor = Mathf.RoundToInt(29.5f * 0.62f * blockerCost * scale);
         bool wantColor = level == 2 || (level > 2 && d.goals.Count < 2 && rng.NextDouble() < 0.5);
-        if (wantColor && d.goals.Count < 2)
+        bool second = rng.NextDouble() < 0.5;
+        if (d.goals.Count == 0)
         {
-            int target = Mathf.Max(8, Mathf.RoundToInt(29.5f * 0.62f * blockerCost * scale));
-            d.goals.Add(new LevelGoal { type = GoalType.Color, target = target, color = (level - 1) % Colors });
+            bool two = level > 2 && (!wantColor || second);     // the levels that used to have a score task
+            int c1 = (level - 1) % Colors;
+            float share = two ? TwoColorShare : level == 1 ? 0.75f : 1f;      // the very first level is a warm-up
+            d.goals.Add(new LevelGoal { type = GoalType.Color, target = Mathf.Max(two ? 6 : 8, Mathf.RoundToInt(baseColor * share)), color = c1 });
+            if (two) d.goals.Add(new LevelGoal { type = GoalType.Color, target = Mathf.Max(6, Mathf.RoundToInt(baseColor * share)), color = (c1 + 2) % Colors });
         }
-        if (d.goals.Count == 0 || (d.goals.Count == 1 && level > 1 && rng.NextDouble() < 0.5))
-        {
-            float set = d.goals.Count > 0 ? 0.75f : 1f;
-            int target = Mathf.Max(300, Mathf.RoundToInt(1950f * 0.62f * set * blockerCost * scale / 10f) * 10);
-            d.goals.Insert(0, new LevelGoal { type = GoalType.Score, target = target });
-        }
+        else if (d.goals.Count < 2 && (wantColor || (d.goals.Count == 1 && second)))
+            d.goals.Add(new LevelGoal { type = GoalType.Color, target = Mathf.Max(8, Mathf.RoundToInt(baseColor * (wantColor ? 1f : 0.75f))), color = (level - 1) % Colors });
 
         // ---- event: milk bucket or mouse thief (never both) ----
         if (IsEventLevel(level))

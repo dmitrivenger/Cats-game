@@ -60,7 +60,8 @@ public class Board : MonoBehaviour
     // milk puddles: moves left before the puddle dries (0 = no milk)
     int[,] milk;
     SpriteRenderer[,] milkSr;
-    const int MilkLife = 6;
+    const int MilkLife = 5;                 // a puddle lasts exactly five moves after the one that spilled it
+    bool[,] milkFresh;                      // spilled during the current move: does not dry at the end of it
     static bool Hittable(Piece n) => n.kind == PieceKind.Vase || n.kind == PieceKind.Milk || n.cover == Cover.Box || n.cover == Cover.Mint;
     const int MintSpreadEvery = 3;
     // mouse thief: rides on a cat, hops to a neighbour after every move and every few moves steals a coin
@@ -78,22 +79,30 @@ public class Board : MonoBehaviour
     public int MouseCoins => mouseCoins;
 
     // ======================================================= setup
+    const float ExitDrop = 0.62f;      // fish exit bowl: below the centre of the lowest cell, in cells
+    const float ExitRoom = 0.45f;      // extra height kept under the grid for those bowls, in cells
+
     public void Setup(LevelDef level, Rect worldRect)
     {
         StopAllCoroutines();
         def = level;
         rng = new System.Random(level.level * 7349 + 3 + (int)(Time.realtimeSinceStartup * 1000) % 1000);
-        cell = Mathf.Min(worldRect.width / cols, worldRect.height / rows);
-        origin = new Vector2(worldRect.center.x - cell * cols * 0.5f, worldRect.center.y - cell * rows * 0.5f);
+        // fish levels have little exit bowls under the bottom row: keep room for them inside the area,
+        // otherwise they hang over the booster bar
+        float below = level.fish > 0 ? ExitRoom : 0f;
+        cell = Mathf.Min(worldRect.width / cols, worldRect.height / (rows + below));
+        origin = new Vector2(worldRect.center.x - cell * cols * 0.5f, worldRect.center.y - cell * rows * 0.5f + cell * below * 0.5f);
 
         foreach (Transform c in transform) Destroy(c.gameObject);
         tilesRoot = new GameObject("Tiles").transform; tilesRoot.SetParent(transform, false);
         piecesRoot = new GameObject("Pieces").transform; piecesRoot.SetParent(transform, false);
         grid = new Piece[cols, rows];
         live = level.mask ?? FullMask();
-        Armed = null; Busy = false; mintCounter = 0; fishToSpawn = 0; fishDelivered = 0;
+        Armed = null; SetSwapPick(null); Busy = false; mintCounter = 0; fishToSpawn = 0; fishDelivered = 0;
         foam = new int[cols, rows]; foamSr = new SpriteRenderer[cols, rows];
-        milk = new int[cols, rows]; milkSr = new SpriteRenderer[cols, rows];
+        milk = new int[cols, rows]; milkSr = new SpriteRenderer[cols, rows]; milkFresh = new bool[cols, rows];
+        tileSr = new SpriteRenderer[cols, rows]; tileBase = new Vector3[cols, rows];
+        guiding = false; guideRoot = null; guideLit.Clear();
         mouseOn = null; mouseT = null; mouseBody = null; mouseSr = null; mousePile.Clear(); mouseCoins = 0; mouseMoves = 0; mouseHopping = false;
 
         BuildTiles();
@@ -144,6 +153,7 @@ public class Board : MonoBehaviour
                     t.color = ((x + y) % 2 == 0) ? new Color(1f, 1f, 1f, 0.42f) : new Color(1f, 1f, 1f, 0.26f);
                 }
                 t.sortingOrder = 2;
+                tileSr[x, y] = t; tileBase[x, y] = t.transform.localScale;
             }
 
         if (def.fish > 0)
@@ -153,7 +163,7 @@ public class Board : MonoBehaviour
                 if (ly < 0) continue;
                 var holder = new GameObject("exit").transform;
                 holder.SetParent(tilesRoot, false);
-                holder.position = CellPos(x, ly) + new Vector3(0, -cell * MouseSize, 0);
+                holder.position = CellPos(x, ly) + new Vector3(0, -cell * ExitDrop, 0);
                 var img = new GameObject("img").AddComponent<SpriteRenderer>();
                 img.transform.SetParent(holder, false);
                 Kit.FitSprite(img, "bowl_exit", cell * 0.5f, 1f);
@@ -269,7 +279,7 @@ public class Board : MonoBehaviour
         if (def.fish > 0)
         {
             // prefer a column with a clear run to the bottom (no holes, no boxes / vases under the fish)
-            int fx = rng.Next(cols);
+            int fx = rng.Next(cols); bool fishPlaced = false;
             for (int pass = 0; pass < 2; pass++)
             {
                 bool placed = false;
@@ -280,9 +290,9 @@ public class Board : MonoBehaviour
                     if (pass == 0 && !ClearColumn(x, ty)) continue;
                     Destroy(grid[x, ty].gameObject); Put(NewPiece(PieceKind.Fish, -1, x, ty), x, ty); placed = true; break;
                 }
-                if (placed) break;
+                if (placed) { fishPlaced = true; break; }
             }
-            fishToSpawn = def.fish - 1;
+            fishToSpawn = def.fish - (fishPlaced ? 1 : 0);
         }
         PlaceFoam();
         EnsureMovesExist(false);
@@ -294,21 +304,94 @@ public class Board : MonoBehaviour
         for (int i = list.Count - 1; i > 0; i--) { int j = rng.Next(i + 1); var t = list[i]; list[i] = list[j]; list[j] = t; }
     }
 
+    // The board's entrance. While IntroHold is set (the level card is still open) the board stays empty;
+    // then the tiles ripple out from the centre and the cats pour in from above, column after column,
+    // each landing with a bounce.
+    public bool IntroHold;
+
     IEnumerator IntroDrop()
     {
-        Busy = true;
-        var moves = new List<IEnumerator>();
+        Busy = false;
+        var tiles = new List<SpriteRenderer>(); var tileA = new List<float>();
+        foreach (Transform t in tilesRoot)
+        {
+            if (t.name != "tile" && t.name != "frame" && t.name != "foam") continue;
+            var sr = t.GetComponent<SpriteRenderer>();
+            if (sr == null) sr = t.GetComponentInChildren<SpriteRenderer>();
+            if (sr == null) continue;
+            tiles.Add(sr); tileA.Add(sr.color.a);
+            var c = sr.color; c.a = 0f; sr.color = c;
+        }
+        var list = new List<Piece>();
         for (int x = 0; x < cols; x++)
             for (int y = 0; y < rows; y++)
             {
                 var p = grid[x, y];
                 if (p == null) continue;
-                Vector3 to = CellPos(x, y);
-                p.transform.position = to + new Vector3(0, cell * (rows + 1), 0);
-                StartCoroutine(MoveTo(p, to, 0.35f + y * 0.03f + x * 0.015f, true));
+                p.transform.position = CellPos(x, y) + new Vector3(0, 100f, 0);       // far off screen while waiting
+                p.gameObject.SetActive(false);
+                list.Add(p);
             }
-        yield return new WaitForSeconds(0.75f);
+        while (IntroHold) yield return null;
+
+        Busy = true;
+        Vector3 mid = (CellPos(0, 0) + CellPos(cols - 1, rows - 1)) * 0.5f;
+        for (int i = 0; i < tiles.Count; i++)
+            if (tiles[i] != null) StartCoroutine(TileIn(tiles[i], tileA[i], Vector3.Distance(tiles[i].transform.position, mid) / cell * 0.035f));
+        yield return new WaitForSeconds(0.14f);
+        float topY = CellPos(0, rows - 1).y + cell * 1.6f, last = 0f;
+        foreach (var p in list)
+        {
+            if (p == null) continue;
+            float delay = p.x * 0.06f + p.y * 0.04f;
+            last = Mathf.Max(last, delay);
+            StartCoroutine(DropIn(p, CellPos(p.x, p.y), topY, delay, p.y == LowestLive(p.x)));
+        }
+        StartCoroutine(DropSounds());
+        yield return new WaitForSeconds(last + 0.6f);
         Busy = false;
+    }
+
+    // the cats landing on the board at the start: two soft drops, the second quieter
+    IEnumerator DropSounds()
+    {
+        yield return new WaitForSeconds(0.15f);
+        AudioManager.Play("cat_drop", 0.6f);
+        yield return new WaitForSeconds(0.3f);
+        AudioManager.Play("cat_drop", 0.35f);
+    }
+
+    // Special cats the player bought on the level card: they take the place of random plain cats.
+    public void AddStartSpecials(List<Special> types)
+    {
+        if (types == null || types.Count == 0 || grid == null) return;
+        var free = new List<Piece>(); var second = new List<Piece>();
+        foreach (var p in grid)
+        {
+            if (p == null || !p.PlainCat || p == mouseOn) continue;
+            if (foam[p.x, p.y] > 0) second.Add(p); else free.Add(p);
+        }
+        Shuffle(free); Shuffle(second); free.AddRange(second);
+        for (int i = 0; i < types.Count && i < free.Count; i++)
+        {
+            var p = free[i];
+            p.special = types[i]; p.lineRow = rng.Next(2) == 0; p.Refresh();
+        }
+    }
+
+    IEnumerator TileIn(SpriteRenderer sr, float alpha, float delay)
+    {
+        if (delay > 0f) yield return new WaitForSeconds(delay);
+        yield return Kit.Tween(0.22f, k => { if (sr != null) { var c = sr.color; c.a = alpha * k; sr.color = c; } });
+    }
+
+    IEnumerator DropIn(Piece p, Vector3 to, float topY, float delay, bool dust)
+    {
+        if (delay > 0f) yield return new WaitForSeconds(delay);
+        if (p == null || p.dead) yield break;
+        p.transform.position = new Vector3(to.x, Mathf.Max(topY, to.y + cell), 0);
+        p.gameObject.SetActive(true);
+        yield return MoveTo(p, to, 0.26f + 0.02f * (rows - p.y), true, dust);
     }
 
     // ======================================================= input
@@ -369,11 +452,12 @@ public class Board : MonoBehaviour
             if (!canAct) { pressing = false; return; }
             var w = ScreenToWorld(ptr.position.ReadValue());
             Vector3 d = w - downWorld;
-            if (Armed == null && d.magnitude > cell * 0.35f)
+            if ((Armed == null || Armed == PowerUpType.Swap) && d.magnitude > cell * 0.35f)
             {
                 pressing = false;
                 Vector2Int dir = Mathf.Abs(d.x) > Mathf.Abs(d.y) ? new Vector2Int(d.x > 0 ? 1 : -1, 0) : new Vector2Int(0, d.y > 0 ? 1 : -1);
-                StartCoroutine(TrySwap(downCell, dir));
+                if (Armed == PowerUpType.Swap) SwapBoostSwipe(downCell, dir);
+                else StartCoroutine(TrySwap(downCell, dir));
             }
         }
         else if (pressing && ptr.press.wasReleasedThisFrame)
@@ -385,13 +469,15 @@ public class Board : MonoBehaviour
 
     void ResetIdle() { idleTimer = 0; hintShown = false; }
 
-    public void ArmPowerUp(PowerUpType? t) { Armed = t; ResetIdle(); }
+    public void ArmPowerUp(PowerUpType? t) { Armed = t; SetSwapPick(null); ResetIdle(); }
 
     // ======================================================= player actions
     IEnumerator Tap(Vector2Int c)
     {
         var p = At(c.x, c.y);
         if (p == null) yield break;
+        if (guiding) { if (!guideTap || c != guideA) yield break; EndGuide(true); }
+        if (Armed == PowerUpType.Swap) { SwapBoostTap(p); yield break; }
         if (Armed != null)
         {
             var t = Armed.Value;
@@ -418,6 +504,7 @@ public class Board : MonoBehaviour
     IEnumerator TrySwap(Vector2Int a, Vector2Int dir)
     {
         var b = a + dir;
+        if (guiding) { if (guideTap || !((a == guideA && b == guideB) || (a == guideB && b == guideA))) yield break; EndGuide(true); }
         var pa = At(a.x, a.y);
         var pb = At(b.x, b.y);
         if (pa == null) yield break;
@@ -436,7 +523,7 @@ public class Board : MonoBehaviour
         {
             BeginMove(); quietPops = true;
             var ctx = new Ctx();
-            if (aSp && bSp) Combo(pa, pb, ctx);
+            if (aSp && bSp) { yield return MergeIntro(pa, pb); Combo(pa, pb, ctx); }
             else
             {
                 var s = aSp ? pa : pb; var other = aSp ? pb : pa;
@@ -465,6 +552,46 @@ public class Board : MonoBehaviour
         BeginMove();
         DebugPhase = "resolve"; yield return ResolveLoop(new HashSet<Vector2Int> { a, b });
         DebugPhase = "end"; yield return EndMove();
+    }
+
+    // Two special cats swapped together: a swirl pulls them into one spot, they spin around each other
+    // and fuse in a star flash (with a shake) - then the combined effect goes off.
+    static Color SpecialTint(Special s)
+    {
+        switch (s)
+        {
+            case Special.Line: return FX.LineGlow;
+            case Special.Bomb: return FX.BombGlow;
+            case Special.Hunter: return FX.HunterGlow;
+            default: return new Color(1f, 0.55f, 0.95f);   // rainbow
+        }
+    }
+
+    IEnumerator MergeIntro(Piece a, Piece b)
+    {
+        Vector3 c = b.transform.position, a0 = a.transform.position - c;
+        Color tint = SpecialTint(a.special), tint2 = SpecialTint(b.special);   // each cat keeps its own colour (mixing them gives grey)
+        bool rainbow = a.special == Special.Rainbow || b.special == Special.Rainbow;
+        const float Dur = 0.36f;
+        FX.MergeSwirl(c, cell, tint, tint2, Dur, rainbow);
+        AudioManager.Play("swap_3", 0.9f);
+        a.SetOrder(22); b.SetOrder(21);
+        float ang0 = Mathf.Atan2(a0.y, a0.x), rad0 = a0.magnitude;
+        yield return Kit.Tween(Dur, k =>
+        {
+            float e = Kit.EaseInCubic(k), ang = ang0 + e * Mathf.PI * 2.5f;
+            Vector3 dir = new Vector3(Mathf.Cos(ang), Mathf.Sin(ang), 0);
+            a.transform.position = c + dir * rad0 * (1f - e);
+            b.transform.position = c - dir * cell * 0.3f * Mathf.Sin(k * Mathf.PI);
+            float s = 1f + 0.18f * Mathf.Sin(k * Mathf.PI) - 0.25f * e;
+            a.visual.localScale = b.visual.localScale = new Vector3(s, s, 1);
+        });
+        a.transform.position = c; b.transform.position = c;
+        a.visual.localScale = b.visual.localScale = Vector3.one;
+        a.SetOrder(10); b.SetOrder(10);
+        FX.MergeFlash(c, cell, tint, tint2, rainbow);
+        FX.Shake(cell * 0.16f, 0.3f);
+        yield return new WaitForSeconds(0.07f);     // a beat on the flash before everything goes off
     }
 
     void BeginMove()
@@ -538,6 +665,92 @@ public class Board : MonoBehaviour
         yield return Execute(ctx, null);
         yield return Gravity();
         yield return ResolveLoop(null);
+        if (!HasPossibleMove()) yield return ShuffleBoard();
+        MoveResolved?.Invoke(clearedThisMove);
+        Busy = false; quietPops = false;
+    }
+
+    // ---- swap booster: two neighbouring cats trade places, no match needed, no move spent
+    Piece swapPick; GameObject swapMark;
+
+    void SetSwapPick(Piece p)
+    {
+        swapPick = p;
+        if (swapMark != null) Destroy(swapMark);
+        if (p == null) return;
+        var sr = new GameObject("swapPick").AddComponent<SpriteRenderer>();
+        sr.sprite = Kit.SoftCircle(64); sr.sortingOrder = 9; sr.color = new Color(1f, 0.83f, 0.38f, 0.85f);
+        sr.transform.SetParent(p.transform, false);
+        swapMark = sr.gameObject;
+        StartCoroutine(SwapPickPulse(p, sr));
+        StartCoroutine(p.Wiggle());
+        AudioManager.Play("click", 0.6f);
+    }
+
+    IEnumerator SwapPickPulse(Piece p, SpriteRenderer sr)
+    {
+        float baseS = cell * 1.25f / sr.sprite.bounds.size.x / Mathf.Max(0.001f, p.transform.lossyScale.x), t = 0;
+        while (sr != null && swapPick == p)
+        {
+            t += Time.deltaTime;
+            sr.transform.localScale = Vector3.one * baseS * (1f + 0.08f * Mathf.Sin(t * 6f));
+            yield return null;
+        }
+    }
+
+    void SwapBoostTap(Piece p)
+    {
+        if (!p.Movable) { StartCoroutine(p.Wiggle()); return; }
+        if (swapPick == null || swapPick.dead) { SetSwapPick(p); return; }
+        if (p == swapPick) { SetSwapPick(null); return; }
+        if (Mathf.Abs(p.x - swapPick.x) + Mathf.Abs(p.y - swapPick.y) != 1) { SetSwapPick(p); return; }   // not a neighbour: pick this one instead
+        var a = swapPick;
+        StartCoroutine(UseSwap(a, p));
+    }
+
+    void SwapBoostSwipe(Vector2Int c, Vector2Int dir)
+    {
+        var a = At(c.x, c.y); var b = At(c.x + dir.x, c.y + dir.y);
+        if (a == null) return;
+        if (!a.Movable || b == null || !b.Movable) { StartCoroutine(a.Wiggle()); if (b != null) StartCoroutine(b.Wiggle()); return; }
+        StartCoroutine(UseSwap(a, b));
+    }
+
+    IEnumerator UseSwap(Piece pa, Piece pb)
+    {
+        Busy = true; Armed = null; SetSwapPick(null);
+        clearedThisMove = 0;
+        Vector2Int a = new Vector2Int(pa.x, pa.y), b = new Vector2Int(pb.x, pb.y);
+        // a little magic: sparkles on both, then the cats hop over each other on an arc
+        FX.Burst(pa.transform.position, new Color(0.45f, 0.95f, 0.95f), cell, 8);
+        FX.Burst(pb.transform.position, new Color(1f, 0.83f, 0.38f), cell, 8);
+        AudioManager.Play("swap_" + UnityEngine.Random.Range(1, 4), 0.9f);
+        Vector3 p0 = pa.transform.position, p1 = pb.transform.position;
+        Vector3 side = Vector3.Cross(p1 - p0, Vector3.forward).normalized * cell * 0.45f;
+        pa.SetOrder(20); pb.SetOrder(18);
+        yield return Kit.Tween(0.3f, k =>
+        {
+            float arc = Mathf.Sin(k * Mathf.PI);
+            pa.transform.position = Vector3.Lerp(p0, p1, k) + side * arc;
+            pb.transform.position = Vector3.Lerp(p1, p0, k) - side * arc;
+            float s = 1f + 0.15f * arc;
+            pa.visual.localScale = pb.visual.localScale = new Vector3(s, s, 1);
+        }, Kit.EaseInOut);
+        pa.visual.localScale = pb.visual.localScale = Vector3.one;
+        pa.SetOrder(10); pb.SetOrder(10);
+        Put(pa, b.x, b.y); Put(pb, a.x, a.y);
+        PowerUpUsed?.Invoke(PowerUpType.Swap);
+
+        bool aSp = pa.special != Special.None, bSp = pb.special != Special.None;
+        if (aSp && bSp)
+        {   // two special cats brought together go off as a combo
+            quietPops = true;
+            var ctx = new Ctx { byPowerUp = true };
+            yield return MergeIntro(pa, pb); Combo(pa, pb, ctx);
+            yield return Execute(ctx, null);
+            yield return Gravity();
+        }
+        yield return ResolveLoop(new HashSet<Vector2Int> { a, b });
         if (!HasPossibleMove()) yield return ShuffleBoard();
         MoveResolved?.Invoke(clearedThisMove);
         Busy = false; quietPops = false;
@@ -720,6 +933,15 @@ public class Board : MonoBehaviour
                         }
                 }
             if (!quietPops) AudioManager.Play("Pop", 0.9f);      // the combo sound belongs to the combo banner
+            // a glowing streak in the cats' colour sweeps along every matched line (a soft glow for a 2x2 square)
+            foreach (var r in runs)
+            {
+                int rc = r.Color; Color tc = rc >= 0 ? CatFxColors[rc % CatFxColors.Length] : new Color(1f, .9f, .5f);
+                if (tc.grayscale < 0.4f) tc = Color.Lerp(tc, new Color(0.75f, 0.6f, 1f), 0.6f);   // black cats: a violet glow reads better than a dark one
+                Vector3 lo = r.cells[0].transform.position, hi = lo;
+                foreach (var p in r.cells) { var q = p.transform.position; lo = Vector3.Min(lo, q); hi = Vector3.Max(hi, q); }
+                FX.RunTrace(lo, hi, tc, cell, r.square);
+            }
             DebugPhase = "loop.execute " + step; yield return Execute(ctx, spawns);
             DebugPhase = "loop.gravity " + step; yield return Gravity();
             preferred = null;
@@ -864,12 +1086,28 @@ public class Board : MonoBehaviour
         return best;
     }
 
+    static string ComboEmblem(Special a, Special b)
+    {
+        bool Has(Special s) => a == s || b == s;
+        if (a == Special.Hunter && b == Special.Hunter) return "combo_hh";
+        if (Has(Special.Hunter)) return Has(Special.Bomb) ? "combo_hb" : Has(Special.Line) ? "combo_hl" : Has(Special.Rainbow) ? "combo_hr" : null;
+        if (a == Special.Rainbow && b == Special.Rainbow) return "combo_rr";
+        if (Has(Special.Rainbow)) return Has(Special.Bomb) ? "combo_rb" : Has(Special.Line) ? "combo_rl" : null;
+        if (a == Special.Bomb && b == Special.Bomb) return "combo_bb";
+        if (a == Special.Line && b == Special.Line) return "combo_ll";
+        if (Has(Special.Line) && Has(Special.Bomb)) return "combo_lb";
+        return null;
+    }
+
     void Combo(Piece a, Piece b, Ctx ctx)
     {
         ctx.clear.Add(a); ctx.clear.Add(b); ctx.triggered.Add(a); ctx.triggered.Add(b);
         int cx = b.x, cy = b.y;
         var t1 = a.special; var t2 = b.special;
         bool Has(Special s) => t1 == s || t2 == s;
+        Vector3 ep = CellPos(cx, cy);                       // kept fully on screen even for a merge at the edge
+        ep.x = Mathf.Clamp(ep.x, WorldRect.xMin + cell * 1.1f, WorldRect.xMax - cell * 1.1f);
+        FX.Emblem(ep, ComboEmblem(t1, t2), cell);
         if (t1 == Special.Rainbow && t2 == Special.Rainbow)
         {
             AudioManager.Play("rainbow");
@@ -972,6 +1210,7 @@ public class Board : MonoBehaviour
             FX.RainbowBlast(CellPos(rb.x, rb.y), cell, pts, rb.arrive, rb.orbs, rb.t);
         }
         float delay = 0f, latest = 0f;
+        if (list.Count > 0) StartCoroutine(TileRipple(centre, Mathf.Clamp(0.05f + 0.012f * list.Count, 0.07f, 0.17f)));
         foreach (var p in list)
         {
             if (p.dead) continue;
@@ -984,7 +1223,8 @@ public class Board : MonoBehaviour
                 StartCoroutine(Later(lt2 > 0f ? lt2 : delay, CatchMouse));
             }
             if (milk[p.x, p.y] > 0 && p.kind == PieceKind.Cat)
-            {   // the cat laps up the milk: a coin, and that bit of the puddle is gone
+            {   // the cat laps up the milk: a coin, that bit of the puddle is gone, and the cat counts twice for a colour task
+                if (p.special == Special.None) CatCleared?.Invoke(p.color, p.transform.position);
                 int mx = p.x, my = p.y; float lt1 = ctx.When(p);
                 StartCoroutine(Later(lt1 > 0f ? lt1 : delay, () => LapMilk(mx, my)));
             }
@@ -995,6 +1235,7 @@ public class Board : MonoBehaviour
             }
             if (p.kind == PieceKind.Cat && p.special == Special.None) CatCleared?.Invoke(p.color, p.transform.position);
             float lt = ctx.When(p);
+            if (p.kind == PieceKind.Cat) StartCoroutine(TileFlash(p.x, p.y, p.special == Special.None ? p.color : -1, lt > 0f ? lt : delay));
             if (lt > 0f) { StartCoroutine(PopRoutine(p, lt)); latest = Mathf.Max(latest, lt); }
             else { StartCoroutine(PopRoutine(p, delay)); delay += 0.018f; }
         }
@@ -1024,20 +1265,23 @@ public class Board : MonoBehaviour
         if (spawns != null && spawns.Count > 0) yield return new WaitForSeconds(0.18f);
     }
 
-    static readonly Color[] CatFxColors = { new Color(1f, .62f, .3f), new Color(1f, 1f, 1f), new Color(.75f, .75f, .8f), new Color(.35f, .3f, .4f), new Color(1f, .85f, .25f) };
+    static readonly Color[] CatFxColors = { new Color(.95f, .78f, .58f), new Color(1f, 1f, 1f), new Color(.75f, .75f, .8f), new Color(.35f, .3f, .4f), new Color(1f, .85f, .25f) };
 
     IEnumerator PopRoutine(Piece p, float delay)
     {
         if (delay > 0) yield return new WaitForSeconds(delay);
         Vector3 pos = p.transform.position;
         Color c = p.kind == PieceKind.Cat && p.color >= 0 ? CatFxColors[p.color % CatFxColors.Length] : new Color(1f, .9f, .5f);
-        if (p.kind == PieceKind.Cat) FX.CatPop(pos, c, cell, p.special != Special.None ? 1.4f : 1f);
+        if (p.kind == PieceKind.Cat) StartCoroutine(Later(0.06f, () => FX.CatPop(pos, c, cell, p != null && p.special != Special.None ? 1.4f : 1f)));
         else FX.Burst(pos, c, cell, 8);
         var srs = p.GetComponentsInChildren<SpriteRenderer>();
-        yield return Kit.Tween(0.16f, k =>
+        if (p.kind == PieceKind.Cat) FX.PopFlash(pos, c, cell);
+        // anticipation: the cat squashes down for a moment, then bursts outwards and fades
+        yield return Kit.Tween(0.06f, k => p.visual.localScale = new Vector3(1f + 0.2f * k, 1f - 0.25f * k, 1));
+        yield return Kit.Tween(0.13f, k =>
         {
-            float s = 1f + 0.25f * k;
-            p.visual.localScale = new Vector3(s, s, 1);
+            float e = Kit.EaseOutCubic(k);
+            p.visual.localScale = new Vector3(Mathf.Lerp(1.2f, 1.4f, e), Mathf.Lerp(0.75f, 1.4f, e), 1);
             foreach (var sr in srs) { var col = sr.color; col.a = 1f - k; sr.color = col; }
         });
         Destroy(p.gameObject);
@@ -1072,9 +1316,15 @@ public class Board : MonoBehaviour
         {
             h.coverHp--;
             AudioManager.Play("Hit", 0.8f);
-            FX.Debris(pos, new[] { "box_piece_1", "box_piece_2", "box_piece_3" }, cell, h.coverHp <= 0 ? 4 : 2);
             if (h.coverHp <= 0) ReleaseCover(h, pos);
-            else { h.Refresh(); StartCoroutine(h.Wiggle()); }
+            else
+            {   // first hit: the box crumples hard, a few scraps and a puff of dust fly off
+                h.Refresh();
+                StartCoroutine(h.BoxCrush());
+                FX.Debris(pos + new Vector3(0, cell * 0.25f, 0), new[] { "box_piece_1", "box_piece_2", "box_piece_3" }, cell, 4);
+                FX.LandDust(pos + new Vector3(0, cell * 0.3f, 0), cell);
+                FX.Shake(cell * 0.06f, 0.15f);
+            }
             return;
         }
         if (h.cover == Cover.Mint) ReleaseCover(h, pos);
@@ -1124,7 +1374,7 @@ public class Board : MonoBehaviour
         {
             var v = cells[i];
             float delay = 0.08f + 0.06f * Mathf.Max(Mathf.Abs(v.x - c.x), Mathf.Abs(v.y - c.y));
-            StartCoroutine(Later(delay, () => { milk[v.x, v.y] = MilkLife; MilkVisual(v.x, v.y, true); FX.MilkSplash(CellPos(v.x, v.y), cell, 2); }));
+            StartCoroutine(Later(delay, () => { milk[v.x, v.y] = MilkLife; milkFresh[v.x, v.y] = true; MilkVisual(v.x, v.y, true); FX.MilkSplash(CellPos(v.x, v.y), cell, 2); }));
         }
         Bonus?.Invoke(20);
     }
@@ -1169,7 +1419,9 @@ public class Board : MonoBehaviour
             if (appear) StartCoroutine(PopIn(holder));
         }
         // a drying puddle gets paler
-        var c = milkSr[x, y].color; c.a = Mathf.Lerp(0.6f, 1f, m / (float)MilkLife); milkSr[x, y].color = c;
+        var c = milkSr[x, y].color; c.a = Mathf.Lerp(0.6f, 1f, m / (float)MilkLife);
+        if (foam[x, y] > 0) c.a *= 0.5f;   // milk spilled over foam: keep the blue foam readable through the puddle
+        milkSr[x, y].color = c;
     }
 
     IEnumerator PopIn(Transform t)
@@ -1199,12 +1451,275 @@ public class Board : MonoBehaviour
     {
         for (int x = 0; x < cols; x++)
             for (int y = 0; y < rows; y++)
-                if (milk[x, y] > 0) { milk[x, y]--; MilkVisual(x, y, false); }
+            {
+                if (milk[x, y] <= 0) continue;
+                if (milkFresh[x, y]) { milkFresh[x, y] = false; continue; }
+                milk[x, y]--; MilkVisual(x, y, false);
+            }
+    }
+
+    // ======================================================= win celebration
+    // The level is won with moves to spare: every spare move sends a spark from the moves counter into a
+    // random cat, which turns into a navigator or a demolition cat; then they go off one after another.
+    public bool CelebrateSkip;
+    public IEnumerator Celebrate(int count, Vector3 from, Action<Vector3> onFire)
+    {
+        Busy = true; quietPops = true; CelebrateSkip = false;
+        var made = new List<Piece>();
+        for (int i = 0; i < count && !CelebrateSkip; i++)
+        {
+            var cands = new List<Piece>();
+            foreach (var p in grid) if (p != null && p.PlainCat && !made.Contains(p)) cands.Add(p);
+            if (cands.Count == 0) break;
+            var c = cands[rng.Next(cands.Count)];
+            made.Add(c);
+            StartCoroutine(Spark(from, c));
+            yield return new WaitForSeconds(0.1f);
+        }
+        yield return new WaitForSeconds(0.35f);
+        // go off in volleys of up to 3 so a long party stays short
+        for (int i = 0; i < made.Count && !CelebrateSkip; i += 3)
+        {
+            var ctx = new Ctx(); bool any = false; tappedCross = null;
+            for (int j = i; j < Mathf.Min(i + 3, made.Count); j++)
+            {
+                var p = made[j];
+                if (p == null || p.dead || p.special == Special.None) continue;
+                Trigger(p, ctx, false); any = true;   // keep each line its own random direction
+                onFire?.Invoke(p.transform.position);
+            }
+            if (!any) continue;
+            yield return Execute(ctx, null);
+            yield return Gravity();
+            yield return ResolveLoop(null);
+        }
+        Busy = false; quietPops = false;
+    }
+
+    IEnumerator Spark(Vector3 from, Piece target)
+    {
+        var sr = new GameObject("spark").AddComponent<SpriteRenderer>();
+        sr.sprite = Kit.SoftCircle(64); sr.sortingOrder = FX.FxOrder + 4; sr.color = new Color(1f, 0.85f, 0.35f);
+        float s = cell * 0.35f / sr.sprite.bounds.size.x; sr.transform.localScale = Vector3.one * s;
+        from.z = 0; Vector3 mid = (from + target.transform.position) * 0.5f + new Vector3(0, cell * 1.2f, 0);
+        AudioManager.Play("Pop", 0.4f);
+        yield return Kit.Tween(0.3f, k =>
+        {
+            if (sr == null || target == null) return;
+            Vector3 to = target.transform.position;
+            sr.transform.position = Vector3.Lerp(Vector3.Lerp(from, mid, k), Vector3.Lerp(mid, to, k), k);
+        });
+        if (sr != null) Destroy(sr.gameObject);
+        if (target == null || target.dead || !target.PlainCat) yield break;
+        target.special = rng.Next(3) == 0 ? Special.Bomb : Special.Line; target.lineRow = rng.Next(2) == 0; target.Refresh();
+        FX.Burst(target.transform.position, new Color(1f, 0.85f, 0.35f), cell, 8);
+        StartCoroutine(PopIn(target));
+    }
+
+    // ======================================================= tutorial guide
+    // One guided action: the board is dimmed, only the cats of that action stay bright, a paw shows what to
+    // do, and nothing else can be moved until the player does it.
+    bool guiding, guideTap;
+    Vector2Int guideA, guideB;
+    Transform guideRoot;
+    readonly List<Piece> guideLit = new List<Piece>();
+    public bool Guiding => guiding;
+    public event Action GuideDone;
+
+    void GuideRun(Piece mover, Vector2Int dest, Vector2Int from, HashSet<Piece> set)
+    {
+        if (mover == null) return;
+        int c = mover.MatchColor; if (c < 0) return;
+        foreach (var d in new[] { new Vector2Int(1, 0), new Vector2Int(0, 1) })
+        {
+            var run = new List<Piece>();
+            for (int sgn = -1; sgn <= 1; sgn += 2)
+                for (int i = 1; i < 5; i++)
+                {
+                    var q = dest + d * (i * sgn);
+                    if (q == from || !Live(q.x, q.y)) break;
+                    var p = At(q.x, q.y);
+                    if (p == null || p.MatchColor != c) break;
+                    run.Add(p);
+                }
+            if (run.Count >= 2) foreach (var p in run) set.Add(p);
+        }
+    }
+
+    void BeginGuide(HashSet<Piece> lit, Vector3 from, Vector3 to, bool tap)
+    {
+        guiding = true; guideTap = tap;
+        guideRoot = new GameObject("Guide").transform; guideRoot.SetParent(transform, false);
+        var dim = new GameObject("dim").AddComponent<SpriteRenderer>(); dim.transform.SetParent(guideRoot, false);
+        dim.sprite = Kit.RoundedRect(128, 8); dim.drawMode = SpriteDrawMode.Sliced; dim.size = new Vector2(60f, 60f);
+        dim.color = new Color(0.04f, 0.05f, 0.14f, 0f); dim.sortingOrder = 44;
+        guideLit.Clear();
+        foreach (var p in lit) { p.SetOrder(50); guideLit.Add(p); }
+        var hand = new GameObject("hand").transform; hand.SetParent(guideRoot, false);
+        var hs = new GameObject("img").AddComponent<SpriteRenderer>(); hs.transform.SetParent(hand, false);
+        Kit.FitSprite(hs, "ui_hand", cell * 1.25f, 1f, new Vector2(cell * 0.45f, -cell * 0.45f));   // the fingertip is the top-left of the art
+        hs.sortingOrder = 58;
+        StartCoroutine(GuideAnim(dim, hand, from, to, tap));
+    }
+
+    IEnumerator GuideAnim(SpriteRenderer dim, Transform hand, Vector3 from, Vector3 to, bool tap)
+    {
+        float t = 0f;
+        while (guiding && dim != null)
+        {
+            t += Time.deltaTime;
+            var c = dim.color; c.a = Mathf.Min(0.72f, t * 2.4f); dim.color = c;
+            float u = Mathf.Repeat(t, 1.5f) / 1.5f;
+            if (tap)
+            {   // press, press, pause
+                float press = Mathf.Max(0f, Mathf.Sin(u * Mathf.PI * 4f)) * (u < 0.5f ? 1f : 0f);
+                hand.position = from + new Vector3(cell * 0.12f, -cell * 0.12f, 0) * (1f - press);
+                float hsq = 1f - 0.08f * press; hand.localScale = new Vector3(hsq, hsq, 1f);
+            }
+            else
+            {   // slides from one cat to the other, then starts again
+                float k = u < 0.15f ? 0f : u < 0.7f ? Kit.EaseInOut((u - 0.15f) / 0.55f) : 1f;
+                hand.position = Vector3.Lerp(from, to, k);
+            }
+            foreach (var p in guideLit) if (p != null && !p.dead) p.visual.localScale = Vector3.one * (1f + 0.05f * Mathf.Sin(t * 5f));
+            yield return null;
+        }
+    }
+
+    void EndGuide(bool done)
+    {
+        if (!guiding) return;
+        guiding = false;
+        foreach (var p in guideLit) if (p != null && !p.dead) { p.SetOrder(10); p.visual.localScale = Vector3.one; }
+        guideLit.Clear();
+        if (guideRoot != null) Destroy(guideRoot.gameObject);
+        if (done) GuideDone?.Invoke();
+    }
+
+    // level 1: one swap that makes a match
+    public bool GuideSwap()
+    {
+        if (guiding || !FindMove(out var a, out var b)) return false;
+        var lit = new HashSet<Piece>();
+        var pa = At(a.x, a.y); var pb = At(b.x, b.y);
+        if (pa == null || pb == null) return false;
+        lit.Add(pa); lit.Add(pb);
+        GuideRun(pa, b, a, lit); GuideRun(pb, a, b, lit);
+        guideA = a; guideB = b;
+        // the paw drags the cat that completes the run
+        var test = new HashSet<Piece>(); GuideRun(pa, b, a, test);
+        bool aMoves = test.Count >= 2;
+        BeginGuide(lit, CellPos(aMoves ? a.x : b.x, aMoves ? a.y : b.y), CellPos(aMoves ? b.x : a.x, aMoves ? b.y : a.y), false);
+        return true;
+    }
+
+    // level 2: a special cat is put on the board and the player taps it
+    public bool GuideTapSpecial(Special type)
+    {
+        if (guiding) return false;
+        Piece best = null; float bestD = 1e9f;
+        Vector2 mid = new Vector2((cols - 1) * 0.5f, (rows - 1) * 0.5f);
+        foreach (var p in grid)
+        {
+            if (p == null || !p.PlainCat) continue;
+            float d = Vector2.Distance(new Vector2(p.x, p.y), mid);
+            if (d < bestD) { bestD = d; best = p; }
+        }
+        if (best == null) return false;
+        best.special = type; best.lineRow = true; best.Refresh();
+        StartCoroutine(PopIn(best));
+        guideA = guideB = new Vector2Int(best.x, best.y);
+        BeginGuide(new HashSet<Piece> { best }, CellPos(best.x, best.y), CellPos(best.x, best.y), true);
+        return true;
+    }
+
+    // ======================================================= tiles react to a match
+    // The cell under a cleared cat flashes in that cat's colour, a ripple runs through the neighbouring
+    // tiles from the middle of the match, and a pale paw print stays on the cell for a second.
+    SpriteRenderer[,] tileSr;
+    Vector3[,] tileBase;
+    static readonly Color[] TileFlashColors = { new Color(1f, .8f, .52f), new Color(.72f, .87f, 1f), new Color(.7f, .73f, .84f), new Color(.5f, .44f, .62f), new Color(1f, .85f, .28f) };
+    static readonly Color PawPink = new Color(.93f, .6f, .62f);
+
+    IEnumerator TileFlash(int x, int y, int color, float delay)
+    {
+        if (delay > 0f) yield return new WaitForSeconds(delay);
+        if (tilesRoot == null) yield break;
+        Color c = color >= 0 ? TileFlashColors[color % TileFlashColors.Length] : new Color(1f, .93f, .6f);
+        Vector3 pos = CellPos(x, y);
+        var glow = new GameObject("flash").AddComponent<SpriteRenderer>();
+        glow.transform.SetParent(tilesRoot, false); glow.transform.position = pos;
+        glow.sprite = Kit.RoundedRect(128, 30); glow.drawMode = SpriteDrawMode.Sliced;
+        glow.size = new Vector2(cell * 0.97f, cell * 0.97f); glow.sortingOrder = 3;
+        StartCoroutine(TilePaw(pos, c));           // the print shows at once, while the cell is still empty
+        // a white blink first, then the cat's colour fading out
+        yield return Kit.Tween(0.42f, k =>
+        {
+            if (glow == null) return;
+            Color cc = Color.Lerp(Color.white, c, Mathf.Clamp01(k * 4f));
+            cc.a = k < 0.15f ? 0.95f : 0.85f * (1f - (k - 0.15f) / 0.85f);
+            glow.color = cc;
+            float sc = 1f + 0.06f * Mathf.Sin(Mathf.Clamp01(k * 2f) * Mathf.PI);
+            glow.transform.localScale = new Vector3(sc, sc, 1f);
+        });
+        if (glow != null) Destroy(glow.gameObject);
+    }
+
+    IEnumerator TilePaw(Vector3 pos, Color c)
+    {
+        // a random cat thing (fish bone, toy mouse, bell, feather...) is left on the cell; the paw is only the fallback
+        string icon = "tile_icon_" + UnityEngine.Random.Range(1, 9);
+        if (!GameArt.I.Has(icon)) icon = "fx_paw";
+        if (!GameArt.I.Has(icon) || tilesRoot == null) yield break;
+        var holder = new GameObject("pawprint").transform; holder.SetParent(tilesRoot, false);
+        holder.position = pos; holder.localRotation = Quaternion.Euler(0, 0, UnityEngine.Random.Range(-14f, 14f));
+        // drawn above the cats, so it is still seen after new cats have dropped into the cell. The glossy art
+        // keeps its own colours (only the paw fallback is tinted).
+        var paw = new GameObject("img").AddComponent<SpriteRenderer>(); paw.transform.SetParent(holder, false);
+        Kit.FitSprite(paw, icon, cell * 0.5f, 1f); paw.sortingOrder = 41;
+        Color pc = icon == "fx_paw" ? Color.Lerp(c, PawPink, 0.55f) : Color.white;
+        yield return Kit.Tween(1.5f, k =>
+        {
+            if (paw == null) return;
+            // pops in, holds for a moment, then fades while it drifts up a little
+            float a = k < 0.08f ? k / 0.08f : k < 0.45f ? 1f : 1f - (k - 0.45f) / 0.55f;
+            pc.a = a * 0.7f; paw.color = pc;          // 30% see-through at full strength
+            holder.position = pos + new Vector3(0, cell * 0.14f * k, 0);
+            float pop = k < 0.12f ? Kit.EaseOutBack(k / 0.12f) : 1f;
+            holder.localScale = new Vector3(pop, pop, 1f);
+        });
+        if (holder != null) Destroy(holder.gameObject);
+    }
+
+    IEnumerator TileRipple(Vector3 from, float amp)
+    {
+        if (tileSr == null) yield break;
+        const float step = 0.045f, life = 0.26f, reach = 5.5f;
+        float total = reach * step + life, age = 0f;
+        var tiles = tileSr; var bases = tileBase;
+        while (age < total)
+        {
+            age += Time.deltaTime;
+            for (int x = 0; x < cols; x++)
+                for (int y = 0; y < rows; y++)
+                {
+                    var t = tiles[x, y]; if (t == null) continue;
+                    float d = Vector3.Distance(CellPos(x, y), from) / cell;
+                    if (d > reach) continue;
+                    float k = (age - d * step) / life;
+                    float f = k <= 0f || k >= 1f ? 0f : Mathf.Sin(k * Mathf.PI) * amp * Mathf.Exp(-d * 0.42f);
+                    t.transform.localScale = bases[x, y] * (1f + f);
+                }
+            yield return null;
+        }
+        for (int x = 0; x < cols; x++) for (int y = 0; y < rows; y++) if (tiles[x, y] != null) tiles[x, y].transform.localScale = bases[x, y];
     }
 
     // ======================================================= mouse thief
-    const float MouseSize = 0.85f;
-    Vector3 MouseOffset => new Vector3(cell * 0.2f, cell * 0.2f, 0f);   // perched on the cat's top-right
+    const float MouseSize = 0.816f;   // +20%
+    // sitting in the middle of the cat: the art's tail sticks out to the left, so the picture is shifted left
+    // a little to put the mouse's body (not the middle of the picture) on the cat's centre
+    Vector3 MouseOffset => new Vector3(-cell * 0.11f, cell * 0.02f, 0f);
     static bool MouseSeat(Piece p) => p != null && !p.dead && p.kind == PieceKind.Cat && p.special == Special.None && p.cover == Cover.None;
 
     void PlaceMouse()
@@ -1219,20 +1734,81 @@ public class Board : MonoBehaviour
         mouseBody = new GameObject("body").transform; mouseBody.SetParent(mouseT, false);
         mouseSr = new GameObject("img").AddComponent<SpriteRenderer>(); mouseSr.transform.SetParent(mouseBody, false);   // FitSprite scales this child; the body carries the animation scale
         mouseSr.sortingOrder = 30;                  // over the cats, under the FX
-        Kit.FitSprite(mouseSr, "mouse_idle", cell * MouseSize, 1f);
+        BuildMouseParts();
+        MouseIdleLook();
         mouseT.position = mouseOn.transform.position + MouseOffset;
         mouseFace = 1;
+    }
+
+    // ---- the mouse comes alive: its tail (a separate piece of the art) swishes, a soft glow keeps it
+    //      readable on grey cats, it fidgets now and then and the coin in its sack glints
+    Transform mouseTail, mouseGlint; SpriteRenderer mouseTailSr, mouseGlowSr, mouseGlintSr;
+    float mouseNextFidget, mouseFidgetT = -1f;
+
+    void BuildMouseParts()
+    {   // the new mouse art is complete (tail and sack drawn in); only the fidget timer is set up here
+        mouseTail = null; mouseGlint = null; mouseGlowSr = null;
+        mouseNextFidget = Time.time + UnityEngine.Random.Range(1.5f, 3f); mouseFidgetT = -1f;
+    }
+
+    // running: four frames of the run cycle, a trail of yellow smoke and bits of cheese behind
+    float mouseTrailNext;
+    void MouseRunFrame(SpriteRenderer sr, Transform at, float dir)
+    {
+        if (sr == null) return;
+        int f = 1 + (int)(Time.time * 14f) % 4;
+        string key = GameArt.I.Has("mouse_run_" + f) ? "mouse_run_" + f : "mouse_run";
+        if (sr.sprite != GameArt.I.S(key)) Kit.FitSpriteAs(sr, key, "mouse_run_1", cell * MouseSize, 1f);
+        if (at != null && Time.time >= mouseTrailNext)
+        {
+            mouseTrailNext = Time.time + 0.04f;
+            FX.MouseTrail(at.position + new Vector3(-dir * cell * 0.22f, -cell * 0.2f, 0), cell, dir);
+        }
+    }
+
+    void MouseIdleLook()
+    {
+        if (mouseSr == null) return;
+        Kit.FitSprite(mouseSr, "mouse_idle", cell * MouseSize, 1f);
+        if (mouseTail != null) mouseTail.gameObject.SetActive(true);
+        if (mouseGlint != null) mouseGlint.gameObject.SetActive(true);
+    }
+
+    static void MouseRunLook(Transform body)
+    {   // the running / caught art has its own tail and sack
+        if (body == null) return;
+        var tl = body.Find("tail"); if (tl != null) tl.gameObject.SetActive(false);
+        var gl = body.Find("glint"); if (gl != null) gl.gameObject.SetActive(false);
     }
 
     void LateUpdate()
     {
         if (mouseT == null) return;
         if (!mouseHopping && mouseOn != null) mouseT.position = mouseOn.transform.position + MouseOffset;
+        float tm = Time.time;
+        if (mouseGlowSr != null) mouseGlowSr.color = new Color(1f, 0.97f, 0.85f, 0.32f + 0.08f * Mathf.Sin(tm * 2.2f));
+        if (mouseTail != null) mouseTail.localRotation = Quaternion.Euler(0, 0, 9f * Mathf.Sin(tm * 3.1f) + 4f * Mathf.Sin(tm * 7.3f));
+        if (mouseGlintSr != null)
+        {
+            float g = Mathf.Max(0f, Mathf.Sin(tm * 2.6f)); g = g * g * g;
+            mouseGlintSr.color = new Color(1f, 0.95f, 0.6f, g);
+            mouseGlint.localScale = Vector3.one * (0.5f + 0.7f * g);
+            mouseGlint.localRotation = Quaternion.Euler(0, 0, tm * 90f);
+        }
         if (mouseBody != null && !mouseHopping)
-        {   // idle: breathes and looks a bit shifty
-            float s = Mathf.Sin(Time.time * 5f);
-            mouseBody.localScale = new Vector3(mouseFace * (1f + 0.04f * s), 1f - 0.04f * s, 1f);
-            mouseBody.localRotation = Quaternion.Euler(0, 0, 4f * Mathf.Sin(Time.time * 1.7f));
+        {   // idle: breathes and looks a bit shifty; now and then a nervous little bounce with a glance round
+            float s = Mathf.Sin(tm * 5f);
+            float jump = 0f, glance = 0f;
+            if (mouseFidgetT < 0f && tm > mouseNextFidget) { mouseFidgetT = 0f; mouseNextFidget = tm + UnityEngine.Random.Range(2.5f, 5f); }
+            if (mouseFidgetT >= 0f)
+            {
+                mouseFidgetT += Time.deltaTime; float k = mouseFidgetT / 0.7f;
+                if (k >= 1f) mouseFidgetT = -1f;
+                else { jump = Mathf.Max(0f, Mathf.Sin(Mathf.Min(1f, k * 2.2f) * Mathf.PI)); glance = Mathf.Sin(k * Mathf.PI * 3f) * (1f - k); }
+            }
+            mouseBody.localScale = new Vector3(mouseFace * (1f + 0.04f * s - 0.06f * jump), 1f - 0.04f * s + 0.08f * jump, 1f);
+            mouseBody.localRotation = Quaternion.Euler(0, 0, 4f * Mathf.Sin(tm * 1.7f) + 12f * glance);
+            mouseBody.localPosition = new Vector3(0, cell * 0.08f * jump, 0);
         }
     }
 
@@ -1269,17 +1845,19 @@ public class Board : MonoBehaviour
         float dx = to.transform.position.x + MouseOffset.x - a.x;
         if (Mathf.Abs(dx) > 0.01f) mouseFace = dx < 0 ? -1 : 1;   // the art faces right
         Kit.FitSprite(mouseSr, "mouse_run", cell * MouseSize, 1f);
-        mouseBody.localRotation = Quaternion.identity;
+        MouseRunLook(mouseBody);
+        mouseBody.localRotation = Quaternion.identity; mouseBody.localPosition = Vector3.zero;
         AudioManager.Play("mouse_hop", 0.35f);
-        yield return Kit.Tween(0.32f, k =>
+        yield return Kit.Tween(0.42f, k =>
         {
             if (mouseT == null) return;
             Vector3 b = (mouseOn != null ? mouseOn.transform.position : a - MouseOffset) + MouseOffset;
-            mouseT.position = Vector3.Lerp(a, b, k) + new Vector3(0, cell * 0.4f * Mathf.Sin(k * Mathf.PI), 0);
+            mouseT.position = Vector3.Lerp(a, b, k) + new Vector3(0, cell * 0.25f * Mathf.Sin(k * Mathf.PI), 0);
+            MouseRunFrame(mouseSr, mouseT, mouseFace);
             float sq = k > 0.85f ? 1f - 0.15f * Mathf.Sin((k - 0.85f) / 0.15f * Mathf.PI) : 1f;
             if (mouseBody != null) mouseBody.localScale = new Vector3(mouseFace * (2f - sq), sq, 1f);
         });
-        if (mouseSr != null) Kit.FitSprite(mouseSr, "mouse_idle", cell * MouseSize, 1f);
+        MouseIdleLook();
         mouseHopping = false;
     }
 
@@ -1317,9 +1895,9 @@ public class Board : MonoBehaviour
         {
             int i = mousePile.Count;
             var holder = new GameObject("coin").transform; holder.SetParent(mouseT, false);
-            holder.localPosition = new Vector3(cell * (0.12f + 0.09f * (i % 3)), cell * (-0.3f + 0.08f * (i / 3)), 0);
+            holder.localPosition = new Vector3(cell * (0.08f + 0.06f * (i % 3)), cell * (-0.2f + 0.05f * (i / 3)), 0);
             var sr = new GameObject("img").AddComponent<SpriteRenderer>(); sr.transform.SetParent(holder, false);
-            Kit.FitSprite(sr, "ui_balance", cell * 0.24f, 1f);   // FitSprite owns the child's scale; PopIn animates the holder
+            Kit.FitSprite(sr, "ui_balance", cell * 0.16f, 1f);   // FitSprite owns the child's scale; PopIn animates the holder
             sr.sortingOrder = 31;
             mousePile.Add(sr);
             StartCoroutine(PopIn(holder));
@@ -1339,7 +1917,8 @@ public class Board : MonoBehaviour
 
     IEnumerator MouseCaughtAnim(Transform t, Transform body, SpriteRenderer sr)
     {
-        if (sr != null) Kit.FitSprite(sr, "mouse_caught", cell * 1.0f, 1f);
+        if (sr != null) Kit.FitSprite(sr, "mouse_caught", cell * 0.65f, 1f);
+        MouseRunLook(body);
         if (body != null) { body.localScale = Vector3.one; body.localRotation = Quaternion.identity; }
         Vector3 a = t.position;
         var srs = t.GetComponentsInChildren<SpriteRenderer>();
@@ -1364,14 +1943,16 @@ public class Board : MonoBehaviour
         mouseT = null; mouseOn = null; mouseBody = null; mouseSr = null; mousePile.Clear();
         int dir = t.position.x < WorldRect.center.x ? -1 : 1;
         if (sr != null) Kit.FitSprite(sr, "mouse_run", cell * MouseSize, 1f);
-        if (body != null) { body.localScale = new Vector3(dir, 1f, 1f); body.localRotation = Quaternion.identity; }
+        MouseRunLook(body);
+        if (body != null) { body.localScale = new Vector3(dir, 1f, 1f); body.localRotation = Quaternion.identity; body.localPosition = Vector3.zero; }
         AudioManager.Play("mouse_run", 0.8f);
         Vector3 a = t.position;
         float dist = Mathf.Abs((dir < 0 ? WorldRect.xMin : WorldRect.xMax) - a.x) + cell * 2f;
-        yield return Kit.Tween(0.9f, k =>
+        yield return Kit.Tween(1.1f, k =>
         {
             if (t == null) return;
-            t.position = a + new Vector3(dir * dist * Kit.EaseInCubic(k) * 0.6f + dir * dist * 0.4f * k, cell * 0.2f * Mathf.Abs(Mathf.Sin(k * Mathf.PI * 5f)), 0);
+            t.position = a + new Vector3(dir * dist * Kit.EaseInCubic(k) * 0.6f + dir * dist * 0.4f * k, cell * 0.12f * Mathf.Abs(Mathf.Sin(k * Mathf.PI * 5f)), 0);
+            MouseRunFrame(sr, t, dir);
         });
         if (t != null) Destroy(t.gameObject);
     }
@@ -1454,15 +2035,21 @@ public class Board : MonoBehaviour
         switch (c)
         {
             case Cover.Box:
-                FX.Debris(pos, new[] { "box_piece_1", "box_piece_2", "box_piece_3" }, cell, 3);
+                // the box bursts: scraps fly out fast, more of them flutter down, dust
+                FX.Debris(pos + new Vector3(0, cell * 0.2f, 0), new[] { "box_piece_1", "box_piece_2", "box_piece_3" }, cell, 6);
+                FX.LeafFall(pos + new Vector3(0, cell * 0.2f, 0), new[] { "box_piece_1", "box_piece_2", "box_piece_3" }, cell * 1.3f, 9);
+                FX.LandDust(pos + new Vector3(0, cell * 0.25f, 0), cell);
+                FX.Shake(cell * 0.08f, 0.18f);
                 Bonus?.Invoke(20); GoalHit?.Invoke(GoalType.Box, pos); break;
             case Cover.Yarn:
                 AudioManager.Play("Chain", 0.8f);
-                FX.Debris(pos, new[] { "yarn_ball", "yarn_thread_1", "yarn_thread_2" }, cell, 3);
+                FX.LeafFall(pos, new[] { "yarn_thread_1", "yarn_thread_3", "yarn_thread_4", "yarn_thread_2", "yarn_thread_3", "yarn_thread_4" }, cell, 13);   // the strand snaps into bits that flutter down
                 Bonus?.Invoke(20); GoalHit?.Invoke(GoalType.Yarn, pos); break;
             case Cover.Mint:
                 AudioManager.Play("mint_off", 0.8f);
-                FX.Debris(pos, new[] { "mint_leaf" }, cell, 4);
+                FX.LeafFall(pos, "mint_leaf", cell, 14);
+                FX.Steam(pos, cell);                                // the green cloud rushes up like steam
+                FX.Burst(pos + new Vector3(cell * 0.25f, cell * 0.3f, 0), new Color(0.75f, 0.92f, 1f), cell * 0.7f, 8);   // the "Zzz" pops: the cat is awake
                 mintHitThisMove = true;
                 Bonus?.Invoke(20); GoalHit?.Invoke(GoalType.Mint, pos); break;
         }
@@ -1473,7 +2060,7 @@ public class Board : MonoBehaviour
     {
         while (true)
         {
-            float longest = 0f;
+            float longest = 0f; dustCols.Clear();
             for (int x = 0; x < cols; x++)
             {
                 int y = 0;
@@ -1497,7 +2084,7 @@ public class Board : MonoBehaviour
                             grid[x, r] = null; Put(p, x, write);
                             float d = MoveDuration(r - write);
                             longest = Mathf.Max(longest, d);
-                            StartCoroutine(MoveTo(p, CellPos(x, write), d, true));
+                            StartCoroutine(MoveTo(p, CellPos(x, write), d, true, dustCols.Add(x)));   // one dust puff per column: under the lowest cat that fell
                         }
                         write++;
                     }
@@ -1539,14 +2126,14 @@ public class Board : MonoBehaviour
                 Piece p = null; int fy = -1;
                 for (int y = 0; y < rows; y++) if (grid[x, y] != null && grid[x, y].kind == PieceKind.Fish) { p = grid[x, y]; fy = y; break; }
                 if (p == null) continue;
-                bool bottom = true;
-                for (int y = 0; y < fy; y++) if (!Blocked(x, y)) { bottom = false; break; }
+                // the bottom of the shape, a hole in the shape right under it, or only static pieces below
+                bool bottom = fy == 0 || !live[x, fy - 1];
+                if (!bottom) { bottom = true; for (int y = 0; y < fy; y++) if (!Blocked(x, y)) { bottom = false; break; } }
                 if (bottom)
                 {
                     delivered = true;
                     grid[x, fy] = null; p.dead = true;
                     Vector3 pos = p.transform.position;
-                    AudioManager.Play("win", 0.6f);
                     FX.Debris(pos, new[] { "water_drop_1", "water_drop_2", "water_drop_3" }, cell, 5);
                     StartCoroutine(FishOut(p));
                     fishDelivered++;
@@ -1565,19 +2152,36 @@ public class Board : MonoBehaviour
 
     IEnumerator FishOut(Piece p)
     {
+        AudioManager.Play("fish_plop", 0.75f);
         yield return Kit.Tween(0.3f, k => { float s = 1f - k; p.visual.localScale = new Vector3(s, s, 1); p.visual.localPosition = new Vector3(0, -cell * 0.5f * k, 0); });
         Destroy(p.gameObject);
     }
 
     float MoveDuration(int cellsDown) => 0.12f + 0.055f * Mathf.Sqrt(Mathf.Max(1, cellsDown)) * 2f;
 
-    IEnumerator MoveTo(Piece p, Vector3 to, float dur, bool bounce)
+    readonly HashSet<int> dustCols = new HashSet<int>();
+    IEnumerator MoveTo(Piece p, Vector3 to, float dur, bool bounce, bool dust = false)
     {
         Vector3 from = p.transform.position;
         yield return Kit.Tween(dur, k => { if (p != null) p.transform.position = Vector3.LerpUnclamped(from, to, bounce ? Kit.EaseInCubic(k) : k); });
         if (p == null) yield break;
         p.transform.position = to;
-        if (bounce) yield return Kit.Tween(0.12f, k => { if (p != null) { float s = 1f + 0.08f * Mathf.Sin(k * Mathf.PI); p.visual.localScale = new Vector3(1f / s, s * 0.95f + 0.05f, 1); } });
+        if (bounce)
+        {
+            if (dust) FX.LandDust(to + new Vector3(0, -cell * 0.38f, 0), cell);
+            // lands flat and wide, springs back up a little too tall, settles (the feet stay on the floor)
+            float drop = Mathf.Clamp01((from.y - to.y) / (cell * 3f));
+            float amp = 0.1f + 0.1f * drop;
+            yield return Kit.Tween(0.24f, k =>
+            {
+                if (p == null) return;
+                float w = Mathf.Exp(-k * 3.2f) * Mathf.Cos(k * Mathf.PI * 2.2f);   // damped spring: +1 -> flat, negative -> stretched
+                float sy = 1f - amp * w, sx = 1f + amp * 0.8f * w;
+                p.visual.localScale = new Vector3(sx, sy, 1);
+                p.visual.localPosition = new Vector3(0, -(1f - sy) * cell * 0.42f, 0);
+            });
+            if (p != null) p.visual.localPosition = Vector3.zero;
+        }
         if (p != null) p.visual.localScale = Vector3.one;
     }
 
@@ -1675,11 +2279,19 @@ public class Board : MonoBehaviour
     {
         var cats = new List<Piece>();
         foreach (var p in grid) if (p != null && p.PlainCat) cats.Add(p);
-        for (int attempt = 0; attempt < 60; attempt++)
+        cats.Sort((a, b) => a.y != b.y ? a.y.CompareTo(b.y) : a.x.CompareTo(b.x));
+        int Col(int xx, int yy) => xx >= 0 && yy >= 0 && grid[xx, yy] != null ? grid[xx, yy].color : -1;
+        for (int attempt = 0; attempt < 200; attempt++)
         {
-            if (FindRuns().Count == 0 && HasPossibleMove()) return;
-            foreach (var p in cats) p.color = rng.Next(LevelGen.Colors);
-            if (!animate) foreach (var p in cats) p.Refresh();
+            if (FindRuns().Count == 0 && HasPossibleMove()) break;
+            // new colours that avoid ready-made runs with the cats already coloured (left / below)
+            foreach (var p in cats)
+            {
+                int x = p.x, y = p.y, c, guard = 0;
+                do { c = rng.Next(LevelGen.Colors); guard++; }
+                while (guard < 20 && ((Col(x - 1, y) == c && Col(x - 2, y) == c) || (Col(x, y - 1) == c && Col(x, y - 2) == c)));
+                p.color = c;
+            }
         }
         foreach (var p in cats) p.Refresh();
     }
@@ -1687,6 +2299,7 @@ public class Board : MonoBehaviour
     IEnumerator ShuffleBoard()
     {
         Toast?.Invoke("shuffle");
+        AudioManager.Play("board_shuffle", 0.8f);
         var cats = new List<Piece>();
         foreach (var p in grid) if (p != null && p.PlainCat) cats.Add(p);
         yield return Kit.Tween(0.2f, k => { foreach (var p in cats) p.visual.localScale = Vector3.one * (1f - k); });
@@ -1694,7 +2307,10 @@ public class Board : MonoBehaviour
         foreach (var p in cats) p.Refresh();
         yield return Kit.Tween(0.25f, k => { foreach (var p in cats) p.visual.localScale = Vector3.one * Kit.EaseOutBack(k); });
         yield return ResolveLoop(null);
+        // if the shuffle still left no move (or a cascade took it away), shuffle again - a few times at most
+        if (!HasPossibleMove() && shuffleDepth < 3) { shuffleDepth++; yield return ShuffleBoard(); shuffleDepth--; }
     }
+    int shuffleDepth;
 
     // For the HUD fly-in of a "collect colour" goal
     public string CatKey(int color) => "cat_" + color;

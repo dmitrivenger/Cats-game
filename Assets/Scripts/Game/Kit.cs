@@ -148,6 +148,171 @@ public class FX : MonoBehaviour
     // Falls back to the old dot burst when the art is missing.
     public const float BonusChance = 0.12f;   // heart / paw on roughly 1 pop in 8
 
+    // ---- small "juice" effects for every move ----
+    static SpriteRenderer Blob(string name, Sprite sprite, Vector3 pos, int order, Color c)
+    {
+        var sr = new GameObject(name).AddComponent<SpriteRenderer>();
+        sr.sprite = sprite; sr.sortingOrder = order; sr.color = c; sr.transform.position = pos;
+        return sr;
+    }
+
+    // a streak of light that sweeps along a matched line (or a soft glow over a 2x2 square)
+    public static void RunTrace(Vector3 a, Vector3 b, Color tint, float cell, bool square)
+    {
+        Host.StartCoroutine(RunTraceRoutine(a, b, tint, cell, square));
+    }
+
+    static IEnumerator RunTraceRoutine(Vector3 a, Vector3 b, Color tint, float cell, bool square)
+    {
+        Color glowC = Color.Lerp(tint, Color.white, 0.25f);
+        var bar = Kit.RoundedRect(128, 60);
+        Vector3 mid = (a + b) * 0.5f;
+        bool vertical = Mathf.Abs(b.y - a.y) > Mathf.Abs(b.x - a.x);
+        float len = (square ? cell : Vector3.Distance(a, b)) + cell * 0.9f;
+        float thick = square ? len : cell * 0.62f;
+        var glow = Blob("trace_glow", bar, mid, FxOrder - 2, new Color(glowC.r, glowC.g, glowC.b, 0f));   // a soft coloured haze over the cats
+        var core = Blob("trace_core", bar, mid, FxOrder - 1, new Color(1f, 1f, 1f, 0f));              // a thin bright line over them
+        foreach (var sr in new[] { glow, core }) { sr.drawMode = SpriteDrawMode.Sliced; if (vertical && !square) sr.transform.rotation = Quaternion.Euler(0, 0, 90f); }
+        var head = square ? null : Blob("trace_head", Kit.SoftCircle(64), a, FxOrder, new Color(1f, 1f, 1f, 0.95f));
+        float t = 0f; const float Sweep = 0.13f, Life = 0.32f;
+        Vector3 dir = square ? Vector3.zero : (b - a).normalized;
+        Vector3 start = a - dir * cell * 0.45f;
+        while (t < Life)
+        {
+            t += Time.deltaTime;
+            float k = Mathf.Clamp01(t / Sweep), e = Kit.EaseOutCubic(k);
+            float fade = t < Sweep ? 1f : 1f - (t - Sweep) / (Life - Sweep);
+            float cur = square ? len : len * e;
+            Vector3 centre = square ? mid : start + dir * cur * 0.5f;
+            glow.transform.position = centre; core.transform.position = centre;
+            glow.size = new Vector2(cur, thick * (1.25f + 0.15f * Mathf.Sin(t * 30f)));
+            core.size = new Vector2(cur, square ? thick * 0.6f : thick * 0.22f);
+            glow.color = new Color(glowC.r, glowC.g, glowC.b, (square ? 0.3f : 0.42f) * fade);
+            core.color = new Color(1f, 1f, 1f, (square ? 0.35f : 0.85f) * fade);
+            if (head != null)
+            {
+                head.transform.position = start + dir * cur;
+                head.transform.localScale = Vector3.one * cell * 0.9f * (1f - 0.5f * k);
+                var hc = head.color; hc.a = 0.95f * (1f - k); head.color = hc;
+            }
+            yield return null;
+        }
+        Destroy(glow.gameObject); Destroy(core.gameObject); if (head != null) Destroy(head.gameObject);
+    }
+
+    // ---- two special cats merging ----
+    static SpriteRenderer ArtBlob(string key, Vector3 pos, int order, Color c, out float unit)
+    {
+        var sp = GameArt.I.S(key) ?? Kit.SoftCircle(64);
+        unit = sp.bounds.size.x > 0.001f ? 1f / sp.bounds.size.x : 1f;     // scale that makes the sprite 1 world unit wide
+        return Blob(key, sp, pos, order, c);
+    }
+
+    public static void MergeSwirl(Vector3 pos, float cell, Color tint, Color tint2, float dur, bool rainbow)
+    {
+        Host.StartCoroutine(MergeSwirlRoutine(pos, cell, tint, tint2, dur, rainbow));
+    }
+
+    static IEnumerator MergeSwirlRoutine(Vector3 pos, float cell, Color tint, Color tint2, float dur, bool rainbow)
+    {
+        var back = ArtBlob("fx_merge_swirl", pos, 9, tint, out float u);                       // coloured, under the cats
+        var front = ArtBlob("fx_merge_swirl", pos, FxOrder - 1, tint2, out float u2);          // the second cat's colour, over them
+        float t = 0f;
+        while (t < dur)
+        {
+            t += Time.deltaTime;
+            float k = Mathf.Clamp01(t / dur);
+            // opens wide at once, then tightens onto the two cats while it spins faster and faster
+            float size = cell * Mathf.Lerp(4.6f, 1.6f, Kit.EaseInCubic(k)) * Mathf.Min(1f, k * 6f);
+            float rot = -(240f * k + 500f * k * k);
+            Color c = rainbow ? Hue(k * 1.5f, 0.5f) : tint;
+            float a = Mathf.Min(1f, k * 5f);
+            back.transform.localScale = Vector3.one * size * u; back.transform.rotation = Quaternion.Euler(0, 0, rot);
+            front.transform.localScale = Vector3.one * size * 0.8f * u2; front.transform.rotation = Quaternion.Euler(0, 0, rot * 1.3f + 60f);
+            back.color = new Color(c.r, c.g, c.b, 0.95f * a);
+            Color c2 = rainbow ? Hue(k * 1.5f + 0.5f, 0.5f) : tint2;
+            front.color = new Color(c2.r, c2.g, c2.b, 0.8f * a);
+            yield return null;
+        }
+        Destroy(back.gameObject); Destroy(front.gameObject);
+    }
+
+    public static void MergeFlash(Vector3 pos, float cell, Color tint, Color tint2, bool rainbow)
+    {
+        Host.StartCoroutine(MergeFlashRoutine(pos, cell, tint, tint2, rainbow));
+    }
+
+    static IEnumerator MergeFlashRoutine(Vector3 pos, float cell, Color tint, Color tint2, bool rainbow)
+    {
+        Color light = Color.Lerp(tint, Color.white, 0.2f);
+        var screen = Blob("merge_screen", Kit.SoftCircle(64), pos, FxOrder - 3, new Color(1f, 1f, 1f, 0f));     // a soft white blink over the board
+        var glow = ArtBlob("fx_merge_star", pos, FxOrder + 5, light, out float u);
+        var star = ArtBlob("fx_merge_star", pos, FxOrder + 6, Color.white, out float u2);
+        var ring = Blob("merge_ring", Kit.RoundedRect(256, 128, 10), pos, FxOrder + 4, Color.white);
+        float t = 0f; const float Life = 0.42f;
+        while (t < Life)
+        {
+            t += Time.deltaTime;
+            float k = Mathf.Clamp01(t / Life), e = Kit.EaseOutCubic(k), fade = (1f - k) * (1f - k);
+            Color c = rainbow ? Hue(k * 2f, 0.45f) : light;
+            glow.transform.localScale = Vector3.one * cell * Mathf.Lerp(1.6f, 7.5f, e) * u;
+            glow.transform.rotation = Quaternion.Euler(0, 0, 40f * k);
+            glow.color = new Color(c.r, c.g, c.b, 0.9f * fade);
+            star.transform.localScale = Vector3.one * cell * Mathf.Lerp(1.0f, 4.8f, e) * u2;
+            star.transform.rotation = Quaternion.Euler(0, 0, -25f * k);
+            star.color = new Color(1f, 1f, 1f, fade);
+            ring.transform.localScale = Vector3.one * cell * Mathf.Lerp(0.4f, 4.4f, e) / 2.56f;
+            Color rc = rainbow ? Hue(k * 2f + 0.5f, 0.45f) : tint2;
+            ring.color = new Color(rc.r, rc.g, rc.b, 0.9f * (1f - k));
+            screen.transform.localScale = Vector3.one * cell * 26f;
+            screen.color = new Color(1f, 1f, 1f, 0.2f * Mathf.Clamp01(1f - k * 2.5f));
+            yield return null;
+        }
+        Destroy(screen.gameObject); Destroy(glow.gameObject); Destroy(star.gameObject); Destroy(ring.gameObject);
+    }
+
+    // the bright blink in the cat's colour at the moment it pops
+    public static void PopFlash(Vector3 pos, Color tint, float cell)
+    {
+        Host.StartCoroutine(PopFlashRoutine(pos, tint, cell));
+    }
+
+    static IEnumerator PopFlashRoutine(Vector3 pos, Color tint, float cell)
+    {
+        yield return new WaitForSeconds(0.05f);
+        Color c = Color.Lerp(tint, Color.white, 0.6f);
+        var sr = Blob("pop_flash", Kit.SoftCircle(64), pos, FxOrder + 4, c);
+        yield return Kit.Tween(0.16f, k =>
+        {
+            sr.transform.localScale = Vector3.one * cell * Mathf.Lerp(0.7f, 1.9f, Kit.EaseOutCubic(k));
+            sr.color = new Color(c.r, c.g, c.b, 0.95f * (1f - k) * (1f - k));
+        });
+        Destroy(sr.gameObject);
+    }
+
+    // two little puffs of dust that roll out sideways from under a cat that has just landed
+    public static void LandDust(Vector3 pos, float cell)
+    {
+        Host.StartCoroutine(LandDustRoutine(pos, cell));
+    }
+
+    static IEnumerator LandDustRoutine(Vector3 pos, float cell)
+    {
+        var sprite = GameArt.I.S("fx_puff") ?? Kit.SoftCircle(64);
+        float unit = sprite.bounds.size.x > 0.001f ? 1f / sprite.bounds.size.x : 1f;
+        var l = Blob("dust", sprite, pos, 9, new Color(1f, 1f, 1f, 0f));
+        var r = Blob("dust", sprite, pos, 9, new Color(1f, 1f, 1f, 0f));
+        yield return Kit.Tween(0.3f, k =>
+        {
+            float e = Kit.EaseOutCubic(k), s = cell * Mathf.Lerp(0.18f, 0.42f, e) * unit, al = 0.6f * (1f - k);
+            l.transform.position = pos + new Vector3(-cell * 0.34f * e, cell * 0.06f * e, 0);
+            r.transform.position = pos + new Vector3(cell * 0.34f * e, cell * 0.06f * e, 0);
+            l.transform.localScale = new Vector3(-s, s, 1); r.transform.localScale = new Vector3(s, s, 1);
+            l.color = new Color(1f, 1f, 1f, al); r.color = new Color(1f, 1f, 1f, al);
+        });
+        Destroy(l.gameObject); Destroy(r.gameObject);
+    }
+
     public static void CatPop(Vector3 pos, Color tint, float cell, float power = 1f)
     {
         if (!GameArt.I.Has("fx_puff")) { Burst(pos, tint, cell, 8); return; }
@@ -620,17 +785,22 @@ public class FX : MonoBehaviour
         yield return new WaitForSeconds(LineStartDelay);
 
         var beamSprite = GameArt.I.S("line_beam");
-        SpriteRenderer glowSr = null, coreSr = null;
+        // one solid beam (painted art: white core, turquoise body, red edge) with red flashes racing along it
+        var bodySprite = GameArt.I.S("line_beam_x") ?? beamSprite;
+        SpriteRenderer glowSr = null;
+        const int Dashes = 4;
+        var dash = new SpriteRenderer[Dashes * 2];
+        Color lineRed = new Color(1f, 0.25f, 0.22f);
         if (beamSprite != null)
         {
-            glowSr = BeamPart(beamSprite, FxOrder + 3, new Color(glow.r, glow.g, glow.b, 0.85f));
-            coreSr = BeamPart(beamSprite, FxOrder + 4, new Color(1f, 1f, 1f, 0.95f));
+            glowSr = BeamPart(bodySprite, FxOrder + 3, Color.white);
+            for (int i = 0; i < dash.Length; i++) dash[i] = BeamPart(beamSprite, FxOrder + 4, lineRed);
         }
         Transform headP = null, headN = null; SpriteRenderer hpSr = null, hnSr = null;
         if (GameArt.I.Has("line_head"))
         {
-            headP = Make("line_head", o, cell * 0.95f, FxOrder + 6, light, out hpSr); headP.rotation = Quaternion.Euler(0, 0, ang);
-            headN = Make("line_head", o, cell * 0.95f, FxOrder + 6, light, out hnSr); headN.rotation = Quaternion.Euler(0, 0, ang + 180f);
+            headP = Make("line_head", o, cell * 0.75f, FxOrder + 6, light, out hpSr); headP.rotation = Quaternion.Euler(0, 0, ang);
+            headN = Make("line_head", o, cell * 0.75f, FxOrder + 6, light, out hnSr); headN.rotation = Quaternion.Euler(0, 0, ang + 180f);
         }
 
         float speed = cell / LineStepTime, travel = Mathf.Max(dNeg, dPos) / speed;
@@ -645,8 +815,19 @@ public class FX : MonoBehaviour
             if (glowSr != null)
             {
                 float swell = 1f + 0.12f * Mathf.Sin(age * 40f);
-                SetBeam(glowSr, beamSprite, o, axis, cn, cp, ang, cell * 0.95f * swell * (1f - 0.6f * f), 0.85f * (1f - f));
-                SetBeam(coreSr, beamSprite, o, axis, cn, cp, ang, cell * 0.38f * (1f - 0.7f * f), 0.95f * (1f - f));
+                SetBeam(glowSr, bodySprite, o, axis, cn, cp, ang, cell * 0.46f * swell * (1f - 0.6f * f), 1f - f);
+                for (int i = 0; i < Dashes; i++)
+                {   // red flashes leave the cat one after another and run out to both ends
+                    float d = run * 0.75f - i * cell * 1.25f, half = cell * 0.32f;
+                    for (int sgn = 0; sgn < 2; sgn++)
+                    {
+                        float lim = sgn == 0 ? cp : cn;
+                        var ds = dash[i * 2 + sgn];
+                        bool show = d > half && d < lim - half;
+                        float da = show ? 0.9f * (1f - f) * Mathf.Clamp01((lim - half - d) / (cell * 0.5f)) : 0f;
+                        SetBeam(ds, beamSprite, o + axis * (sgn == 0 ? d : -d), axis, half, half, ang, cell * 0.16f, da);
+                    }
+                }
             }
             if (headP != null)
             {
@@ -658,8 +839,34 @@ public class FX : MonoBehaviour
             while (nextSparkN < cn) { LineSpark(o - axis * nextSparkN, -axis, side, cell, glow); nextSparkN += cell * UnityEngine.Random.Range(0.35f, 0.6f); }
             yield return null;
         }
-        if (glowSr != null) { Destroy(glowSr.gameObject); Destroy(coreSr.gameObject); }
+        if (glowSr != null) { Destroy(glowSr.gameObject); foreach (var ds in dash) Destroy(ds.gameObject); }
         if (headP != null) { Destroy(headP.gameObject); Destroy(headN.gameObject); }
+    }
+
+    // Two special cats merged: a big emblem of the pair pops at the spot for a moment.
+    public static void Emblem(Vector3 pos, string key, float cell)
+    {
+        if (key == null || !GameArt.I.Has(key)) return;
+        var t = Make(key, pos, cell * 2.6f, FxOrder + 9, Color.white, out var sr);
+        t.localScale = Vector3.zero;
+        Host.StartCoroutine(EmblemRoutine(t, sr));
+    }
+
+    static IEnumerator EmblemRoutine(Transform t, SpriteRenderer sr)
+    {
+        float life = 0.8f, age = 0f, rot = UnityEngine.Random.Range(-8f, 8f);
+        while (age < life)
+        {
+            age += Time.deltaTime;
+            if (t == null) yield break;
+            float k = age / life;
+            float s = k < 0.22f ? Kit.EaseOutBack(k / 0.22f) : 1f + 0.12f * (k - 0.22f);
+            t.localScale = new Vector3(s, s, 1f);
+            t.rotation = Quaternion.Euler(0, 0, rot * (1f - k));
+            var c = sr.color; c.a = k < 0.6f ? 1f : 1f - (k - 0.6f) / 0.4f; sr.color = c;
+            yield return null;
+        }
+        if (t != null) Destroy(t.gameObject);
     }
 
     static SpriteRenderer BeamPart(Sprite s, int order, Color c)
@@ -845,6 +1052,107 @@ public class FX : MonoBehaviour
             Vector2 v = new Vector2(UnityEngine.Random.Range(-1f, 1f), UnityEngine.Random.Range(0.4f, 1.2f)) * size * 2.2f;
             Host.StartCoroutine(Throw(go.transform, sr, v, UnityEngine.Random.Range(-400f, 400f)));
         }
+    }
+
+    // Behind a running mouse: a puff of yellow smoke, and now and then a bit of cheese tumbling off.
+    public static void MouseTrail(Vector3 pos, float cell, float dir)
+    {
+        var go = new GameObject("trail");
+        var sr = go.AddComponent<SpriteRenderer>(); sr.sprite = Kit.SoftCircle(64); sr.sortingOrder = 29;
+        go.transform.position = pos + new Vector3(0, UnityEngine.Random.Range(-0.06f, 0.06f) * cell, 0);
+        Host.StartCoroutine(TrailPuff(go.transform, sr, cell, dir));
+        if (UnityEngine.Random.value < 0.3f) Debris(pos + new Vector3(0, cell * 0.12f, 0), new[] { "cheese_1", "cheese_2", "cheese_3" }, cell * 0.55f, 1);
+    }
+
+    static IEnumerator TrailPuff(Transform t, SpriteRenderer sr, float cell, float dir)
+    {
+        float s0 = cell * UnityEngine.Random.Range(0.16f, 0.26f) / sr.sprite.bounds.size.x, life = UnityEngine.Random.Range(0.45f, 0.65f), age = 0f;
+        Vector3 p0 = t.position, drift = new Vector3(-dir * cell * UnityEngine.Random.Range(0.1f, 0.3f), cell * UnityEngine.Random.Range(0.1f, 0.3f), 0);
+        while (age < life)
+        {
+            age += Time.deltaTime; float k = age / life;
+            if (t == null) yield break;
+            t.position = p0 + drift * Kit.EaseOutCubic(k);
+            t.localScale = Vector3.one * s0 * (1f + 1.6f * k);
+            sr.color = new Color(1f, 0.86f, 0.3f, 0.6f * (1f - k));
+            yield return null;
+        }
+        if (t != null) Destroy(t.gameObject);
+    }
+
+    // The catnip cloud lifts off: soft green puffs rush upward, swell and fade like steam.
+    public static void Steam(Vector3 pos, float cell)
+    {
+        for (int i = 0; i < 11; i++)
+        {
+            var go = new GameObject("steam");
+            var sr = go.AddComponent<SpriteRenderer>(); sr.sprite = Kit.SoftCircle(64); sr.sortingOrder = FxOrder;
+            Vector3 p0 = pos + new Vector3(UnityEngine.Random.Range(-0.3f, 0.3f), UnityEngine.Random.Range(-0.3f, 0.2f), 0) * cell;
+            go.transform.position = p0;
+            Host.StartCoroutine(SteamPuff(go.transform, sr, p0, cell, UnityEngine.Random.Range(0f, 0.12f)));
+        }
+    }
+
+    static IEnumerator SteamPuff(Transform t, SpriteRenderer sr, Vector3 p0, float cell, float delay)
+    {
+        float s0 = cell * UnityEngine.Random.Range(0.3f, 0.45f) / sr.sprite.bounds.size.x;
+        t.localScale = Vector3.one * s0;
+        var c = new Color(0.55f, 0.95f, 0.5f, 0f); sr.color = c;
+        if (delay > 0f) yield return new WaitForSeconds(delay);
+        float life = UnityEngine.Random.Range(0.55f, 0.8f), age = 0f, rise = cell * UnityEngine.Random.Range(1.3f, 2f), drift = cell * UnityEngine.Random.Range(-0.35f, 0.35f);
+        while (age < life)
+        {
+            age += Time.deltaTime; float k = age / life;
+            if (t == null) yield break;
+            t.position = p0 + new Vector3(drift * k, rise * Kit.EaseOutCubic(k), 0);
+            t.localScale = Vector3.one * s0 * (1f + 1.4f * k);
+            c = Color.Lerp(new Color(0.55f, 0.95f, 0.5f), new Color(0.9f, 1f, 0.9f), k);
+            c.a = 0.55f * (k < 0.15f ? k / 0.15f : 1f - (k - 0.15f) / 0.85f);
+            sr.color = c;
+            yield return null;
+        }
+        if (t != null) Destroy(t.gameObject);
+    }
+
+    // Catnip cleared off a cat: a puff of leaves bursts out, then they flutter down slowly, swaying.
+    public static void LeafFall(Vector3 pos, string key, float size, int count) => LeafFall(pos, new[] { key }, size, count);
+
+    public static void LeafFall(Vector3 pos, string[] keys, float size, int count)
+    {
+        for (int i = 0; i < count; i++)
+        {
+            string key = keys[i % keys.Length];
+            if (!GameArt.I.Has(key)) continue;
+            var go = new GameObject("leaf");
+            var child = new GameObject("img"); child.transform.SetParent(go.transform, false);
+            var sr = child.AddComponent<SpriteRenderer>(); sr.sortingOrder = FxOrder + 1;
+            Kit.FitSprite(sr, key, size * UnityEngine.Random.Range(0.22f, 0.42f), 1f);
+            float ang = (i + UnityEngine.Random.Range(-0.4f, 0.4f)) / count * Mathf.PI * 2f;
+            go.transform.position = pos + new Vector3(Mathf.Cos(ang), Mathf.Sin(ang), 0) * size * 0.3f;
+            go.transform.rotation = Quaternion.Euler(0, 0, UnityEngine.Random.Range(0f, 360f));
+            Vector2 v = new Vector2(Mathf.Cos(ang) * 1.6f, Mathf.Sin(ang) * 1.2f + 1.3f) * size * UnityEngine.Random.Range(0.8f, 1.3f);
+            Host.StartCoroutine(Flutter(go.transform, sr, v, size, UnityEngine.Random.Range(1.2f, 1.9f), UnityEngine.Random.Range(0f, 6.28f)));
+        }
+    }
+
+    static IEnumerator Flutter(Transform t, SpriteRenderer sr, Vector2 v, float size, float life, float phase)
+    {
+        float age = 0f, fall = size * UnityEngine.Random.Range(1.3f, 1.9f), sway = size * UnityEngine.Random.Range(0.5f, 0.9f), freq = UnityEngine.Random.Range(4f, 6f);
+        Vector3 p = t.position; Vector3 s0 = t.localScale;
+        while (age < life)
+        {
+            float dt = Time.deltaTime; age += dt;
+            v.x *= 1f / (1f + 3.5f * dt);                                   // the burst dies out fast...
+            v.y = Mathf.MoveTowards(v.y, -fall, size * 7f * dt);              // ...then the leaf just drifts down
+            float w = Mathf.Sin(age * freq + phase);
+            p += new Vector3(v.x + w * sway, v.y, 0) * dt;
+            t.position = p;
+            t.rotation = Quaternion.Euler(0, 0, w * 40f + phase * 57f);
+            t.localScale = new Vector3(s0.x * (0.35f + 0.65f * Mathf.Abs(Mathf.Cos(age * freq * 0.5f + phase))), s0.y, 1f);   // turning over in the air
+            var c = sr.color; c.a = 1f - Mathf.Clamp01((age - life * 0.7f) / (life * 0.3f)); sr.color = c;
+            yield return null;
+        }
+        Destroy(t.gameObject);
     }
 
     static IEnumerator Throw(Transform t, SpriteRenderer sr, Vector2 v, float spin)

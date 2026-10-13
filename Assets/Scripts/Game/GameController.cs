@@ -19,10 +19,12 @@ public class GameController : MonoBehaviour
     // coins for winning a level: a flat part plus half the moves left over (so a clean win pays more)
     const int WinCoinsBase = 8, WinCoinsMaxMoveBonus = 8;
     int lastWinCoins;
+    int lastStars, lastStarsNew;      // stars of the win just shown, and how many of them are new for this level
+    bool boughtMoves;                 // +5 moves were used on this attempt: the win is worth one star
     // Global coin knob: every payout is scaled by this; the fractions carry over, so over a session the
     // player gets exactly this share of the original amounts (0.8 = 20% fewer coins).
-    const float CoinRate = 0.8f;
-    float coinCarry;
+    const float CoinRate = 0.51f;          // all coin income: 20% lower again than the 0.64 before (ad rewards stay as they are)
+    float coinCarry, milkCarry;
     int Coins(int n) { coinCarry += n * CoinRate; int whole = Mathf.FloorToInt(coinCarry + 1e-4f); coinCarry -= whole; return whole; }
     static readonly int[] ComboTiers = { 6, 10, 15, 20 };   // cats cleared by one move -> banner 1..4
 
@@ -34,7 +36,7 @@ public class GameController : MonoBehaviour
 
     LevelDef def;
     int level, moves, score;
-    bool balancePaidThisMove, ended;
+    bool balancePaidThisMove, ended, celebrating;
 
     Text movesText, balanceText, hintText;
     int movesPending;   // +moves already granted but still flying in as crosses (not shown yet)
@@ -83,11 +85,17 @@ public class GameController : MonoBehaviour
         board.CatCleared += OnCatCleared;
         board.GoalHit += OnGoalHit;
         board.MilkCoin += pos =>
-        {   // a cat lapped up milk: double points for it ("x2" floats up) and one coin flies to the balance
+        {   // a cat lapped up milk: it counts twice for a colour task ("x2" floats up) and one coin flies to the balance
             AddScore(MilkBonusScore);
             StartCoroutine(FloatX2(pos));
-            coinsInFlight++; Progress.AddBalance(1);
-            FX.FlyToUI("ui_balance", pos, balanceIcon, board.cell * 0.42f, CoinLanded);
+            if (celebrating) return;                 // the win celebration pays nothing extra
+            milkCarry += 0.64f;                      // 20% less again: about two coins for every three laps
+            if (milkCarry >= 1f)
+            {
+                milkCarry -= 1f;
+                coinsInFlight++; Progress.AddBalance(1); levelEarned++;
+                FX.FlyToUI("ui_balance", pos, balanceIcon, board.cell * 0.42f, CoinLanded);
+            }
         };
         board.MouseSteal = () =>
         {   // the mouse takes one coin from the balance (nothing to take -> it just hops)
@@ -97,7 +105,7 @@ public class GameController : MonoBehaviour
             StartCoroutine(Shake(balanceIcon));
             Vector3 p = balanceIcon.position; p.z = 0; return p;
         };
-        board.MouseCaught += (pos, coins) => StartCoroutine(CaughtBanner(Mathf.Max(MouseMinReward, coins * 2)));
+        board.MouseCaught += (pos, coins) => StartCoroutine(CaughtBanner(0));   // catching the mouse only stops the stealing: the stolen coins are gone
         board.MoveCommitted += OnMoveCommitted;
         board.MoveResolved += OnMoveResolved;
         board.PowerUpUsed += t => RefreshPowerUps();
@@ -117,8 +125,9 @@ public class GameController : MonoBehaviour
     {
         AudioManager.PlayMusic("Game");
         yield return null;                       // let the canvases do their first layout
-        StartLevel(Progress.Level);
+        StartLevel(Worlds.Playable);             // at a closed star gate: the last level before it
         ShowMap();                               // the game opens on the level map
+        if (Ads.Enabled) { if (Ads.ConsentAsked) Ads.Init(); else ShowConsent(); }
     }
 
     // Board sits between the HUD and the power-up bar, whatever the phone's aspect ratio.
@@ -143,20 +152,33 @@ public class GameController : MonoBehaviour
     }
 
     // ============================================================ level flow
+    int levelEarned;        // coins picked up during the current game (cascades, combos, milk)
+    string tutorialText = "";
+
     void StartLevel(int lvl)
     {
+        // Leaving a game that is not over (replay, another level): the coins earned in it are not kept.
+        if (!ended && levelEarned > 0) Progress.TrySpend(Mathf.Min(levelEarned, Progress.Balance));
+        levelEarned = 0; tutorialText = ""; celebrating = false;
+        if (tutBanner != null) Destroy(tutBanner.gameObject);
         StopAllCoroutines();
+        foreach (Transform c in toastRoot) Destroy(c.gameObject);     // toasts / banners whose animation was just stopped
+        activeComboRoot = null; finishing = false;
+        if (movesText != null) movesText.transform.localScale = Vector3.one;
+        foreach (var kv in puButtons) if (kv.Value.root != null) kv.Value.root.anchoredPosition = kv.Value.basePos;
         coinsInFlight = 0; balancePulse = null; movesPending = 0;
         AudioManager.SetMusicDuck(1f);
         if (balanceIcon != null) balanceIcon.localScale = Vector3.one;
         foreach (Transform c in popupRoot) Destroy(c.gameObject);
         map = null;
-        level = lvl; lossCounted = false;
+        level = lvl; lossCounted = false; boughtMoves = false; startBought.Clear();
+        if (lvl > 3) tutReplay = false;
         def = LevelGen.Build(level);
         moves = def.moves;
         score = 0;
         ended = false;
         background.SetTheme(def.theme, false);
+        board.IntroHold = true;                 // the cats pour in when the level card is closed
         board.ArmPowerUp(null);
         board.InputLocked = true;
         usedRect = BoardWorldRect();
@@ -184,6 +206,7 @@ public class GameController : MonoBehaviour
             usedRect = r;
             bool locked = board.InputLocked;
             board.Setup(def, r);
+            board.AddStartSpecials(startBought);        // the rebuilt board keeps the cats the player paid for
             board.InputLocked = locked;
             foreach (var g in def.goals)
                 if (g.type == GoalType.Box || g.type == GoalType.Yarn || g.type == GoalType.Mint || g.type == GoalType.Vase || g.type == GoalType.Foam)
@@ -198,6 +221,12 @@ public class GameController : MonoBehaviour
         balancePaidThisMove = false;
         RefreshTexts();
         if (moves <= 3 && moves > 0) StartCoroutine(PunchText(movesText));
+        if (moves == 5 && !ended)
+        {   // a heads-up while there is still time (and while "+5 moves" can still save the level)
+            AudioManager.Play("moves_low", 0.8f);
+            StartCoroutine(MovesLowBanner());
+            StartCoroutine(PunchText(movesText));
+        }
     }
 
     void OnCascadeStep(int step, List<int> runLengths)
@@ -206,12 +235,12 @@ public class GameController : MonoBehaviour
         int s = 0;
         foreach (var n in runLengths) s += BaseScoreForRun(n);
         AddScore(s * mult);
-        if (step >= BalanceCascadeThreshold && !balancePaidThisMove)
+        if (step >= BalanceCascadeThreshold && !balancePaidThisMove && !celebrating)
         {
             balancePaidThisMove = true;
             int pay = Coins(BalanceReward);
             coinsInFlight += pay;                    // hold the counter until each coin lands
-            Progress.AddBalance(pay);
+            Progress.AddBalance(pay); levelEarned += pay;
             AudioManager.Play("balance");
             StartCoroutine(CoinShower(lastClearPos, pay));
         }
@@ -296,16 +325,18 @@ public class GameController : MonoBehaviour
         if (ended) yield break;
         // Goals are counted at the moment of clearing, so the outcome is already known here:
         // lock the board right away so no extra move can sneak in while fly-to-HUD plays.
-        bool finishing = AllGoalsDone() || moves <= 0;
-        if (!finishing) yield break;
+        if (!(AllGoalsDone() || moves <= 0)) yield break;
+        finishing = true;
         board.InputLocked = true;
         yield return new WaitForSeconds(0.75f);     // let fly-to-HUD animations land
         while (board.Busy) yield return null;
         if (ended) yield break;
+        finishing = false;
         if (AllGoalsDone()) { ended = true; StartCoroutine(Win()); }
         else if (moves <= 0) { ended = true; Lose(); }
         else board.InputLocked = false;
     }
+    bool finishing;          // the last move is being counted: no pause, no unlocking the board
 
     IEnumerator Win()
     {
@@ -314,10 +345,12 @@ public class GameController : MonoBehaviour
         if (board.MouseActive)
         {   // the mouse wasn't caught: it runs off with whatever it stole
             int lost = board.MouseCoins;
-            Toast(lost > 0 ? "Мышка убежала с монетками!" : "Мышка убежала!");
+            Toast(Loc.T(lost > 0 ? "MouseGoneCoins" : "MouseGone"));
             yield return board.MouseRunAway();
         }
-        AudioManager.Play("win");
+        // with spare moves the "cat party" plays its own short fanfare first and the big "win" comes with the
+        // result screen, so the two never sound on top of each other
+        if (moves <= 0) AudioManager.Play("win");
         StartCoroutine(DuckMusic(3.4f));
         var r = board.WorldRect;
         for (int i = 0; i < 6; i++)
@@ -325,17 +358,132 @@ public class GameController : MonoBehaviour
             FX.Burst(new Vector3(Random.Range(r.xMin, r.xMax), Random.Range(r.yMin, r.yMax), 0), Color.HSVToRGB(Random.value, 0.5f, 1f), board.cell * 2f, 14);
             yield return new WaitForSeconds(0.12f);
         }
+        bool replay = level < Progress.Level;      // a level won before pays half the coins (replaying is for stars)
+        if (!replay) Progress.WinStreak = Progress.WinStreak + 1;
+        lastStars = boughtMoves ? 1 : LevelGen.StarsFor(def, moves);
+        lastStarsNew = Progress.AddStars(level, lastStars);
         Progress.Level = Mathf.Max(Progress.Level, level + 1);
         lastWinCoins = Coins(WinCoinsBase + Mathf.Min(WinCoinsMaxMoveBonus, Mathf.Max(0, moves) / 2));
-        Progress.AddBalance(lastWinCoins);
-        RefreshBalance();
+        if (replay) lastWinCoins = (lastWinCoins + 1) / 2;
+        int spare = Mathf.Min(Mathf.Max(0, moves), 12);
+        if (spare > 0 && lastWinCoins > 0)
+        {   // "cat party": the spare moves turn into special cats that go off; the win coins (no more than
+            // before) fly out of the blasts into the balance
+            coinsInFlight += lastWinCoins;
+            Progress.AddBalance(lastWinCoins);
+            celebrating = true;
+            StartCoroutine(CelebrateBanner());
+            yield return new WaitForSeconds(0.6f);
+            int per = lastWinCoins / spare, rem = lastWinCoins % spare, left = lastWinCoins;
+            StartCoroutine(CelebrateSkipWatch());
+            Vector3 from = movesText != null ? movesText.transform.position : board.WorldRect.center;
+            yield return board.Celebrate(spare, from, pos =>
+            {
+                int n = Mathf.Min(left, per + (rem-- > 0 ? 1 : 0));
+                left -= n;
+                if (n > 0) StartCoroutine(CoinShower(pos, n));
+                moves = Mathf.Max(0, moves - 1);   // stars and coins are already settled; this is just the counter
+                RefreshTexts();
+            });
+            if (left > 0) StartCoroutine(CoinShower(board.WorldRect.center, left));
+            celebrating = false;
+            yield return new WaitForSeconds(0.6f);
+            AudioManager.Play("win");
+            StartCoroutine(DuckMusic(3.4f));
+        }
+        else { Progress.AddBalance(lastWinCoins); RefreshBalance(); if (moves > 0) AudioManager.Play("win"); }
         ShowResult(true);
+    }
+
+    // "Cat party!" on the painted ribbon: pops in, sways a little, then floats up and fades
+    IEnumerator CelebrateBanner()
+    {
+        AudioManager.Play("celebrate", 0.85f);
+        if (!GameArt.I.Has("celebrate_banner")) { Toast(Loc.T("Celebrate")); yield break; }
+        toastRoot.SetAsLastSibling();
+        var img = UIKit.Image(toastRoot, "celebrate_banner", new Vector2(0.5f, 0.5f), new Vector2(0, 330), new Vector2(960, 320));
+        var rt = img.rectTransform;
+        // the text sits on the pink panel (a bit below the art's middle)
+        var lbl = UIKit.Label(rt, Loc.T("Celebrate"), 52, Color.white, new Vector2(0.5f, 0.5f), new Vector2(-4, -22), new Vector2(430, 90));
+        lbl.resizeTextForBestFit = true; lbl.resizeTextMinSize = 30; lbl.resizeTextMaxSize = 52;
+        var grp = rt.gameObject.AddComponent<CanvasGroup>();
+        yield return UIKit.PopIn(rt, 0.3f);
+        float t = 0;
+        while (t < 1.5f && rt != null)
+        {
+            t += Time.deltaTime;
+            rt.localRotation = Quaternion.Euler(0, 0, 2.5f * Mathf.Sin(t * 5f));
+            rt.localScale = Vector3.one * (1f + 0.03f * Mathf.Sin(t * 7f));
+            yield return null;
+        }
+        if (rt == null) yield break;
+        Vector2 p0 = rt.anchoredPosition;
+        yield return Kit.Tween(0.4f, k => { if (rt == null) return; rt.anchoredPosition = p0 + new Vector2(0, 160 * k * k); grp.alpha = 1f - k; });
+        if (rt != null) Destroy(rt.gameObject);
+    }
+
+    // "5 moves left!": a small picture card slides in from the right edge, wobbles, and slides back out.
+    // The words are written by code on the card's blank plate, so one picture serves every language.
+    IEnumerator MovesLowBanner()
+    {
+        if (!GameArt.I.Has("moves_low_banner")) { Toast(Loc.T("MovesLow")); yield break; }
+        toastRoot.SetAsLastSibling();
+        var parent = (RectTransform)toastRoot;
+        var s = GameArt.I.S("moves_low_banner");
+        float w = 430f, h = w * s.rect.height / s.rect.width;
+        float W = Mathf.Max(1080f, parent.rect.width);
+        // a small card that pops out of the moves counter and hangs just under it
+        Vector2 counter = movesText != null ? (Vector2)parent.InverseTransformPoint(movesText.transform.position) : new Vector2(-W * 0.5f + 160f, parent.rect.height * 0.5f - 90f);
+        Vector2 home = new Vector2(-W * 0.5f + w * 0.5f + 150f, counter.y - 70f - h * 0.5f);   // right of the pause button
+        var img = UIKit.Image(toastRoot, "moves_low_banner", new Vector2(0.5f, 0.5f), counter, new Vector2(w, h));
+        var rt = img.rectTransform; img.raycastTarget = false;
+        rt.localScale = Vector3.one * 0.2f;
+        var lbl = UIKit.Label(rt, Loc.T("MovesLow"), 40, Color.white, new Vector2(0.5f, 0.5f), new Vector2(w * MovesLowPlate.x, h * MovesLowPlate.y), new Vector2(w * MovesLowPlate.z, h * MovesLowPlate.w));
+        lbl.resizeTextForBestFit = true; lbl.resizeTextMinSize = 18; lbl.resizeTextMaxSize = 40;
+        lbl.horizontalOverflow = HorizontalWrapMode.Wrap;
+        yield return Kit.Tween(0.35f, k =>
+        {
+            if (rt == null) return;
+            float e = Kit.EaseOutBack(k);
+            rt.anchoredPosition = Vector2.LerpUnclamped(counter, home, e);
+            rt.localScale = Vector3.one * Mathf.LerpUnclamped(0.2f, 1f, e);
+        });
+        float t = 0f;
+        while (t < 2f && rt != null)
+        {
+            t += Time.deltaTime;
+            rt.localRotation = Quaternion.Euler(0, 0, 3f * Mathf.Sin(t * 6f) * Mathf.Exp(-t * 1.2f));
+            yield return null;
+        }
+        if (rt == null) yield break;
+        // and back into the counter
+        yield return Kit.Tween(0.25f, k =>
+        {
+            if (rt == null) return;
+            rt.anchoredPosition = Vector2.Lerp(home, counter, k * k);
+            rt.localScale = Vector3.one * Mathf.Lerp(1f, 0.2f, k * k);
+        });
+        if (rt != null) Destroy(rt.gameObject);
+    }
+    // the blank plate on the "5 moves left" card: centre x, centre y (from the card's centre), width, height - as shares of the card
+    static readonly Vector4 MovesLowPlate = new Vector4(0.205f, 0.04f, 0.48f, 0.52f);
+
+    // a tap anywhere during the cat party skips the rest of it
+    IEnumerator CelebrateSkipWatch()
+    {
+        yield return null;
+        while (celebrating)
+        {
+            var ptr = UnityEngine.InputSystem.Pointer.current;
+            if (ptr != null && ptr.press.wasPressedThisFrame) board.CelebrateSkip = true;
+            yield return null;
+        }
     }
 
     // one loss per attempt: counted as soon as the lose screen shows (closing the app there still counts),
     // or when the level is restarted from the pause menu
     bool lossCounted;
-    void CountLoss() { if (lossCounted) return; lossCounted = true; LevelGen.RegisterLoss(level); }
+    void CountLoss() { if (lossCounted) return; lossCounted = true; LevelGen.RegisterLoss(level); Progress.WinStreak = 0; }
 
     void Lose()
     {
@@ -433,7 +581,7 @@ public class GameController : MonoBehaviour
             case GoalType.Color: return "cat_" + g.color;
             case GoalType.Box: return "box_full";
             case GoalType.Yarn: return "yarn_wrap";
-            case GoalType.Mint: return "mint_wreath";
+            case GoalType.Mint: return "mint_leaf";
             case GoalType.Vase: return "vase";
             case GoalType.Foam: return "goal_foam";
             default: return "fish_bowl";
@@ -454,7 +602,7 @@ public class GameController : MonoBehaviour
 
     void RefreshTexts()
     {
-        if (movesText != null) { movesText.text = (moves - movesPending).ToString(); movesText.color = moves <= 3 ? new Color(1f, 0.55f, 0.5f) : Color.white; }
+        if (movesText != null) { movesText.text = (moves - movesPending).ToString(); movesText.color = moves <= 3 ? new Color(1f, 0.55f, 0.5f) : moves <= 5 ? new Color(1f, 0.86f, 0.42f) : Color.white; }
         if (levelLabel != null) levelLabel.text = Loc.T("Level", level);
         RefreshBalance();
     }
@@ -508,16 +656,30 @@ public class GameController : MonoBehaviour
     }
 
     // ============================================================ power-up bar
+    public static string PuKey(PowerUpType t)
+    {
+        switch (t)
+        {
+            case PowerUpType.Paw: return "pu_paw";
+            case PowerUpType.MegaBomb: return "pu_bomb";
+            case PowerUpType.ColorBlast: return "pu_color";
+            case PowerUpType.Swap: return "pu_swap";
+            default: return "pu_moves";
+        }
+    }
     void BuildPowerUpBar()
     {
         barRoot = UIKit.Place(UIKit.Rect("PowerUps", safe), new Vector2(0.5f, 0f), new Vector2(0, 135), new Vector2(1080, 250));
-        var types = new[] { PowerUpType.Paw, PowerUpType.MegaBomb, PowerUpType.ColorBlast, PowerUpType.ExtraMoves };
-        var keys = new[] { "pu_paw", "pu_bomb", "pu_color", "pu_moves" };
+        // the swap booster is new: a player who never had it gets one to try
+        if (!PlayerPrefs.HasKey("Kuzya.PowerUp.Swap")) { PlayerPrefs.SetInt("Kuzya.PowerUp.Swap", 1); PlayerPrefs.Save(); }
+        var types = new[] { PowerUpType.Paw, PowerUpType.Swap, PowerUpType.MegaBomb, PowerUpType.ColorBlast, PowerUpType.ExtraMoves };
+        var keys = new string[types.Length];
+        for (int i = 0; i < types.Length; i++) keys[i] = PuKey(types[i]);
         for (int i = 0; i < types.Length; i++)
         {
             var t = types[i];
             var b = new PowerUpButton();
-            var btn = UIKit.ArtButton(barRoot, keys[i], new Vector2(0.5f, 0.5f), new Vector2(-360 + i * 240, 10), 190, () => OnPowerUpTap(t), "+" + ExtraMovesAmount);
+            var btn = UIKit.ArtButton(barRoot, keys[i], new Vector2(0.5f, 0.5f), new Vector2(-416 + i * 208, 10), 172, () => OnPowerUpTap(t), "+" + ExtraMovesAmount);
             b.root = (RectTransform)btn.transform;
             if (t == PowerUpType.ExtraMoves && GameArt.I.Has(keys[i]))   // the number lives in code, not in the art
                 UIKit.Label(b.root, "+" + ExtraMovesAmount, 54, Color.white, new Vector2(0.5f, 0.5f), new Vector2(-8, -18), new Vector2(120, 70), true);
@@ -533,8 +695,10 @@ public class GameController : MonoBehaviour
                 b.sparks[s] = UIKit.Image(b.sparkRing, "ui_booster_sparkle", new Vector2(0.5f, 0.5f), new Vector2(Mathf.Cos(a), Mathf.Sin(a)) * ArmSparkRadius, new Vector2(60, 60));
                 b.sparks[s].color = new Color(ArmGold.r, ArmGold.g, ArmGold.b, 0f);
             }
-            var badgeBg = UIKit.Panel(b.root, new Vector2(0.5f, 0.5f), new Vector2(70, -70), new Vector2(64, 64), new Color(0.2f, 0.75f, 0.35f), 32);
-            b.badge = UIKit.Label(badgeBg.rectTransform, "1", 38, Color.white, new Vector2(0.5f, 0.5f), Vector2.zero, new Vector2(64, 64), true);
+            bool badgeArt = GameArt.I.Has("ui_badge_count");
+            var badgeBg = badgeArt ? UIKit.Image(b.root, "ui_badge_count", new Vector2(0.5f, 0.5f), new Vector2(70, -68), new Vector2(84, 84))
+                                   : UIKit.Panel(b.root, new Vector2(0.5f, 0.5f), new Vector2(70, -70), new Vector2(64, 64), new Color(0.2f, 0.75f, 0.35f), 32);
+            b.badge = UIKit.Label(badgeBg.rectTransform, "1", badgeArt ? 40 : 38, Color.white, new Vector2(0.5f, 0.5f), new Vector2(0, badgeArt ? 1 : 0), new Vector2(64, 64), true);
             b.priceGroup = UIKit.Panel(b.root, new Vector2(0.5f, 0.5f), new Vector2(0, -95), new Vector2(140, 52), new Color(0.13f, 0.18f, 0.36f, 0.85f), 26).gameObject;
             UIKit.Image(b.priceGroup.transform, "ui_balance", new Vector2(0.5f, 0.5f), new Vector2(-40, 0), new Vector2(44, 44));
             b.price = UIKit.Label(b.priceGroup.transform, Progress.Price(t).ToString(), 34, Color.white, new Vector2(0.5f, 0.5f), new Vector2(18, 0), new Vector2(90, 50), true);
@@ -554,22 +718,23 @@ public class GameController : MonoBehaviour
             kv.Value.priceGroup.SetActive(c == 0);
             bool armed = board != null && board.Armed == kv.Key;
         }
-        if (hintText != null) hintText.text = board != null && board.Armed != null ? Loc.T("PickCat") : "";
+        if (hintText != null) hintText.text = board != null && board.Armed != null ? Loc.T(board.Armed == PowerUpType.Swap ? "PickSwap" : "PickCat") : tutorialText;
     }
 
     void OnPowerUpTap(PowerUpType t)
     {
-        if (ended || board.Busy || board.InputLocked) return;
+        if (ended || board.Busy || board.InputLocked || board.Guiding) return;
         if (board.Armed == t) { board.ArmPowerUp(null); RefreshPowerUps(); return; }
         if (Progress.Charges(t) == 0)
         {
-            if (!Progress.Buy(t)) { Toast(Loc.T("NotEnough")); StartCoroutine(Shake(puButtons[t].root)); return; }
+            if (!Progress.Buy(t)) { NotEnoughCoins(); StartCoroutine(Shake(puButtons[t].root)); return; }
+            AudioManager.Play("purchase", 0.8f);
             Toast(Loc.T("Bought"));
         }
         if (t == PowerUpType.ExtraMoves)
         {
             if (!Progress.Consume(t)) return;
-            moves += ExtraMovesAmount;
+            moves += ExtraMovesAmount; boughtMoves = true;
             AudioManager.Play("balance");
             RefreshPowerUps();
             PlusMovesShower(puButtons[t].root);
@@ -646,6 +811,7 @@ public class GameController : MonoBehaviour
         if (!string.IsNullOrEmpty(title)) UIKit.Label(holder, title, 64, Color.white, new Vector2(0.5f, 1f), new Vector2(0, art != null ? -PopupTitleY : 0), new Vector2(600, 100));
         body = holder;
         StartCoroutine(UIKit.PopIn(holder));
+        AudioManager.Play("popup", 0.6f);
         return root;
     }
 
@@ -655,52 +821,439 @@ public class GameController : MonoBehaviour
 
     void ClosePopup(RectTransform root)
     {
-        if (root != null) Destroy(root.gameObject);
+        if (root != null) { Destroy(root.gameObject); AudioManager.Play("popup", 0.4f); }
         StartCoroutine(UnlockNextFrame());
     }
 
     IEnumerator UnlockNextFrame()
     {
         yield return null;
-        if (popupRoot.childCount == 0 && !ended) board.InputLocked = false;
+        if (popupRoot.childCount == 0 && !ended && !finishing) { board.InputLocked = false; board.IntroHold = false; }
     }
+
+    // ---- start cats: special cats bought on the level card, they are on the board from the first move ----
+    const int StartCatsUnlock = 8;
+    static readonly Special[] StartCatType = { Special.Line, Special.Bomb, Special.Rainbow };
+    static readonly string[] StartCatKey = { "special_line", "special_bomb", "special_rainbow" };
+    static readonly int[] StartCatPrice = { 30, 45, 70 };
+    readonly bool[] startPick = new bool[3];
+    readonly List<Special> startBought = new List<Special>();
+    bool adCat;                                   // a free random cat was earned with a video on this card
 
     void ShowLevelIntro()
     {
         var meet = NextMeet();
         if (meet != null) { ShowMeet(meet, ShowLevelIntro); return; }
-        var root = OpenPopup(Loc.T("Level", level), Art ? 1040 : 620, out var body, false);
-        UIKit.Label(body, Loc.T("Goals"), 46, Color.white, new Vector2(0.5f, 0.5f), new Vector2(0, Art ? 160 : 150), new Vector2(700, 60));
+        bool shop = level >= StartCatsUnlock;
+        float up = shop ? 105f : 0f;                      // the goals move up to make room for the row of cats
+        var root = OpenPopup(Loc.T("Level", level), shop ? (Art ? 1440 : 1040) : (Art ? 1040 : 620), out var body, false);
+        int streak = Progress.WinStreak;
+        if (shop)
+        {   // win streak: three medals and the gift they lead to
+            float sy = Art ? 352 : 330;
+            UIKit.Label(body, Loc.T("Streak.Title"), 34, Color.white, new Vector2(0.5f, 0.5f), new Vector2(-205, sy), new Vector2(300, 50));
+            for (int i = 0; i < 3; i++)
+                UIKit.Image(body, i < streak ? "ui_streak_on" : "ui_streak_off", new Vector2(0.5f, 0.5f), new Vector2(-10 + i * 82, sy), new Vector2(74, 74));
+            if (streak >= 3)
+            {
+                var gg = UIKit.Place(UIKit.Rect("giftGlow", body), new Vector2(0.5f, 0.5f), new Vector2(248, sy), new Vector2(10, 10)).gameObject.AddComponent<PickGlow>();
+                gg.Build(ArmGold); gg.transform.localScale = Vector3.one * 0.6f; gg.on = true;
+            }
+            var gift = UIKit.Image(body, "ui_streak_gift", new Vector2(0.5f, 0.5f), new Vector2(248, sy), new Vector2(streak >= 3 ? 104 : 86, streak >= 3 ? 104 : 86));
+            if (streak < 3) gift.color = new Color(1f, 1f, 1f, 0.55f);
+        }
+        UIKit.Label(body, Loc.T("Goals"), 46, Color.white, new Vector2(0.5f, 0.5f), new Vector2(0, (Art ? 160 : 150) + up), new Vector2(700, 60));
         int n = def.goals.Count;
         for (int i = 0; i < n; i++)
         {
             var g = def.goals[i];
             float x = (i - (n - 1) * 0.5f) * 220;
-            UIKit.Image(body, GoalIcon(g), new Vector2(0.5f, 0.5f), new Vector2(x, Art ? 40 : 30), new Vector2(150, 150));
-            UIKit.Label(body, g.target.ToString(), 50, Color.white, new Vector2(0.5f, 0.5f), new Vector2(x, Art ? -70 : -80), new Vector2(200, 60), true);
+            UIKit.Image(body, GoalIcon(g), new Vector2(0.5f, 0.5f), new Vector2(x, (Art ? 40 : 30) + up), new Vector2(150, 150));
+            UIKit.Label(body, g.target.ToString(), 50, Color.white, new Vector2(0.5f, 0.5f), new Vector2(x, (Art ? -70 : -80) + up), new Vector2(200, 60), true);
         }
-        UIKit.ArtButton(body, "ui_play", new Vector2(0.5f, 0f), new Vector2(0, BottomY(40) + (Art ? 110 : 0)), 170, () => ClosePopup(root), "▶");
+        for (int i = 0; i < startPick.Length; i++) startPick[i] = false;
+        adCat = false;
+        if (shop)
+        {
+            float rowY = Art ? -175 : -185;
+            UIKit.Label(body, Loc.T("Start.Take"), 40, Color.white, new Vector2(0.5f, 0.5f), new Vector2(0, rowY + 118), new Vector2(760, 54));
+            for (int i = 0; i < StartCatType.Length; i++)
+            {
+                int k = i;
+                float x = (i - 1) * 220;
+                // chosen cat: the same golden glow with circling sparkles as an armed booster
+                var pick = UIKit.Place(UIKit.Rect("pick", body), new Vector2(0.5f, 0.5f), new Vector2(x, rowY), new Vector2(10, 10)).gameObject.AddComponent<PickGlow>();
+                pick.Build(ArmGold);
+                var btn = UIKit.ArtButton(body, StartCatKey[i], new Vector2(0.5f, 0.5f), new Vector2(x, rowY), 150, null, "?");
+                btn.name = "btn_start_" + i;
+                // a green tick in the corner of a chosen cat
+                bool tickArt = GameArt.I.Has("ui_badge_check");
+                var tick = tickArt ? UIKit.Image(body, "ui_badge_check", new Vector2(0.5f, 0.5f), new Vector2(x + 52, rowY + 56), new Vector2(72, 72))
+                                   : UIKit.Panel(body, new Vector2(0.5f, 0.5f), new Vector2(x + 58, rowY + 58), new Vector2(58, 58), new Color(0.25f, 0.78f, 0.3f), 29);
+                if (!tickArt) {
+                var t1 = UIKit.Panel(tick.transform, new Vector2(0.5f, 0.5f), new Vector2(-9, -5), new Vector2(11, 24), Color.white, 5); t1.rectTransform.localRotation = Quaternion.Euler(0, 0, 45);
+                var t2 = UIKit.Panel(tick.transform, new Vector2(0.5f, 0.5f), new Vector2(7, 1), new Vector2(11, 38), Color.white, 5); t2.rectTransform.localRotation = Quaternion.Euler(0, 0, -40);
+                }
+                tick.gameObject.SetActive(false);
+                UIKit.Image(body, "ui_balance", new Vector2(0.5f, 0.5f), new Vector2(x - 34, rowY - 108), new Vector2(46, 46));
+                UIKit.Label(body, StartCatPrice[i].ToString(), 42, Color.white, new Vector2(0.5f, 0.5f), new Vector2(x + 24, rowY - 108), new Vector2(120, 50), true);
+                btn.onClick.AddListener(() =>
+                {
+                    if (!startPick[k])
+                    {   // only what the player can pay for can be ticked
+                        int sum = StartCatPrice[k];
+                        for (int j = 0; j < startPick.Length; j++) if (startPick[j]) sum += StartCatPrice[j];
+                        if (sum > Progress.Balance) { NotEnoughCoins(); StartCoroutine(Shake(btn.transform)); return; }
+                    }
+                    startPick[k] = !startPick[k];
+                    pick.on = startPick[k]; tick.gameObject.SetActive(startPick[k]);
+                    if (startPick[k]) { AudioManager.Play("balance", 0.5f); StartCoroutine(UIKit.PopIn(tick.transform, 0.22f)); }
+                });
+            }
+        }
+        UIKit.ArtButton(body, "ui_play", new Vector2(0.5f, 0f), new Vector2(0, BottomY(40) + (Art ? 110 : 0)), 170, () =>
+        {
+            // the coins are taken only now; the chosen cats drop in with the rest of the board
+            int sum = 0;
+            for (int j = 0; j < startPick.Length; j++) if (startPick[j]) sum += StartCatPrice[j];
+            startBought.Clear();
+            if (sum > 0 && Progress.TrySpend(sum))
+            {
+                for (int j = 0; j < startPick.Length; j++) if (startPick[j]) startBought.Add(StartCatType[j]);
+                AudioManager.Play("purchase", 0.8f);
+                RefreshBalance();
+            }
+            if (shop && Progress.WinStreak >= 3)
+            {   // three wins in a row: one free special cat, and the streak starts over
+                startBought.Add(StartCatType[Random.Range(0, StartCatType.Length)]);
+                Progress.WinStreak = 0;
+                Toast(Loc.T("Streak.Gift"));
+            }
+            if (adCat) { startBought.Add(StartCatType[Random.Range(0, StartCatType.Length)]); adCat = false; }
+            if (startBought.Count > 0) board.AddStartSpecials(startBought);
+            ClosePopup(root); board.IntroHold = false;
+            StartCoroutine(Tutorial());
+        }, "▶");
+        if (shop && Ads.CanReward)
+        {   // next to Play: a video for one free random special cat on this level
+            float py = BottomY(40) + (Art ? 110 : 0);
+            Button cat = null;
+            cat = UIKit.AdButton(body, Loc.T("Ads.Cat"), new Vector2(0.5f, 0f), new Vector2(192, py), new Vector2(196, 96), () =>
+                Ads.ShowRewarded(ok =>
+                {
+                    if (!ok || cat == null) return;
+                    adCat = true;
+                    var at = ((RectTransform)cat.transform).anchoredPosition;
+                    cat.gameObject.SetActive(false);
+                    var given = UIKit.Label(body, Loc.T("Ads.CatGiven"), 34, new Color(1f, 0.9f, 0.4f), new Vector2(0.5f, 0f), at, new Vector2(240, 90));
+                    StartCoroutine(UIKit.PopIn(given.transform, 0.3f));
+                    AudioManager.Play("balance", 0.6f);
+                }));
+        }
+    }
+
+    // ---- ads: first-launch consent (UK/EU) and the "not enough coins" video offer ----
+    // A window on its own top canvas, styled like the popups, with two equal buttons (no nudging).
+    RectTransform AdWindow(string name, int order, float height, out Canvas c)
+    {
+        c = UIKit.CreateCanvas(name, order);
+        var root = UIKit.Rect(name, c.transform); UIKit.Stretch(root);
+        var dim = root.gameObject.AddComponent<Image>(); dim.color = new Color(0.05f, 0.05f, 0.15f, 0.7f);
+        var holder = UIKit.Place(UIKit.Rect("window", root), new Vector2(0.5f, 0.5f), new Vector2(0, 30), new Vector2(880, height));
+        var art = GameArt.I.S("ui_popup_panel");
+        if (art != null)
+        {
+            var i = UIKit.Image(holder, "ui_popup_panel", new Vector2(0.5f, 0.5f), Vector2.zero, new Vector2(880, height), false);
+            i.type = Image.Type.Sliced; i.pixelsPerUnitMultiplier = art.rect.width / 880f; i.raycastTarget = true;
+        }
+        else
+        {
+            UIKit.Panel(holder, new Vector2(0.5f, 0.5f), Vector2.zero, new Vector2(880, height), UIKit.Navy, 70).raycastTarget = true;
+            UIKit.Panel(holder, new Vector2(0.5f, 0.5f), Vector2.zero, new Vector2(840, height - 40), UIKit.Sky, 50);
+        }
+        StartCoroutine(UIKit.PopIn(holder));
+        AudioManager.Play("popup", 0.6f);
+        return holder;
+    }
+
+    void ShowConsent()
+    {
+        var w = AdWindow("Consent", 500, 1120, out var c);
+        UIKit.Label(w, Loc.T("Consent.Title"), 54, Color.white, new Vector2(0.5f, 1f), new Vector2(0, -PopupTitleY - 25), new Vector2(620, 80));
+        UIKit.Label(w, Loc.T("Consent.Text"), 31, Color.white, new Vector2(0.5f, 0.5f), new Vector2(0, 20), new Vector2(580, 400));
+        System.Action<bool> pick = yes => { Ads.SetConsent(yes); Ads.Init(); Destroy(c.gameObject); };
+        UIKit.TextButton(w, Loc.T("Consent.Yes"), new Vector2(0.5f, 0.5f), new Vector2(-148, -240), new Vector2(276, 96), new Color(0.3f, 0.8f, 0.4f), () => pick(true)).name = "btn_consent_yes";
+        UIKit.TextButton(w, Loc.T("Consent.No"), new Vector2(0.5f, 0.5f), new Vector2(148, -240), new Vector2(276, 96), new Color(0.3f, 0.8f, 0.4f), () => pick(false)).name = "btn_consent_no";
+    }
+
+    // "not enough coins": a short video for a few coins (a few times a day), otherwise just the note
+    void NotEnoughCoins()
+    {
+        if (!Ads.CanReward || !Ads.CoinAdLeft) { Toast(Loc.T("NotEnough")); return; }
+        var w = AdWindow("CoinOffer", 400, 1000, out var c);
+        UIKit.Label(w, Loc.T("Ads.CoinsTitle"), 56, Color.white, new Vector2(0.5f, 1f), new Vector2(0, -PopupTitleY), new Vector2(700, 90));
+        UIKit.Image(w, "ui_balance", new Vector2(0.5f, 0.5f), new Vector2(0, 110), new Vector2(120, 120));
+        UIKit.Label(w, Loc.T("Ads.CoinsText", Ads.CoinReward), 40, Color.white, new Vector2(0.5f, 0.5f), new Vector2(0, -20), new Vector2(640, 120));
+        UIKit.AdButton(w, Loc.T("Ads.CoinsGo"), new Vector2(0.5f, 0.5f), new Vector2(0, -150), new Vector2(400, 100), () =>
+        {
+            Vector3 from = w.position;
+            Destroy(c.gameObject);
+            Ads.ShowRewarded(ok =>
+            {
+                if (!ok) return;
+                Ads.CountCoinAd();
+                int n = Ads.CoinReward;
+                coinsInFlight += n; Progress.AddBalance(n);
+                StartCoroutine(CoinShower(from, n));
+                AudioManager.Play("balance", 0.7f);
+                Toast(Loc.T("Ads.Thanks"));
+            });
+        });
+        UIKit.TextButton(w, Loc.T("Ads.No"), new Vector2(0.5f, 0.5f), new Vector2(0, -262), new Vector2(300, 76), new Color(0.55f, 0.58f, 0.7f), () => Destroy(c.gameObject));
+    }
+
+    // ============================================================ "How to play" guide
+    // A little picture book (Settings / Pause -> "?"): pages of icon + title + a line or two, built only from
+    // art the game already has. Obstacles the player hasn't reached yet stay locked, so nothing is spoiled.
+    // The last page can replay the first-level tutorial.
+    class GuideRow { public string icon, title, text; public bool locked; }
+    class GuidePage { public string head; public bool tutorial; public readonly List<GuideRow> rows = new List<GuideRow>(); }
+
+    bool tutReplay;                       // "play the tutorial again": level 1 shows its guided move even when already won
+
+    List<GuidePage> BuildGuide()
+    {
+        var pages = new List<GuidePage>();
+        GuidePage Page(string head) { var p = new GuidePage { head = Loc.T(head) }; pages.Add(p); return p; }
+        void Row(GuidePage p, string icon, string key) { p.rows.Add(new GuideRow { icon = icon, title = Loc.T(key + ".T"), text = Loc.T(key + ".X") }); }
+
+        var basics = Page("Guide.Basics");
+        Row(basics, "cat_0", "Guide.Match"); Row(basics, "ui_moves", "Guide.Goals"); Row(basics, "ui_star", "Guide.Stars"); Row(basics, "ui_balance", "Guide.Coins");
+
+        var sp = Page("Guide.Specials");
+        Row(sp, "special_line", "Guide.Line"); Row(sp, "special_bomb", "Guide.Bomb"); Row(sp, "special_rainbow", "Guide.Rainbow"); Row(sp, "special_hunter", "Guide.Hunter");
+
+        var c1 = Page("Guide.Combos");
+        Row(c1, "combo_ll", "Guide.CLL"); Row(c1, "combo_lb", "Guide.CLB"); Row(c1, "combo_bb", "Guide.CBB"); Row(c1, "combo_rr", "Guide.CRR");
+        var c2 = Page("Guide.Combos");
+        Row(c2, "combo_rb", "Guide.CRX"); Row(c2, "combo_hb", "Guide.CHX"); Row(c2, "combo_hh", "Guide.CHH");
+
+        GuidePage obs = null;
+        for (int i = 0; i < Meets.Length; i++)
+        {
+            if (i % 4 == 0) obs = Page("Guide.Obstacles");
+            var m = Meets[i];
+            bool locked = Progress.Level < m.unlock;          // not reached yet: a silhouette and "you'll meet it on level N"
+            obs.rows.Add(new GuideRow
+            {
+                icon = m.icon, locked = locked,
+                title = locked ? "???" : Loc.T("Meet." + m.id + ".Title"),
+                text = locked ? Loc.T("Guide.Locked", m.unlock)
+                     : Loc.T("Guide.O." + m.id) != "Guide.O." + m.id ? Loc.T("Guide.O." + m.id) : Loc.T("Meet." + m.id + ".Text"),   // a shorter line where the card text is long
+            });
+        }
+
+        var pu = Page("Guide.Boosters");
+        foreach (var t in new[] { PowerUpType.Paw, PowerUpType.Swap, PowerUpType.MegaBomb, PowerUpType.ColorBlast, PowerUpType.ExtraMoves })
+            Row(pu, PuKey(t), "Guide.PU." + t);
+
+        pages.Add(new GuidePage { head = Loc.T("Guide.Tutorial"), tutorial = true });
+        return pages;
+    }
+
+    void ShowGuide()
+    {
+        var pages = BuildGuide();
+        int page = 0;
+        var root = OpenPopup(null, Art ? 1500 : 1300, out var body, false);
+        var head = UIKit.Label(body, "", 58, Color.white, new Vector2(0.5f, 1f), new Vector2(0, Art ? -PopupTitleY - 10 : -60), new Vector2(620, 90));
+        var area = UIKit.Rect("page", body); UIKit.Place(area, new Vector2(0.5f, 0.5f), new Vector2(0, 40), new Vector2(640, 900));
+        float navY = BottomY(40) + (Art ? 70 : 20);
+        var count = UIKit.Label(body, "", 38, new Color(1f, 1f, 1f, 0.8f), new Vector2(0.5f, 0f), new Vector2(0, navY), new Vector2(200, 60), true);
+        var prev = UIKit.ArtButton(body, "ui_next", new Vector2(0.5f, 0f), new Vector2(-235, navY), 116, null, "<");
+        if (GameArt.I.Has("ui_next"))
+        {
+            // the "next" arrow, mirrored. The mirror sits on a child picture, so the button's press bounce
+            // (which resets the button's own scale) can never turn it back to point right.
+            var pimg = prev.GetComponent<UnityEngine.UI.Image>();
+            var face = UIKit.Image(prev.transform, "ui_next", new Vector2(0.5f, 0.5f), Vector2.zero, new Vector2(116, 116));
+            face.preserveAspect = true; face.raycastTarget = false;
+            face.rectTransform.localScale = new Vector3(-1f, 1f, 1f);
+            pimg.color = new Color(1f, 1f, 1f, 0f);           // still catches the tap, just invisible
+            prev.transition = UnityEngine.UI.Selectable.Transition.None;
+        }
+        var next = UIKit.ArtButton(body, "ui_next", new Vector2(0.5f, 0f), new Vector2(235, navY), 116, null, ">");
+        prev.name = "btn_guide_prev"; next.name = "btn_guide_next";
+        UIKit.ArtButton(body, "ui_close", new Vector2(1f, 1f), new Vector2(-70, Art ? -230 : -30), 120, () => ClosePopup(root), "X");
+
+        System.Action show = null;
+        show = () =>
+        {
+            foreach (Transform c in area) Destroy(c.gameObject);
+            var p = pages[page];
+            head.text = p.head;
+            count.text = (page + 1) + " / " + pages.Count;
+            prev.gameObject.SetActive(page > 0);
+            next.gameObject.SetActive(page < pages.Count - 1);
+            if (p.tutorial)
+            {
+                var t = UIKit.Label(area, Loc.T("Guide.Tut.X"), 38, Color.white, new Vector2(0.5f, 0.5f), new Vector2(0, 120), new Vector2(600, 300));
+                t.horizontalOverflow = HorizontalWrapMode.Wrap;
+                UIKit.TextButton(area, Loc.T("Guide.Tut.Go"), new Vector2(0.5f, 0.5f), new Vector2(0, -130), new Vector2(480, 110), new Color(0.3f, 0.8f, 0.4f), ReplayTutorial).name = "btn_guide_tutorial";
+            }
+            else
+            {
+                int n = p.rows.Count;
+                // rows run from just under the page title down to just above the arrows
+                float step = n >= 5 ? 146f : 196f, y0 = 290f;
+                float isz = n >= 5 ? 128f : 150f;
+                for (int i = 0; i < n; i++)
+                {
+                    var r = p.rows[i];
+                    float y = y0 - i * step;
+                    var ic = UIKit.Image(area, r.icon, new Vector2(0.5f, 0.5f), new Vector2(-226, y), new Vector2(isz, isz));
+                    if (r.locked) ic.color = new Color(0.12f, 0.14f, 0.3f, 0.55f);
+                    var tt = UIKit.Label(area, r.title, 42, r.locked ? new Color(1f, 1f, 1f, 0.6f) : new Color(1f, 0.87f, 0.4f), new Vector2(0.5f, 0.5f), new Vector2(85, y + 56), new Vector2(450, 56), false, TextAnchor.MiddleLeft);
+                    tt.horizontalOverflow = HorizontalWrapMode.Overflow;
+                    int fs = tt.fontSize; while (fs > 24 && tt.preferredWidth > 450) { fs -= 2; tt.fontSize = fs; }
+                    var tx = UIKit.Label(area, r.text, 30, Color.white, new Vector2(0.5f, 0.5f), new Vector2(90, y - 34), new Vector2(460, 130), false, TextAnchor.UpperLeft);
+                    tx.horizontalOverflow = HorizontalWrapMode.Wrap; tx.verticalOverflow = VerticalWrapMode.Overflow;
+                    // centre the title + text block on the icon, whether the text is one line or three
+                    float th = Mathf.Min(tx.preferredHeight, 130f);
+                    float top = y + 84f, bottom = y + 31f - th;
+                    var shift = new Vector2(0f, y - (top + bottom) * 0.5f);
+                    tt.rectTransform.anchoredPosition += shift; tx.rectTransform.anchoredPosition += shift;
+                }
+            }
+            StartCoroutine(UIKit.PopIn(area, 0.2f));
+        };
+        prev.onClick.AddListener(() => { if (page > 0) { page--; show(); } });
+        next.onClick.AddListener(() => { if (page < pages.Count - 1) { page++; show(); } });
+        show();
+    }
+
+    // the first level again with the paw showing the moves (progress and coins are untouched)
+    void ReplayTutorial()
+    {
+        tutReplay = true;
+        for (int i = 1; i <= 3; i++) PlayerPrefs.DeleteKey("Kuzya.Tut." + i);
+        PlayerPrefs.Save();
+        foreach (Transform c in popupRoot) Destroy(c.gameObject);
+        map = null; chestRoot = null;
+        AudioManager.PlayMusic("Game");
+        StartLevel(1);
+    }
+
+    // ---- first-time tutorial on levels 1-3: a paw shows one action and the player does it ----
+    IEnumerator Tutorial()
+    {
+        if (level > 3 || (level != Progress.Level && !tutReplay) || PlayerPrefs.GetInt("Kuzya.Tut." + level, 0) == 1) yield break;
+        int lv = level;
+        yield return new WaitForSeconds(0.4f);
+        while (board.Busy || board.IntroHold) yield return null;
+        yield return new WaitForSeconds(0.25f);
+        if (ended || level != lv || popupRoot.childCount > 0) yield break;
+        if (lv == 3) { ShowGoalTip(); yield break; }
+        if (!(lv == 1 ? board.GuideSwap() : board.GuideTapSpecial(Special.Line))) yield break;
+        bool done = false; System.Action onDone = () => done = true;
+        board.GuideDone += onDone;
+        TutBanner(toastRoot, Loc.T("Tut." + lv), new Vector2(0, -265));
+        while (board.Guiding) yield return null;
+        board.GuideDone -= onDone;
+        if (tutBanner != null) Destroy(tutBanner.gameObject);
+        if (!done) yield break;
+        PlayerPrefs.SetInt("Kuzya.Tut." + lv, 1); PlayerPrefs.Save();
+        if (lv == 2) Toast(Loc.T("Tut.2b"));
+    }
+
+    // a dark rounded plate with one short line of help
+    RectTransform tutBanner;
+    void TutBanner(Transform parent, string text, Vector2 pos)
+    {
+        if (tutBanner != null) Destroy(tutBanner.gameObject);
+        int lines = text.Split('\n').Length;
+        var plate = UIKit.Panel(parent, new Vector2(0.5f, 1f), pos, new Vector2(1000, 60 + 62 * lines), new Color(0.1f, 0.14f, 0.32f, 0.92f), 44);
+        UIKit.Label(plate.transform, text, 46, Color.white, new Vector2(0.5f, 0.5f), Vector2.zero, new Vector2(960, 60 * lines));
+        tutBanner = plate.rectTransform;
+        StartCoroutine(UIKit.PopIn(tutBanner, 0.25f));
+    }
+
+    void ShowGoalTip()
+    {
+        board.InputLocked = true;
+        var root = UIKit.Rect("tip", popupRoot); UIKit.Stretch(root);
+        var dim = root.gameObject.AddComponent<Image>(); dim.color = new Color(0.05f, 0.05f, 0.15f, 0.45f);
+        var b = root.gameObject.AddComponent<Button>(); b.transition = Selectable.Transition.None;
+        var hand = UIKit.Image(root, "ui_hand", new Vector2(0.5f, 1f), new Vector2(95, -330), new Vector2(230, 230));
+        hand.gameObject.AddComponent<Bobber>();
+        TutBanner(root, Loc.T("Tut.3"), new Vector2(0, -560));
+        b.onClick.AddListener(() => { PlayerPrefs.SetInt("Kuzya.Tut.3", 1); PlayerPrefs.Save(); tutBanner = null; ClosePopup(root); });
     }
 
     void ShowPause()
     {
-        if (ended || board.Busy) return;
+        if (ended || board.Busy || finishing) return;
         var root = OpenPopup(Loc.T("Pause"), Art ? 860 : 760, out var body, false);
         UIKit.Label(body, Loc.T("Level", level), 50, Color.white, new Vector2(0.5f, 0.5f), new Vector2(0, Art ? 80 : 170), new Vector2(700, 70));
-        UIKit.ArtButton(body, "ui_play", new Vector2(0.5f, 0.5f), new Vector2(-270, PauseRowY), 168, () => ClosePopup(root), "▶");
-        UIKit.ArtButton(body, "ui_replay", new Vector2(0.5f, 0.5f), new Vector2(-90, PauseRowY), 168, () => { ClosePopup(root); CountLoss(); StartLevel(level); }, "↻");
-        UIKit.ArtButton(body, "ui_sett", new Vector2(0.5f, 0.5f), new Vector2(90, PauseRowY), 168, ShowSettings, "⚙");
-        UIKit.ArtButton(body, "ui_levels", new Vector2(0.5f, 0.5f), new Vector2(270, PauseRowY), 168, () => ShowMap(), "☰");
+        UIKit.ArtButton(body, "ui_play", new Vector2(0.5f, 0.5f), new Vector2(-236, PauseRowY), 146, () => ClosePopup(root), "▶");
+        UIKit.ArtButton(body, "ui_replay", new Vector2(0.5f, 0.5f), new Vector2(-79, PauseRowY), 146, () => { ClosePopup(root); if (moves < def.moves || boughtMoves) CountLoss(); StartLevel(level); }, "↻");
+        UIKit.ArtButton(body, "ui_sett", new Vector2(0.5f, 0.5f), new Vector2(79, PauseRowY), 146, ShowSettings, "⚙");
+        UIKit.ArtButton(body, "ui_levels", new Vector2(0.5f, 0.5f), new Vector2(236, PauseRowY), 146, () => ShowMap(), "☰");
+        UIKit.ArtButton(body, "ui_help", new Vector2(0f, 1f), new Vector2(70, Art ? -230 : -30), 120, ShowGuide, "?").name = "btn_ui_help";
     }
 
     void ShowSettings()
     {
-        var root = OpenPopup(Loc.T("Settings"), Art ? 860 : 640, out var body, false);
-        UIKit.Label(body, Loc.T("Music"), 46, Color.white, new Vector2(0.5f, 0.5f), new Vector2(0, Art ? 60 : 130), new Vector2(600, 60));
-        UIKit.MakeSlider(body, new Vector2(0.5f, 0.5f), new Vector2(0, Art ? 0 : 60), 520, AudioManager.MusicVolume, AudioManager.SetMusicVolume);
-        UIKit.Label(body, Loc.T("Sound"), 46, Color.white, new Vector2(0.5f, 0.5f), new Vector2(0, Art ? -80 : -40), new Vector2(600, 60));
-        UIKit.MakeSlider(body, new Vector2(0.5f, 0.5f), new Vector2(0, Art ? -140 : -110), 520, AudioManager.SfxVolume, AudioManager.SetSfxVolume);
+        bool adRow = Ads.Enabled;
+        float up = (adRow ? 45f : 0f) + 70f;              // the rows move up to make room for the ads switch and the privacy link
+        var root = OpenPopup(Loc.T("Settings"), (Art ? 1000 : 800) + (adRow ? 180 : 0), out var body, false);
+        UIKit.Label(body, Loc.T("Music"), 46, Color.white, new Vector2(0.5f, 0.5f), new Vector2(0, (Art ? 60 : 130) + up), new Vector2(600, 60));
+        UIKit.MakeSlider(body, new Vector2(0.5f, 0.5f), new Vector2(0, (Art ? 0 : 60) + up), 520, AudioManager.MusicVolume, AudioManager.SetMusicVolume);
+        UIKit.Label(body, Loc.T("Sound"), 46, Color.white, new Vector2(0.5f, 0.5f), new Vector2(0, (Art ? -80 : -40) + up), new Vector2(600, 60));
+        UIKit.MakeSlider(body, new Vector2(0.5f, 0.5f), new Vector2(0, (Art ? -140 : -110) + up), 520, AudioManager.SfxVolume, AudioManager.SetSfxVolume);
+        if (adRow)
+        {   // personalised ads on/off (the consent can always be changed here)
+            Button ab = null;
+            ab = UIKit.TextButton(body, Loc.T(Ads.Personalised ? "Ads.Personal" : "Ads.Plain"), new Vector2(0.5f, 0.5f), new Vector2(0, (Art ? -375 : -330) + 70f), new Vector2(520, 76), new Color(0.42f, 0.5f, 0.78f), () =>
+            {
+                Ads.SetConsent(!Ads.Personalised);
+                var t = ab.GetComponentInChildren<Text>(); if (t != null) t.text = Loc.T(Ads.Personalised ? "Ads.Personal" : "Ads.Plain");
+            });
+            ab.name = "btn_ads_consent";
+        }
+        // language: two round flags, the current one is bigger with a golden ring behind it
+        float fy = (Art ? -265 : -240) + up;
+        foreach (var lang in new[] { Loc.Lang.Ru, Loc.Lang.En })
+        {
+            var lg = lang; bool on = Loc.Current == lg;
+            float fx = lg == Loc.Lang.Ru ? -95 : 95, fs = on ? 132 : 104;
+            if (on) UIKit.Panel(body, new Vector2(0.5f, 0.5f), new Vector2(fx, fy), new Vector2(fs + 22, fs + 22), UIKit.Gold, Mathf.RoundToInt((fs + 22) / 2)).raycastTarget = false;
+            var fb = UIKit.ArtButton(body, lg == Loc.Lang.Ru ? "ui_flag_ru" : "ui_flag_en", new Vector2(0.5f, 0.5f), new Vector2(fx, fy), fs, () => SetLanguage(lg), lg == Loc.Lang.Ru ? "RU" : "EN");
+            fb.name = lg == Loc.Lang.Ru ? "btn_lang_ru" : "btn_lang_en";
+            if (!on) fb.GetComponent<Image>().color = new Color(1f, 1f, 1f, 0.6f);
+        }
+        // privacy policy (Google Play requires a link inside the game)
+        UIKit.TextButton(body, Loc.T("Privacy"), new Vector2(0.5f, 0.5f), new Vector2(0, (adRow ? (Art ? -375 : -330) : (Art ? -265 : -240)) - 15f), new Vector2(460, 62),
+                         new Color(0.33f, 0.58f, 0.86f), () => Application.OpenURL(PrivacyUrl)).name = "btn_privacy";
         UIKit.ArtButton(body, "ui_close", new Vector2(1f, 1f), new Vector2(-70, GameArt.I.Has("ui_popup_panel") ? -230 : -30), 120, () => ClosePopup(root), "X");
+        UIKit.ArtButton(body, "ui_help", new Vector2(0f, 1f), new Vector2(70, GameArt.I.Has("ui_popup_panel") ? -230 : -30), 120, ShowGuide, "?").name = "btn_ui_help";
+    }
+    const string PrivacyUrl = "https://docs.google.com/document/d/e/2PACX-1vR7nkkgEpzJsbG2kIxG2YvBZX4ZNtJD6pvjaiYGIJzSoniVDEEP8lsbZ1Pc_1RUnZKb6YP7fdAMY4S0/pub";
+
+    // Language switched in Settings: every window is rebuilt in the new language and Settings re-opens
+    // (over the map if it was open, otherwise over the pause window).
+    bool mapClosable = true;
+    void SetLanguage(Loc.Lang lang)
+    {
+        if (Loc.Current == lang) return;
+        Loc.Set(lang);
+        bool hadMap = map != null;
+        foreach (Transform c in popupRoot) Destroy(c.gameObject);
+        map = null; chestRoot = null;
+        RefreshTexts(); RefreshPowerUps();
+        if (hadMap) ShowMap(mapClosable);
+        else if (!ended && !board.Busy) ShowPause();
+        ShowSettings();
     }
 
     // ============================================================ level map
@@ -709,19 +1262,38 @@ public class GameController : MonoBehaviour
     void ShowMap(bool closable = true, int hopFrom = 0)
     {
         if (map != null) return;
+        mapClosable = closable;
         board.InputLocked = true;
         AudioManager.PlayMusic("menu");
         map = LevelMap.Open(popupRoot, Progress.Level,
             lvl => { CloseMap(false); AudioManager.PlayMusic("Game"); StartLevel(lvl); },
-            closable ? () => CloseMap(true) : (System.Action)null, hopFrom, ShowSettings);
-        map.onChest = lvl => { if (lvl == Progress.PendingChest) ShowChest(lvl); };
+            closable ? () => CloseMap(true) : (System.Action)null, hopFrom, ShowSettings, hopFrom > 0 ? lastStarsNew : 0, hopFrom);
+        if (hopFrom > 0) lastStarsNew = 0;
+        map.onChest = () =>
+        {
+            int c = Progress.PendingChest;
+            if (c > 0) ShowChest(c);
+            else Toast(Loc.T("Stars.ToChest", Progress.ChestStars - Progress.ChestProgress));
+        };
+        map.onDaily = ShowDaily;
+        map.onToast = Toast;
+        map.onGateOpened = () => { bool c = mapClosable; CloseMap(false); ShowMap(c); };
         // a chest just became available: after the marker's hop, it opens by itself
         if (Progress.PendingChest > 0) StartCoroutine(AutoChest(hopFrom > 0 ? 1.5f : 0.6f));
     }
 
+    // daily "three bowls": one go a day; after it the icon on the map turns grey until tomorrow
+    void ShowDaily()
+    {
+        if (chestRoot != null) return;
+        if (!Progress.DailyReady) { Toast(Loc.T("Daily.Tomorrow")); return; }
+        foreach (Transform c in popupRoot) if (c.name == "DailyBowls") return;
+        DailyBowls.Open(popupRoot, () => { if (map != null) map.RefreshDaily(); });
+    }
+
     IEnumerator ChestAfterWin(RectTransform resultRoot)
     {
-        yield return new WaitForSecondsRealtime(1.8f);          // let the win screen and its coins play first
+        yield return new WaitForSecondsRealtime(2.4f);          // let the win screen, its stars and coins play first
         int c = Progress.PendingChest;
         if (c > 0 && resultRoot != null && chestRoot == null) ShowChest(c);
     }
@@ -757,12 +1329,12 @@ public class GameController : MonoBehaviour
             rays = UIKit.Image(root, "res_win_rays", new Vector2(0.5f, 0.5f), new Vector2(0, 60), Vector2.one * 1700f);
             rays2 = UIKit.Image(root, "res_win_rays", new Vector2(0.5f, 0.5f), new Vector2(0, 60), Vector2.one * 1150f);
         }
-        var title = UIKit.Label(root, "Сундук!", 84, new Color(1f, 0.85f, 0.35f), new Vector2(0.5f, 0.5f), new Vector2(0, 560), new Vector2(900, 120));
+        var title = UIKit.Label(root, Loc.T("Chest"), 84, new Color(1f, 0.85f, 0.35f), new Vector2(0.5f, 0.5f), new Vector2(0, 560), new Vector2(900, 120));
         var closed = GameArt.I.S("chest_closed");
         float cw = 640f, ch = closed != null ? cw * closed.rect.height / closed.rect.width : 480f;
         var chest = UIKit.Image(root, "chest_closed", new Vector2(0.5f, 0.5f), new Vector2(0, 60), new Vector2(cw, ch));
         chest.raycastTarget = true;
-        var hint = UIKit.Label(root, "Нажми на сундук", 50, Color.white, new Vector2(0.5f, 0.5f), new Vector2(0, -300), new Vector2(900, 80));
+        var hint = UIKit.Label(root, Loc.T("ChestHint"), 50, Color.white, new Vector2(0.5f, 0.5f), new Vector2(0, -300), new Vector2(900, 80));
         var crt = chest.rectTransform;
         int taps = 0; float shake = 0f, shakeAmp = 0f;
         var btn = chest.gameObject.AddComponent<Button>(); btn.transition = Selectable.Transition.None;
@@ -795,14 +1367,14 @@ public class GameController : MonoBehaviour
         StartCoroutine(Kit.Tween(0.5f, k => { if (flash != null) flash.color = new Color(1f, 0.97f, 0.85f, 0.9f * (1f - k)); }));
         StartCoroutine(Kit.Tween(0.45f, k => { if (crt != null) crt.localScale = Vector3.one * (0.85f + 0.25f * Kit.EaseOutBack(k)); }));
 
-        // rewards: 20-40 coins, and every other chest a power-up
+        // rewards: 20-40 coins, and about every other chest a power-up (chestLevel = the chest's number)
         var rng = new System.Random(chestLevel * 977 + 5);
-        int coins = 20 + rng.Next(5) * 5;
-        PowerUpType? pu = rng.NextDouble() < 0.55 ? (PowerUpType)rng.Next(4) : (PowerUpType?)null;
-        Progress.ChestOpened = chestLevel;
+        int coins = Mathf.RoundToInt((20 + rng.Next(5) * 5) * 0.64f);  // 13-26 (20% less again)
+        PowerUpType? pu = rng.NextDouble() < 0.55 ? (PowerUpType)rng.Next(5) : (PowerUpType?)null;
+        Progress.OpenChest();
         Progress.AddBalance(coins);
         if (pu.HasValue) Progress.AddCharge(pu.Value);
-        if (map != null) map.RemoveChest(chestLevel);
+        if (map != null) map.RefreshStars();
 
         // burst: confetti + coins thrown up out of the chest
         var bits = new List<(RectTransform t, Vector2 v, float spin)>();
@@ -823,13 +1395,13 @@ public class GameController : MonoBehaviour
         var coinLbl = UIKit.Label(rewardRow, "+0", 70, new Color(1f, 0.9f, 0.4f), new Vector2(0.5f, 0.5f), new Vector2(coinX + 115, 0), new Vector2(200, 100), true, TextAnchor.MiddleLeft);
         if (pu.HasValue)
         {
-            string pk = pu.Value == PowerUpType.Paw ? "pu_paw" : pu.Value == PowerUpType.MegaBomb ? "pu_bomb" : pu.Value == PowerUpType.ColorBlast ? "pu_color" : "pu_moves";
+            string pk = PuKey(pu.Value);
             var pim = UIKit.Image(rewardRow, pk, new Vector2(0.5f, 0.5f), new Vector2(190, 0), new Vector2(130, 130));
             UIKit.Label(pim.transform, "+1", 44, Color.white, new Vector2(1f, 0f), new Vector2(-10, 10), new Vector2(80, 60), true);
             StartCoroutine(UIKit.PopIn(pim.transform, 0.35f));
         }
         StartCoroutine(UIKit.PopIn(rewardRow, 0.35f));
-        var take = UIKit.TextButton(root, "Забрать", new Vector2(0.5f, 0.5f), new Vector2(0, -470), new Vector2(460, 130), new Color(0.3f, 0.8f, 0.4f), () =>
+        var take = UIKit.TextButton(root, Loc.T("Take"), new Vector2(0.5f, 0.5f), new Vector2(0, -470), new Vector2(460, 130), new Color(0.3f, 0.8f, 0.4f), () =>
         {
             AudioManager.PlayClick();
             if (chestRoot != null) Destroy(chestRoot.gameObject);
@@ -883,32 +1455,54 @@ public class GameController : MonoBehaviour
     {
         foreach (Transform c in popupRoot) Destroy(c.gameObject);
         string bannerKey = win ? "banner_win" : "banner_lose";
-        bool hasBanner = GameArt.I.Has(bannerKey);
+        bool hasBanner = Loc.HasArt(bannerKey);
+        if (hasBanner) bannerKey = Loc.Art(bannerKey);
         var root = OpenPopup(hasBanner ? null : (win ? Loc.T("Win") : Loc.T("Lose")), Art ? 1300 : 1080, out var body, false);
         ResultBackdrop(root, win);
+        bool adMoves = !win && Ads.CanReward;          // a lost level can be continued for a video
         if (hasBanner) StartCoroutine(UIKit.PopIn(UIKit.Image(body, bannerKey, new Vector2(0.5f, 1f), new Vector2(0, Art ? -129 : 40), Art ? new Vector2(900, 507) : new Vector2(820, 420)).transform, 0.45f));
         // the level's tasks with how far the player got: done ones get a check mark, unfinished ones show progress in soft red
         int gn = def.goals.Count;
         for (int i = 0; i < gn; i++)
         {
             var g = def.goals[i];
-            float x = (i - (gn - 1) * 0.5f) * 250;
-            float gy = Art ? 110 : 60;
-            var icon = UIKit.Image(body, GoalIcon(g), new Vector2(0.5f, 0.5f), new Vector2(x, gy), new Vector2(170, 170));
+            float x = (i - (gn - 1) * 0.5f) * 220;
+            float gy = win ? (Art ? 20 : -10) : (Art ? 90 : 50) + (adMoves ? 30 : 0);
+            var icon = UIKit.Image(body, GoalIcon(g), new Vector2(0.5f, 0.5f), new Vector2(x, gy), new Vector2(160, 160));
             if (!g.Done) icon.color = new Color(1f, 1f, 1f, 0.75f);
             string txt = g.type == GoalType.Score ? $"{Mathf.Min(g.progress, g.target)}/{g.target}" : $"{Mathf.Min(g.progress, g.target)}/{g.target}";
             UIKit.Label(body, txt, g.type == GoalType.Score ? 40 : 48, g.Done ? Color.white : new Color(1f, 0.6f, 0.55f), new Vector2(0.5f, 0.5f), new Vector2(x, gy - 120), new Vector2(240, 60), true);
             if (g.Done && GameArt.I.Has("ui_check"))
-                StartCoroutine(UIKit.PopIn(UIKit.Image(body, "ui_check", new Vector2(0.5f, 0.5f), new Vector2(x + 62, gy - 55), new Vector2(80, 80)).transform, 0.35f));
+                StartCoroutine(UIKit.PopIn(UIKit.Image(body, "ui_check", new Vector2(0.5f, 0.5f), new Vector2(x + 56, gy - 55), new Vector2(72, 72)).transform, 0.35f));
         }
-        UIKit.Label(body, $"{Loc.T("Score")}: {score}", 52, Color.white, new Vector2(0.5f, 0.5f), new Vector2(0, Art ? -120 : -230), new Vector2(700, 70), true);
+        if (win) StartCoroutine(ResultStars(body, Art ? 205 : 170));
         if (win && lastWinCoins > 0)
         {
             // reward row: coin + "+N", pops in and counts up
-            float ry = Art ? -205 : -300;
-            var coin = UIKit.Image(body, "ui_balance", new Vector2(0.5f, 0.5f), new Vector2(-70, ry), new Vector2(78, 78));
-            var lbl = UIKit.Label(body, "+0", 56, new Color(1f, 0.9f, 0.4f), new Vector2(0.5f, 0.5f), new Vector2(70, ry), new Vector2(200, 80), true, TextAnchor.MiddleLeft);
+            float ry = Art ? -215 : -310;
+            bool adDouble = Ads.CanReward;
+            float cx = adDouble ? -190f : -70f;
+            var coin = UIKit.Image(body, "ui_balance", new Vector2(0.5f, 0.5f), new Vector2(cx, ry), new Vector2(78, 78));
+            var lbl = UIKit.Label(body, "+0", 56, new Color(1f, 0.9f, 0.4f), new Vector2(0.5f, 0.5f), new Vector2(cx + 140, ry), new Vector2(200, 80), true, TextAnchor.MiddleLeft);
             StartCoroutine(RewardCountUp(coin.transform, lbl, lastWinCoins));
+            if (adDouble)
+            {   // watch a video -> the same coins once more
+                Button dbl = null;
+                dbl = UIKit.AdButton(body, Loc.T("Ads.Double"), new Vector2(0.5f, 0.5f), new Vector2(185, ry), new Vector2(230, 92), () =>
+                    Ads.ShowRewarded(ok =>
+                    {
+                        if (!ok || dbl == null) return;
+                        Vector3 from = dbl.transform.position;
+                        dbl.gameObject.SetActive(false);
+                        int extra = lastWinCoins;
+                        coinsInFlight += extra; Progress.AddBalance(extra);
+                        if (lbl != null) { lbl.text = "+" + (extra * 2); StartCoroutine(Punch(lbl.transform)); }
+                        StartCoroutine(CoinShower(from, Mathf.Min(extra, 20)));
+                        if (extra > 20) { coinsInFlight -= extra - 20; RefreshBalance(); }
+                        AudioManager.Play("balance", 0.7f);
+                    }));
+                StartCoroutine(UIKit.PopIn(dbl.transform, 0.35f));
+            }
         }
         // a chest was earned by this win: it opens right here over the win screen, the player doesn't
         // have to visit the map for it (the map still opens any chest left pending, e.g. after a restart)
@@ -924,35 +1518,60 @@ public class GameController : MonoBehaviour
             int charges = Progress.Charges(PowerUpType.ExtraMoves);
             int price = Progress.Price(PowerUpType.ExtraMoves);
             bool can = charges > 0 || Progress.Balance >= price;
-            string label = Loc.T("Continue") + (charges > 0 ? "" : $"  ({price})");
-            var cont = UIKit.TextButton(body, label, new Vector2(0.5f, 0f), new Vector2(0, BottomY(ResultBtnY) + 160), new Vector2(520, 110), can ? new Color(0.3f, 0.8f, 0.4f) : new Color(0.55f, 0.55f, 0.6f), () =>
+            string label = charges > 0 ? Loc.T("Continue") : string.Format(Loc.T("Continue.Buy"), price);
+            var cont = UIKit.TextButton(body, label, new Vector2(0.5f, 0f), new Vector2(0, BottomY(ResultBtnY) + 160), new Vector2(520, adMoves ? 100 : 110), can ? new Color(0.3f, 0.8f, 0.4f) : new Color(0.55f, 0.55f, 0.6f), () =>
             {
-                if (Progress.Charges(PowerUpType.ExtraMoves) == 0 && !Progress.Buy(PowerUpType.ExtraMoves)) { Toast(Loc.T("NotEnough")); return; }
+                if (Progress.Charges(PowerUpType.ExtraMoves) == 0 && !Progress.Buy(PowerUpType.ExtraMoves)) { NotEnoughCoins(); return; }
                 Progress.Consume(PowerUpType.ExtraMoves);
-                moves += ExtraMovesAmount; ended = false;
+                moves += ExtraMovesAmount; ended = false; boughtMoves = true;
                 RefreshTexts(); RefreshPowerUps();
                 ClosePopup(root);
             });
-            cont.interactable = can;
-            UIKit.ArtButton(body, "ui_replay", new Vector2(0.5f, 0f), new Vector2(-130, BottomY(ResultBtnY)), 180, () => StartLevel(level), "↻");
-            UIKit.ArtButton(body, "ui_levels", new Vector2(0.5f, 0f), new Vector2(130, BottomY(ResultBtnY)), 180, () => { StartLevel(level); ShowMap(); }, "☰");
+            if (charges == 0) CoinAfterLabel(cont);         // "+5 moves for 60 (coin)": it's clear what the number is
+            // a greyed button still answers a tap: it offers coins for a video instead of doing nothing
+            if (adMoves)
+                UIKit.AdButton(body, Loc.T("Ads.Moves"), new Vector2(0.5f, 0f), new Vector2(0, BottomY(ResultBtnY) + 275), new Vector2(520, 100), () =>
+                    Ads.ShowRewarded(ok =>
+                    {
+                        if (!ok || !ended) return;
+                        moves += ExtraMovesAmount; ended = false; boughtMoves = true;
+                        RefreshTexts(); RefreshPowerUps();
+                        ClosePopup(root);
+                    }));
+            // leaving a lost level (replay / map) is where a full-screen ad may show - never after a win
+            UIKit.ArtButton(body, "ui_replay", new Vector2(0.5f, 0f), new Vector2(-130, BottomY(ResultBtnY)), 180, () => Ads.AfterLoss(level, () => StartLevel(level)), "↻");
+            UIKit.ArtButton(body, "ui_levels", new Vector2(0.5f, 0f), new Vector2(130, BottomY(ResultBtnY)), 180, () => Ads.AfterLoss(level, () => { StartLevel(level); ShowMap(); }), "☰");
         }
+    }
+
+    // puts a coin right after a button's caption, the caption and coin centred together
+    static void CoinAfterLabel(Button b)
+    {
+        var lbl = b.GetComponentInChildren<Text>(); if (lbl == null) return;
+        var brt = (RectTransform)b.transform;
+        float icon = brt.sizeDelta.y * 0.5f, gap = 10f, room = brt.sizeDelta.x - 40f - icon - gap;
+        int fs = lbl.fontSize;
+        while (fs > 18 && lbl.preferredWidth > room) { fs -= 2; lbl.fontSize = fs; }
+        float pw = lbl.preferredWidth, shift = (icon + gap) * 0.5f;
+        lbl.rectTransform.anchoredPosition += new Vector2(-shift, 0);
+        var coin = UIKit.Image(b.transform, "ui_balance", new Vector2(0.5f, 0.5f), new Vector2(-shift + pw * 0.5f + gap + icon * 0.5f, 0), new Vector2(icon, icon));
+        coin.raycastTarget = false; coin.preserveAspect = true;
     }
 
     // ============================================================ "Знакомься!" cards
     // The first time a level has a new mechanic, a card introduces it before the level's goals.
     // Mechanics the player already went past when this feature arrived count as known.
-    class Meet { public string id, icon, title, text; public int unlock; }
+    class Meet { public string id, icon; public int unlock; }   // title and text: Loc "Meet.<id>.Title" / ".Text"
     static readonly Meet[] Meets =
     {
-        new Meet { id = "box",   unlock = LevelGen.BoxUnlock,   icon = "box_full",     title = "Коробка",        text = "Котик спрятался в коробку! Собирай котиков рядом — два удара, и она сломается." },
-        new Meet { id = "yarn",  unlock = LevelGen.YarnUnlock,  icon = "yarn_wrap",    title = "Клубок",         text = "Котик запутался в клубке. Собери его в ряд с другими — и он свободен!" },
-        new Meet { id = "vase",  unlock = LevelGen.VaseUnlock,  icon = "vase",         title = "Ваза",           text = "Собирай котиков рядом с вазой — она разобьётся." },
-        new Meet { id = "fish",  unlock = LevelGen.FishUnlock,  icon = "fish",         title = "Рыбка",          text = "Доведи рыбку до самого низа поля — прямо в миску." },
-        new Meet { id = "milk",  unlock = LevelGen.MilkUnlock,  icon = "milk_bucket",  title = "Ведро молока",   text = "Задень ведро — молоко разольётся. Котик в молоке даёт монетку и двойные очки!" },
-        new Meet { id = "mint",  unlock = LevelGen.MintUnlock,  icon = "mint_wreath",  title = "Кошачья мята",   text = "Мята разрастается, если её не трогать. Собирай котиков рядом с ней!" },
-        new Meet { id = "foam",  unlock = LevelGen.FoamUnlock,  icon = "goal_foam",    title = "Мыльная пена",   text = "Убирай котиков, которые стоят на пене, — и она лопнет." },
-        new Meet { id = "mouse", unlock = LevelGen.MouseUnlock, icon = "mouse_idle",   title = "Мышка-воришка",  text = "Каждые 3 хода она крадёт у тебя монетку! Убери котика, на котором она сидит, — и получишь всё обратно вдвойне." },
+        new Meet { id = "box",   unlock = LevelGen.BoxUnlock,   icon = "box_full" },
+        new Meet { id = "yarn",  unlock = LevelGen.YarnUnlock,  icon = "yarn_wrap" },
+        new Meet { id = "vase",  unlock = LevelGen.VaseUnlock,  icon = "vase" },
+        new Meet { id = "fish",  unlock = LevelGen.FishUnlock,  icon = "fish" },
+        new Meet { id = "milk",  unlock = LevelGen.MilkUnlock,  icon = "milk_bucket" },
+        new Meet { id = "mint",  unlock = LevelGen.MintUnlock,  icon = "mint_leaf" },
+        new Meet { id = "foam",  unlock = LevelGen.FoamUnlock,  icon = "goal_foam" },
+        new Meet { id = "mouse", unlock = LevelGen.MouseUnlock, icon = "mouse_idle" },
     };
     const string MetBaseKey = "Kuzya.MetBase";
 
@@ -987,17 +1606,23 @@ public class GameController : MonoBehaviour
         AudioManager.Play("meet_card", 0.7f);
         var icon = UIKit.Image(body, m.icon, new Vector2(0.5f, 0.5f), new Vector2(0, 150), new Vector2(250, 250));
         StartCoroutine(MeetIconBob(icon.rectTransform));
-        UIKit.Label(body, m.title, 62, new Color(1f, 0.87f, 0.4f), new Vector2(0.5f, 0.5f), new Vector2(0, -20), new Vector2(760, 80));
-        var txt = UIKit.Label(body, m.text, 40, Color.white, new Vector2(0.5f, 0.5f), new Vector2(0, -135), new Vector2(680, 170));
-        txt.horizontalOverflow = HorizontalWrapMode.Wrap;
-        UIKit.TextButton(body, "Понятно!", new Vector2(0.5f, 0f), new Vector2(0, BottomY(40) + 10), new Vector2(440, 120), new Color(0.3f, 0.8f, 0.4f), () =>
+        // both stay inside the frame's blue area (about 620 wide): long titles and texts shrink to fit
+        var ttl = UIKit.Label(body, Loc.T("Meet." + m.id + ".Title"), 62, new Color(1f, 0.87f, 0.4f), new Vector2(0.5f, 0.5f), new Vector2(0, -20), new Vector2(580, 80));
+        ttl.resizeTextForBestFit = true; ttl.resizeTextMinSize = 36; ttl.resizeTextMaxSize = 62;
+        var txt = UIKit.Label(body, Loc.T("Meet." + m.id + ".Text"), 40, Color.white, new Vector2(0.5f, 0.5f), new Vector2(0, -140), new Vector2(570, 190));
+        txt.horizontalOverflow = HorizontalWrapMode.Wrap; txt.verticalOverflow = VerticalWrapMode.Truncate;
+        txt.resizeTextForBestFit = true; txt.resizeTextMinSize = 26; txt.resizeTextMaxSize = 38;
+        UIKit.TextButton(body, Loc.T("GotIt"), new Vector2(0.5f, 0f), new Vector2(0, BottomY(40) + 10), new Vector2(440, 120), new Color(0.3f, 0.8f, 0.4f), () =>
         {
             PlayerPrefs.SetInt("Kuzya.Met." + m.id, 1); PlayerPrefs.Save();
             Destroy(root.gameObject);
             next?.Invoke();
         });
         // the badge sits over the window's top ribbon and swings in last
-        var badge = UIKit.Image(body, "badge_meet", new Vector2(0.5f, 1f), new Vector2(0, Art ? -95 : 30), new Vector2(720, 267));
+        // (in a language without its own badge picture the word is written as text)
+        Graphic badge = Loc.HasArt("badge_meet")
+            ? (Graphic)UIKit.Image(body, Loc.Art("badge_meet"), new Vector2(0.5f, 1f), new Vector2(0, Art ? -95 : 30), new Vector2(720, 267))
+            : UIKit.Label(body, Loc.T("MeetBadge"), 120, new Color(1f, 0.85f, 0.3f), new Vector2(0.5f, 1f), new Vector2(0, Art ? -95 : 30), new Vector2(720, 200));
         badge.rectTransform.localScale = Vector3.zero;
         StartCoroutine(BadgeIn(badge.rectTransform));
     }
@@ -1027,7 +1652,7 @@ public class GameController : MonoBehaviour
     IEnumerator CaughtBanner(int reward)
     {
         coinsInFlight += reward; Progress.AddBalance(reward);    // paid at once: safe even if the level ends now
-        if (!GameArt.I.Has("caught_word")) { Toast("Попался! +" + reward); StartCoroutine(CoinShower(lastClearPos, reward)); yield break; }
+        if (!GameArt.I.Has("caught_word")) { Toast(Loc.T("Caught") + (reward > 0 ? " +" + reward : "")); if (reward > 0) StartCoroutine(CoinShower(lastClearPos, reward)); yield break; }
         if (activeComboRoot != null) Destroy(activeComboRoot.gameObject);
         var root = UIKit.Rect("caught", toastRoot); UIKit.Stretch(root);
         activeComboRoot = root;
@@ -1039,13 +1664,32 @@ public class GameController : MonoBehaviour
         var burst = Img("cmb_burst", C + new Vector2(0, -20), new Vector2(860, 820), new Color(gold.r, gold.g, gold.b, 0f));
         var bitsLayer = UIKit.Rect("bits", root); UIKit.Stretch(bitsLayer);
         var sack = Img("caught_sack", C + new Vector2(250, -110), new Vector2(190, 267), new Color(1, 1, 1, 0));
+        if (reward <= 0) sack.gameObject.SetActive(false);
         var mouse = Img("mouse_caught", C + new Vector2(-10, -20), new Vector2(400, 400), new Color(1, 1, 1, 0));
-        var paw = Img("caught_paw", Vector2.zero, new Vector2(330, 414), Color.white);
-        paw.rectTransform.pivot = new Vector2(0.5f, 0.04f);          // the toes
+        bool useNet = GameArt.I.Has("net_empty") && GameArt.I.Has("net_caught");
+        if (useNet) mouse.gameObject.SetActive(false);            // the mouse is seen inside the net
+        // the net swings in on an arc from the upper left around its grip (the top-right end of the handle)
+        var trailLayer = UIKit.Rect("trail", root); UIKit.Stretch(trailLayer);
+        var paw = Img(useNet ? "net_empty" : "caught_paw", Vector2.zero, useNet ? new Vector2(640, 630) : new Vector2(330, 414), Color.white);
+        paw.rectTransform.pivot = useNet ? new Vector2(0.97f, 0.96f) : new Vector2(0.5f, 0.04f);
+        Vector2 grip = C + new Vector2(400, 360);                    // so that, upright, the net bag is over the middle
+        const float SwingFrom = -115f;
         Vector2 pawRest = C + new Vector2(-40, 120), pawFrom = new Vector2(pawRest.x, H * 0.5f + 80f);
-        var wordSprite = GameArt.I.S("caught_word");
-        float ww = 800f, wh = ww * wordSprite.rect.height / wordSprite.rect.width;
-        var word = Img("caught_word", C + new Vector2(0, -310), new Vector2(ww, wh), new Color(1, 1, 1, 0));
+        var trail = new List<(Image i, float born)>();
+        if (useNet) { AudioManager.Play("swap_2", 1f); AudioManager.Play("swap_3", 0.7f); }
+        float ww = 800f, wh = 190f;
+        Graphic word;
+        if (Loc.HasArt("caught_word"))
+        {
+            var wordSprite = GameArt.I.S(Loc.Art("caught_word"));
+            wh = ww * wordSprite.rect.height / wordSprite.rect.width;
+            word = Img(Loc.Art("caught_word"), C + new Vector2(0, -310), new Vector2(ww, wh), new Color(1, 1, 1, 0));
+        }
+        else
+        {   // no picture of the word in this language: write it
+            word = UIKit.Label(root, Loc.T("Caught"), 150, Color.white, new Vector2(0.5f, 0.5f), C + new Vector2(0, -310), new Vector2(ww, wh));
+            word.color = new Color(1, 1, 1, 0);
+        }
 
         var bits = new List<(RectTransform t, Image i, Vector2 v, float spin, float life)>();
         Color[] pal = { gold, new Color(1f, 0.92f, 0.5f), Color.white, new Color(1f, 0.6f, 0.2f) };
@@ -1061,16 +1705,52 @@ public class GameController : MonoBehaviour
             }
         }
 
-        const float Impact = 0.2f, LiftAt = 0.95f, PayAt = 0.6f, ExitAt = 1.75f, End = 2.15f;
+        const float Impact = 0.3f, LiftAt = 1.35f, PayAt = 0.6f, ExitAt = 1.75f, End = 2.15f;
         bool impacted = false, paid = false;
         float t = 0f;
         while (t < End && root != null)
         {
             float dt = Mathf.Min(Time.unscaledDeltaTime, 1f / 30f);
             t += dt;
-            // paw: drops from above, squashes on the mouse, later lifts away
             var prt = paw.rectTransform;
-            if (t < Impact) prt.anchoredPosition = Vector2.Lerp(pawFrom, pawRest, Kit.EaseInCubic(t / Impact));
+            if (useNet)
+            {   // net: whooshes down in an arc, the caught mouse wriggles in it, then it is lifted away
+                prt.anchoredPosition = grip;
+                if (t < Impact)
+                {
+                    float sk = Kit.EaseInCubic(t / Impact);
+                    prt.localRotation = Quaternion.Euler(0, 0, Mathf.Lerp(SwingFrom, 0f, sk));
+                    // the whoosh: soft white smears left along the path of the net bag
+                    Vector3 bag = prt.TransformPoint(new Vector3(-0.62f * 640f, -0.55f * 630f, 0));
+                    var dot = UIKit.Image(trailLayer, null, new Vector2(0.5f, 0.5f), Vector2.zero, new Vector2(300, 300));
+                    dot.sprite = Kit.SoftCircle(64); dot.color = new Color(1f, 1f, 1f, 0.55f);
+                    dot.rectTransform.position = bag;
+                    dot.rectTransform.localRotation = Quaternion.Euler(0, 0, Mathf.Lerp(SwingFrom, 0f, sk) - 40f);
+                    dot.rectTransform.localScale = new Vector3(1.4f, 0.45f, 1f);
+                    trail.Add((dot, t));
+                }
+                else if (t < LiftAt)
+                {
+                    float it0 = t - Impact;
+                    prt.localRotation = Quaternion.Euler(0, 0, 9f * Mathf.Exp(-it0 * 3f) * Mathf.Sin(it0 * 24f) + 3f * Mathf.Sin(it0 * 41f));
+                }
+                else
+                {
+                    float lk = Mathf.Clamp01((t - LiftAt) / 0.35f);
+                    prt.anchoredPosition = grip + new Vector2(260f, H * 0.9f) * Kit.EaseInCubic(lk);
+                    prt.localRotation = Quaternion.Euler(0, 0, -25f * lk);
+                }
+                for (int ti = trail.Count - 1; ti >= 0; ti--)
+                {
+                    var tr = trail[ti]; float age = t - tr.born;
+                    if (tr.i == null) { trail.RemoveAt(ti); continue; }
+                    float fa = Mathf.Clamp01(1f - age / 0.28f);
+                    tr.i.color = new Color(1f, 1f, 1f, 0.55f * fa);
+                    if (fa <= 0f) { Destroy(tr.i.gameObject); trail.RemoveAt(ti); }
+                }
+            }
+            // paw: drops from above, squashes on the mouse, later lifts away
+            else if (t < Impact) prt.anchoredPosition = Vector2.Lerp(pawFrom, pawRest, Kit.EaseInCubic(t / Impact));
             else if (t < LiftAt)
             {
                 float it0 = t - Impact;
@@ -1088,6 +1768,16 @@ public class GameController : MonoBehaviour
             if (!impacted && t >= Impact)
             {
                 impacted = true;
+                if (useNet)
+                {   // caught! the bag now holds the mouse; a few speed lines flick off where the swing stopped
+                    paw.sprite = GameArt.I.S("net_caught");
+                    for (int sl = 0; sl < 3; sl++)
+                    {
+                        var line = UIKit.Panel(trailLayer, new Vector2(0.5f, 0.5f), C + new Vector2(-330f + sl * 30f, 40f - sl * 90f), new Vector2(150, 14), new Color(1f, 1f, 1f, 0.8f), 7);
+                        line.rectTransform.localRotation = Quaternion.Euler(0, 0, 25f);
+                        trail.Add((line, t));
+                    }
+                }
                 AudioManager.Play("mouse_caught", 1f); AudioManager.Play("Hit", 0.5f);
                 SpawnBits(16, C);
                 FX.Shake(board.cell * 0.1f, 0.25f);
@@ -1124,7 +1814,7 @@ public class GameController : MonoBehaviour
                     sack.color = Color.white;
                 }
             }
-            if (!paid && t >= PayAt)
+            if (!paid && reward > 0 && t >= PayAt)
             {
                 paid = true;
                 Vector3 sp = sack.rectTransform.position; sp.z = 0;
@@ -1136,7 +1826,7 @@ public class GameController : MonoBehaviour
             {
                 float ek = Mathf.Clamp01((t - ExitAt) / (End - ExitAt));
                 float a = 1f - Kit.EaseInOut(ek);
-                foreach (var im in new[] { word, burst, mouse, sack })
+                foreach (var im in new Graphic[] { word, burst, mouse, sack })
                 {
                     var c = im.color; c.a = Mathf.Min(c.a, a); im.color = c;
                 }
@@ -1181,6 +1871,49 @@ public class GameController : MonoBehaviour
             var c = lbl.color; c.a = k < 0.6f ? 1f : 1f - (k - 0.6f) / 0.4f; lbl.color = c;
         });
         if (rt != null) Destroy(rt.gameObject);
+    }
+
+    // Win screen: three star places in a shallow arc; the earned ones drop in one after another with a
+    // flash and a little burst of sparks, the rest stay as dark shapes.
+    IEnumerator ResultStars(RectTransform body, float y)
+    {
+        if (!GameArt.I.Has("ui_star")) yield break;
+        var stars = new Image[3];
+        for (int i = 0; i < 3; i++)
+        {
+            float size = i == 1 ? 150f : 124f;
+            var pos = new Vector2((i - 1) * 150f, y + (i == 1 ? 14f : 0f));
+            var shade = UIKit.Image(body, "ui_star", new Vector2(0.5f, 0.5f), pos, new Vector2(size, size));
+            shade.color = new Color(0.1f, 0.14f, 0.36f, 0.55f);
+            shade.rectTransform.localRotation = Quaternion.Euler(0, 0, (1 - i) * 12f);
+            stars[i] = UIKit.Image(body, "ui_star", new Vector2(0.5f, 0.5f), pos, new Vector2(size, size));
+            stars[i].rectTransform.localRotation = shade.rectTransform.localRotation;
+            stars[i].transform.localScale = Vector3.zero;
+        }
+        yield return new WaitForSecondsRealtime(0.55f);
+        for (int i = 0; i < Mathf.Clamp(lastStars, 0, 3); i++)
+        {
+            var st = stars[i];
+            if (st == null) yield break;
+            AudioManager.Play("Pop", 0.55f + 0.15f * i);
+            var rt = st.rectTransform;
+            // sparks
+            for (int s = 0; s < 8; s++)
+            {
+                var sp = UIKit.Image(body, "ui_star", new Vector2(0.5f, 0.5f), rt.anchoredPosition, new Vector2(34, 34));
+                float ang = s * Mathf.PI / 4f + i; var dir = new Vector2(Mathf.Cos(ang), Mathf.Sin(ang));
+                var srt = sp.rectTransform; Vector2 from = rt.anchoredPosition;
+                StartCoroutine(Kit.Tween(0.45f, k =>
+                {
+                    if (sp == null) return;
+                    srt.anchoredPosition = from + dir * (150f * Kit.EaseOutCubic(k));
+                    srt.localScale = Vector3.one * (1f - k); sp.color = new Color(1f, 1f, 1f, 1f - k);
+                    if (k >= 1f) Destroy(sp.gameObject);
+                }));
+            }
+            yield return Kit.Tween(0.28f, k => { if (st != null) st.transform.localScale = Vector3.one * Mathf.Lerp(2.4f, 1f, Kit.EaseOutCubic(k)) * (k < 1f ? 1f : 1f); if (st != null) st.color = new Color(1f, 1f, 1f, Mathf.Clamp01(k * 3f)); });
+            yield return Kit.Tween(0.14f, k => { if (st != null) st.transform.localScale = Vector3.one * (1f + 0.18f * Mathf.Sin(k * Mathf.PI)); });
+        }
     }
 
     IEnumerator RewardCountUp(Transform coin, Text lbl, int amount)
@@ -1459,14 +2192,14 @@ public class GameController : MonoBehaviour
 
     IEnumerator ComboBanner(int tier)
     {
-        if (!GameArt.I.Has("cmb_word_" + tier)) { yield return ComboBannerFlat(tier); yield break; }
+        if (!GameArt.I.Has("cmb_word_" + tier) && !Loc.HasArt("cmb_word_" + tier)) { yield return ComboBannerFlat(tier); yield break; }
         AudioManager.Play("Combo");
         if (activeComboRoot != null) Destroy(activeComboRoot.gameObject);   // a newer combo replaces the old one
         var root = UIKit.Rect("combo", toastRoot); UIKit.Stretch(root);
         activeComboRoot = root;
         Color tint = ComboTint[tier - 1];
         Vector2 C = new Vector2(0, 80);
-        float W = toastRoot.rect.width;
+        float W = toastRoot.rect.width, H = toastRoot.rect.height;
 
         Image Img(string key, Vector2 pos, Vector2 size, Color c)
         {
@@ -1474,7 +2207,23 @@ public class GameController : MonoBehaviour
             i.color = c; return i;
         }
         // layers, back to front
+        // the screen dims a little so the banner stands out
+        var dim = UIKit.Panel(root, new Vector2(0.5f, 0.5f), Vector2.zero, new Vector2(4000, 6000), new Color(0.06f, 0.04f, 0.16f, 0f), 0);
+        dim.raycastTarget = false;
         var flash = tier == 4 ? UIKit.Panel(root, new Vector2(0.5f, 0.5f), Vector2.zero, new Vector2(4000, 6000), new Color(0.7f, 0.3f, 1f, 0f), 0) : null;
+        if (flash != null) flash.raycastTarget = false;
+        // slowly turning light rays behind the splat
+        Image rays = null, rays2 = null;
+        if (GameArt.I.Has("res_win_rays"))
+        {
+            Color rc = Color.Lerp(tint, Color.white, 0.35f);
+            rays = Img("res_win_rays", C, Vector2.one * 1250f, new Color(rc.r, rc.g, rc.b, 0f));
+            rays2 = Img("res_win_rays", C, Vector2.one * 880f, new Color(1f, 1f, 1f, 0f));
+        }
+        // shock wave: a thin white ring that runs outwards from the hit
+        var ringRt = UIKit.Place(UIKit.Rect("ring", root), new Vector2(0.5f, 0.5f), C, new Vector2(420, 420));
+        var ring = ringRt.gameObject.AddComponent<Image>();
+        ring.sprite = Kit.RoundedRect(256, 128, 12); ring.raycastTarget = false; ring.color = new Color(1, 1, 1, 0);
         var burst = Img("cmb_burst", C, new Vector2(820, 780), new Color(tint.r, tint.g, tint.b, 0f));
         var slash = Img("cmb_slash", C + new Vector2(-20, -10), new Vector2(980, 560), new Color(1f, 1f, 1f, 0f));
         var slashGlow = Img("cmb_slash", C + new Vector2(-20, -10), new Vector2(1040, 600), new Color(tint.r, tint.g, tint.b, 0f));
@@ -1483,9 +2232,53 @@ public class GameController : MonoBehaviour
         string charKey = tier == 2 ? "cmb_rocket" : tier == 3 ? "cmb_star" : tier == 4 ? "cmb_monster" : null;
         Image chr = charKey != null && GameArt.I.Has(charKey)
             ? Img(charKey, Vector2.zero, tier == 4 ? new Vector2(430, 550) : new Vector2(300, 300), new Color(1, 1, 1, 0)) : null;
-        var wordSprite = GameArt.I.S("cmb_word_" + tier);
-        float ww = 780f, wh = ww * wordSprite.rect.height / wordSprite.rect.width;
-        var word = Img("cmb_word_" + tier, C, new Vector2(ww, wh), new Color(1, 1, 1, 0));
+        float ww = 780f, wh = 230f;
+        Graphic word;
+        if (Loc.HasArt("cmb_word_" + tier))
+        {
+            var wordSprite = GameArt.I.S(Loc.Art("cmb_word_" + tier));
+            wh = ww * wordSprite.rect.height / wordSprite.rect.width;
+            word = Img(Loc.Art("cmb_word_" + tier), C, new Vector2(ww, wh), new Color(1, 1, 1, 0));
+        }
+        else
+        {   // no picture of the word in this language: write it
+            word = UIKit.Label(root, Loc.T("Combo." + tier), tier == 1 ? 170 : 120, Color.white, new Vector2(0.5f, 0.5f), C, new Vector2(ww, wh));
+            word.color = new Color(1, 1, 1, 0);
+        }
+        // under the word: a soft coloured glow and a short ghost trail; over it: a glossy shine that sweeps
+        // across the letters (picture words only: the shine is masked by the word's own shape)
+        Image glow = null, shine = null;
+        var ghosts = new List<Image>();
+        var wordImg = word as Image;
+        if (wordImg != null)
+        {
+            Color gc2 = Color.Lerp(tint, Color.white, 0.25f);
+            glow = Img(Loc.Art("cmb_word_" + tier), C, new Vector2(ww, wh), new Color(gc2.r, gc2.g, gc2.b, 0f));
+            glow.transform.SetSiblingIndex(word.transform.GetSiblingIndex());
+            for (int g = 0; g < 3; g++)
+            {
+                var gh = Img(Loc.Art("cmb_word_" + tier), C, new Vector2(ww, wh), new Color(1, 1, 1, 0));
+                gh.transform.SetSiblingIndex(word.transform.GetSiblingIndex());
+                ghosts.Add(gh);
+            }
+            wordImg.gameObject.AddComponent<Mask>().showMaskGraphic = true;
+            var srt = UIKit.Place(UIKit.Rect("shine", word.transform), new Vector2(0.5f, 0.5f), new Vector2(-ww, 0), new Vector2(110, wh * 2.4f));
+            shine = srt.gameObject.AddComponent<Image>();
+            shine.sprite = Kit.SoftCircle(64); shine.raycastTarget = false; shine.color = new Color(1, 1, 1, 0.55f);
+            srt.localRotation = Quaternion.Euler(0, 0, -18f);
+        }
+        // little stars twinkling around the word
+        string twKey = GameArt.I.Has("ui_booster_sparkle") ? "ui_booster_sparkle" : "fx_sparkle";
+        var twinkles = new List<(Image img, float phase)>();
+        if (GameArt.I.Has(twKey))
+            for (int k = 0; k < 7 + tier; k++)
+            {
+                float ang = k * Mathf.PI * 2f / (7 + tier) + Random.Range(-0.25f, 0.25f);
+                var tp = C + new Vector2(Mathf.Cos(ang) * (ww * 0.5f + Random.Range(10f, 90f)), Mathf.Sin(ang) * (wh * 0.5f + Random.Range(40f, 150f)));
+                twinkles.Add((Img(twKey, tp, Vector2.one * Random.Range(50f, 95f), new Color(1f, 0.97f, 0.8f, 0f)), Random.Range(0f, 6f)));
+            }
+        // confetti rains down for the two biggest combos
+        var confetti = new List<(RectTransform t, Vector2 v, float spin)>();
         var paw = Img(tier == 4 ? "cmb_paw_monster" : "cmb_paw", Vector2.zero, new Vector2(900, 550), Color.white);
 
         // flying bits
@@ -1503,7 +2296,7 @@ public class GameController : MonoBehaviour
             }
         }
 
-        const float SwipeEnd = 0.2f, Impact = 0.2f, ExitAt = 1.25f, End = 1.6f;
+        const float SwipeEnd = 0.2f, Impact = 0.2f, ExitAt = 0.9f, End = 1.15f;   // on screen for about a second
         bool impacted = false, paid = false;
         Vector2 pawFrom = new Vector2(-W * 0.5f - 70f, C.y - 520f);
         paw.rectTransform.pivot = new Vector2(0.02f, 0.2f);   // shoulder end of the arm
@@ -1535,12 +2328,19 @@ public class GameController : MonoBehaviour
                 impacted = true;
                 SpawnBits(10 + 5 * tier);
                 if (tier >= 3) FX.Shake(board.cell * (tier == 4 ? 0.18f : 0.1f), 0.3f);
+                if (tier >= 3 && GameArt.I.Has("res_confetti_1"))
+                    for (int k = 0; k < (tier == 4 ? 40 : 24); k++)
+                    {
+                        var ci = UIKit.Image(bitsLayer, "res_confetti_" + (1 + k % 8), new Vector2(0.5f, 0.5f), new Vector2(Random.Range(-W * 0.5f, W * 0.5f), H * 0.5f + Random.Range(20f, 400f)), Vector2.one * Random.Range(34f, 58f));
+                        ci.color = Color.HSVToRGB(Random.value, 0.6f, 1f);
+                        confetti.Add((ci.rectTransform, new Vector2(Random.Range(-120f, 120f), Random.Range(-900f, -500f)), Random.Range(-360f, 360f)));
+                    }
             }
             if (!paid && t >= Impact + 0.15f)
             {
                 paid = true;
                 int n = Coins(ComboCoins[tier - 1]);
-                coinsInFlight += n; Progress.AddBalance(n);
+                coinsInFlight += n; Progress.AddBalance(n); levelEarned += n;
                 StartCoroutine(CoinShower(lastClearPos, n));
             }
             float it = t - Impact;
@@ -1559,6 +2359,47 @@ public class GameController : MonoBehaviour
                 word.rectTransform.localRotation = Quaternion.Euler(0, 0, 4f * land - 3f * (1f - wk));
                 word.color = new Color(1, 1, 1, Mathf.Clamp01(wk * 3f));
                 if (flash != null) flash.color = new Color(0.7f, 0.3f, 1f, 0.35f * Mathf.Clamp01(1f - it / 0.35f));
+
+                // ---- the extra layers ----
+                float inA = Mathf.Clamp01(it / 0.12f);
+                dim.color = new Color(0.06f, 0.04f, 0.16f, (tier >= 3 ? 0.4f : 0.28f) * inA);
+                if (rays != null)
+                {
+                    float rs = 0.6f + 0.4f * Kit.EaseOutCubic(Mathf.Clamp01(it / 0.35f));
+                    rays.rectTransform.localScale = Vector3.one * rs; rays2.rectTransform.localScale = Vector3.one * rs;
+                    rays.rectTransform.localRotation = Quaternion.Euler(0, 0, -it * 28f);
+                    rays2.rectTransform.localRotation = Quaternion.Euler(0, 0, it * 18f);
+                    var c1 = rays.color; c1.a = 0.32f * inA; rays.color = c1;
+                    rays2.color = new Color(1f, 1f, 1f, 0.14f * inA);
+                }
+                float rk = Mathf.Clamp01(it / 0.45f);
+                ringRt.localScale = Vector3.one * Mathf.Lerp(0.3f, 2.7f, Kit.EaseOutCubic(rk));
+                ring.color = new Color(1f, 1f, 1f, 0.55f * (1f - rk));
+                if (glow != null)
+                {
+                    float pulse = 1.07f + 0.035f * Mathf.Sin(it * 9f);
+                    glow.rectTransform.localScale = word.rectTransform.localScale * pulse;
+                    glow.rectTransform.localRotation = word.rectTransform.localRotation;
+                    var gcl = glow.color; gcl.a = 0.6f * Mathf.Clamp01((it - 0.15f) / 0.15f); glow.color = gcl;
+                    for (int g = 0; g < ghosts.Count; g++)
+                    {   // each ghost is the word a moment earlier in its fall
+                        float gk = Mathf.Clamp01((it - 0.035f * (g + 1)) / 0.22f);
+                        ghosts[g].rectTransform.localScale = Vector3.one * Mathf.Lerp(2.1f, 1f, Kit.EaseOutCubic(gk));
+                        ghosts[g].color = new Color(1, 1, 1, it < 0.34f ? 0.3f / (g + 1) * Mathf.Clamp01(wk * 3f) * Mathf.Clamp01((0.34f - it) / 0.1f) : 0f);
+                    }
+                    // shine: one quick pass just after the landing
+                    float sh = Mathf.Clamp01((it - 0.25f) / 0.35f);
+                    shine.rectTransform.anchoredPosition = new Vector2(Mathf.Lerp(-ww * 0.5f - 150f, ww * 0.5f + 150f, sh), 0);
+                }
+                for (int k = 0; k < twinkles.Count; k++)
+                {
+                    var tw = twinkles[k];
+                    float ta = Mathf.Clamp01((it - 0.15f - k * 0.03f) / 0.1f);
+                    float bl = 0.5f + 0.5f * Mathf.Sin(it * 11f + tw.phase);
+                    tw.img.color = new Color(1f, 0.97f, 0.8f, ta * bl);
+                    tw.img.rectTransform.localScale = Vector3.one * (0.5f + 0.7f * bl);
+                    tw.img.rectTransform.localRotation = Quaternion.Euler(0, 0, it * 60f + tw.phase * 40f);
+                }
             }
             // character
             if (chr != null && it >= 0.08f)
@@ -1567,7 +2408,7 @@ public class GameController : MonoBehaviour
                 var rt = chr.rectTransform;
                 if (tier == 2)
                 {   // rocket zooms from the lower left past the word and off the top right
-                    float k = Mathf.Clamp01(ct / 0.9f);
+                    float k = Mathf.Clamp01(ct / 0.7f);
                     rt.anchoredPosition = Vector2.Lerp(C + new Vector2(-W * 0.5f - 200f, -380f), C + new Vector2(W * 0.5f + 220f, 520f), Kit.EaseInOut(k)) + new Vector2(0, 40f * Mathf.Sin(k * Mathf.PI));
                     rt.localRotation = Quaternion.Euler(0, 0, -8f + 6f * Mathf.Sin(ct * 18f));
                     chr.color = Color.white;
@@ -1593,11 +2434,13 @@ public class GameController : MonoBehaviour
             {
                 float ek = Mathf.Clamp01((t - ExitAt) / (End - ExitAt));
                 float a = 1f - Kit.EaseInOut(ek);
-                foreach (var im in new[] { word, burst, chr })
+                foreach (var im in new Graphic[] { word, burst, chr, glow, rays, rays2, shine })
                 {
                     if (im == null) continue;
                     var c = im.color; c.a = Mathf.Min(c.a, a); im.color = c;
                 }
+                { var dc = dim.color; dc.a = Mathf.Min(dc.a, a * 0.4f); dim.color = dc; }
+                foreach (var tw2 in twinkles) { var c2 = tw2.img.color; c2.a = Mathf.Min(c2.a, a); tw2.img.color = c2; }
                 word.rectTransform.localScale *= 1f - 0.3f * ek;
                 burst.rectTransform.localScale *= 1f - 0.4f * ek;
                 root.anchoredPosition = new Vector2(0, 90f * Kit.EaseInOut(ek));
@@ -1614,6 +2457,15 @@ public class GameController : MonoBehaviour
                 var c = b.i.color; c.a = Mathf.Clamp01(1f - (age - b.life * 0.6f) / (b.life * 0.4f)); b.i.color = c;
                 bits[i] = b;
                 if (age > b.life) { Destroy(b.t.gameObject); bits.RemoveAt(i); }
+            }
+            for (int i = confetti.Count - 1; i >= 0; i--)
+            {
+                var cf = confetti[i];
+                if (cf.t == null) { confetti.RemoveAt(i); continue; }
+                cf.v.y -= 500f * dt; cf.v.x *= 1f / (1f + 0.6f * dt);
+                cf.t.anchoredPosition += cf.v * dt;
+                cf.t.localRotation = Quaternion.Euler(0, 0, cf.t.localEulerAngles.z + cf.spin * dt);
+                confetti[i] = cf;
             }
             yield return null;
         }
@@ -1649,6 +2501,7 @@ public class GameController : MonoBehaviour
 
     IEnumerator ToastRoutine(string text)
     {
+        toastRoot.SetAsLastSibling();            // above the map and other windows
         var bg = UIKit.Panel(toastRoot, new Vector2(0.5f, 0.5f), new Vector2(0, -200), new Vector2(Mathf.Max(420, text.Length * 26 + 80), 110), new Color(0.13f, 0.18f, 0.36f, 0.9f), 55);
         UIKit.Label(bg.rectTransform, text, 44, Color.white, new Vector2(0.5f, 0.5f), Vector2.zero, bg.rectTransform.sizeDelta);
         yield return UIKit.PopIn(bg.transform, 0.2f);
@@ -1665,9 +2518,43 @@ public class GameController : MonoBehaviour
 
     IEnumerator PunchText(Text t) { if (t != null) yield return Punch(t.transform); }
 
+    // Android back button: closes the top window, or pauses the level; on the map it sends the game to the background
+    void HandleBack()
+    {
+        var kb = UnityEngine.InputSystem.Keyboard.current;
+        if (kb == null || !kb.escapeKey.wasPressedThisFrame) return;
+        if (popupRoot.childCount > 0)
+        {
+            var top = popupRoot.GetChild(popupRoot.childCount - 1);
+            foreach (var b in top.GetComponentsInChildren<Button>(false))
+                if (b.name == "btn_ui_close" && b.interactable) { b.onClick.Invoke(); return; }
+            if (top.GetComponent<LevelMap>() != null) MoveTaskToBack();
+            return;                                       // a window without a close button (win / lose): choose a button
+        }
+        if (!ended && !celebrating) ShowPause();
+    }
+
+    static void MoveTaskToBack()
+    {
+#if UNITY_ANDROID && !UNITY_EDITOR
+        using (var up = new AndroidJavaClass("com.unity3d.player.UnityPlayer"))
+        using (var act = up.GetStatic<AndroidJavaObject>("currentActivity"))
+            act.Call<bool>("moveTaskToBack", true);
+#endif
+    }
+
+    // leaving the app mid-level opens the pause window; everything is saved before the system may close the app
+    void OnApplicationPause(bool paused)
+    {
+        if (!paused) return;
+        PlayerPrefs.Save();
+        if (board != null && !ended && !finishing && !celebrating && map == null && popupRoot != null && popupRoot.childCount == 0) ShowPause();
+    }
+
     // armed power-up: glow breathes, icon lifts and sways, sparkles circle and twinkle; everything eases in/out
     void Update()
     {
+        HandleBack();
         float tm = Time.time, dt = Time.deltaTime;
         if (hudChest != null)
         {
@@ -1712,7 +2599,65 @@ public class GameController : MonoBehaviour
     IEnumerator Shake(Transform t)
     {
         Vector3 p = t.localPosition;
-        yield return Kit.Tween(0.3f, k => t.localPosition = p + new Vector3(Mathf.Sin(k * 40f) * 12f * (1 - k), 0, 0));
-        t.localPosition = p;
+        yield return Kit.Tween(0.3f, k => { if (t != null) t.localPosition = p + new Vector3(Mathf.Sin(k * 40f) * 12f * (1 - k), 0, 0); });
+        if (t != null) t.localPosition = p;
     }
+}
+
+// Golden glow with a ring of twinkling sparkles behind a chosen item (level card). Fades in and out by itself.
+public class PickGlow : MonoBehaviour
+{
+    public bool on;
+    Image glow; RectTransform ring; Image[] sparks; Color tint; float k;
+
+    public void Build(Color c)
+    {
+        tint = c;
+        glow = UIKit.Image(transform, "ui_booster_glow", new Vector2(0.5f, 0.5f), Vector2.zero, new Vector2(290, 290), false);
+        ring = UIKit.Place(UIKit.Rect("sparks", transform), new Vector2(0.5f, 0.5f), Vector2.zero, new Vector2(10, 10));
+        string key = GameArt.I.Has("ui_booster_sparkle") ? "ui_booster_sparkle" : "fx_sparkle";
+        sparks = new Image[6];
+        for (int i = 0; i < sparks.Length; i++)
+        {
+            float a = i * Mathf.PI * 2f / sparks.Length;
+            sparks[i] = UIKit.Image(ring, key, new Vector2(0.5f, 0.5f), new Vector2(Mathf.Cos(a), Mathf.Sin(a)) * 98f, new Vector2(46, 46));
+        }
+        Apply();
+    }
+
+    void Update()
+    {
+        float to = on ? 1f : 0f;
+        if (!Mathf.Approximately(k, to)) k = Mathf.MoveTowards(k, to, Time.unscaledDeltaTime / 0.25f);
+        Apply();
+    }
+
+    void Apply()
+    {
+        float t = Time.unscaledTime;
+        if (glow != null)
+        {
+            glow.color = new Color(tint.r, tint.g, tint.b, k * (0.8f + 0.2f * Mathf.Sin(t * 3f)));
+            float gs = (0.85f + 0.15f * k) * (1f + 0.04f * Mathf.Sin(t * 3f));
+            glow.rectTransform.localScale = new Vector3(gs, gs, 1f);
+        }
+        if (ring != null) ring.localRotation = Quaternion.Euler(0, 0, -t * 40f);
+        if (sparks == null) return;
+        for (int i = 0; i < sparks.Length; i++)
+        {
+            float tw = 0.5f + 0.5f * Mathf.Sin(t * 5f + i * 2.1f);
+            sparks[i].color = new Color(1f, 0.97f, 0.8f, k * (0.35f + 0.65f * tw));
+            float ss = 0.6f + 0.5f * tw;
+            sparks[i].rectTransform.localScale = new Vector3(ss, ss, 1f);
+            sparks[i].rectTransform.localRotation = Quaternion.Euler(0, 0, t * 40f);
+        }
+    }
+}
+
+// Tutorial pointer in the UI: nudges towards what it points at (up-left) and back.
+public class Bobber : MonoBehaviour
+{
+    Vector2 home; RectTransform rt;
+    void Start() { rt = (RectTransform)transform; home = rt.anchoredPosition; }
+    void Update() { float k = 0.5f + 0.5f * Mathf.Sin(Time.unscaledTime * 5f); rt.anchoredPosition = home + new Vector2(18f, -18f) * k; }
 }

@@ -28,26 +28,36 @@ public class GameArtBuilder : AssetPostprocessor
         { "mint_face_3", "Assets/Sprites/mint_face_black.png" },
         { "mint_face_4", "Assets/Sprites/mint_face_yellow.png" },
         // special cats
-        { "special_line", "Assets/Sprites/cat-cross.png" },
-        { "special_bomb", "Assets/Sprites/cat-bomb.png" },
-        { "special_rainbow", "Assets/Sprites/cat-rainbow.png" },
+        { "special_line", "Assets/Sprites/cat-cross.png" },       { "special_line_an", "Assets/Sprites/cat-cross-an.png" },
+        { "special_bomb", "Assets/Sprites/cat-bomb.png" },        { "special_bomb_an", "Assets/Sprites/cat-bomb-an.png" },
+        { "compass_rose", "Assets/Sprites/compass_rose.png" },
+        { "tile_icon_1", "Assets/Sprites/FX/TileIcons/tile_icon_1.png" }, { "tile_icon_2", "Assets/Sprites/FX/TileIcons/tile_icon_2.png" }, { "tile_icon_3", "Assets/Sprites/FX/TileIcons/tile_icon_3.png" }, { "tile_icon_4", "Assets/Sprites/FX/TileIcons/tile_icon_4.png" }, { "tile_icon_5", "Assets/Sprites/FX/TileIcons/tile_icon_5.png" }, { "tile_icon_6", "Assets/Sprites/FX/TileIcons/tile_icon_6.png" }, { "tile_icon_7", "Assets/Sprites/FX/TileIcons/tile_icon_7.png" }, { "tile_icon_8", "Assets/Sprites/FX/TileIcons/tile_icon_8.png" },
+        { "ui_hand", "Assets/ui/ui_hand.png" }, { "daily_kitten", "Assets/ui/daily_kitten.png" }, { "celebrate_banner", "Assets/ui/celebrate_banner.png" }, { "moves_low_banner", "Assets/ui/moves_low_banner.png" }, { "ui_help", "Assets/ui/ui_help.png" }, { "map_cloud_1", "Assets/ui/Map/map_cloud_1.png" }, { "map_cloud_2", "Assets/ui/Map/map_cloud_2.png" }, { "map_cloud_3", "Assets/ui/Map/map_cloud_3.png" }, { "map_cloud_4", "Assets/ui/Map/map_cloud_4.png" }, { "ui_streak_off", "Assets/ui/streak_off.png" }, { "ui_streak_on", "Assets/ui/streak_on.png" }, { "ui_streak_gift", "Assets/ui/streak_gift.png" },
+        { "combo_bb", "Assets/Combos/Emblems/combo_bb.png" }, { "combo_ll", "Assets/Combos/Emblems/combo_ll.png" }, { "combo_lb", "Assets/Combos/Emblems/combo_lb.png" },
+        { "combo_hh", "Assets/Combos/Emblems/combo_hh.png" }, { "combo_hb", "Assets/Combos/Emblems/combo_hb.png" }, { "combo_hl", "Assets/Combos/Emblems/combo_hl.png" }, { "combo_hr", "Assets/Combos/Emblems/combo_hr.png" },
+        { "combo_rr", "Assets/Combos/Emblems/combo_rr.png" }, { "combo_rb", "Assets/Combos/Emblems/combo_rb.png" }, { "combo_rl", "Assets/Combos/Emblems/combo_rl.png" },
+        { "ui_badge_check", "Assets/ui/badge_check.png" }, { "ui_badge_count", "Assets/ui/badge_count.png" },
+        { "sleep_z", "Assets/Sprites/sleep_z.png" },
+        { "special_rainbow", "Assets/Sprites/cat-rainbow.png" },  { "special_rainbow_an", "Assets/Sprites/cat-rainbow-an.png" },
         { "special_hunter", "Assets/Sprites/Cat-hunter.png|Assets/Sprites/cat-hunter.png" },
         { "special_hunter_an", "Assets/Sprites/Cat-hunter-an.png|Assets/Sprites/cat-hunter-an.png|Assets/Sprites/Cat-hunter.png" },
         // blockers
         { "box_full", "Assets/Sprites/Cat-blockers/box_full.png" },
         { "box_damaged", "Assets/Sprites/Cat-blockers/box_damaged.png" },
         // box split in two along the rim: back half is drawn behind the cat, front half in front
-        { "box_full_back", "Assets/Sprites/Cat-blockers/split/box_full_back.png" }, { "box_full_front", "Assets/Sprites/Cat-blockers/split/box_full_front.png" },
-        { "box_damaged_back", "Assets/Sprites/Cat-blockers/split/box_damaged_back.png" }, { "box_damaged_front", "Assets/Sprites/Cat-blockers/split/box_damaged_front.png" },
-        { "yarn_wrap", "Assets/Sprites/Cat-blockers/yarn_wrap.png" },
+        { "yarn_wrap", "Assets/Sprites/Cat-blockers/yarn_wrap.png" }, { "yarn_wrap_front", "Assets/Sprites/Cat-blockers/yarn_wrap_front.png" }, { "yarn_wrap_back", "Assets/Sprites/Cat-blockers/yarn_wrap_back.png" },
         { "yarn_ball", "Assets/Sprites/Cat-blockers/yarn_ball.png" },
-        { "mint_wreath", "Assets/Sprites/Cat-blockers/mint_wreath.png" },
-        // treasure chest (every 5 levels), daily "three bowls", milk x2 sticker
+        // treasure chest (every 10 stars), daily "three bowls", milk x2 sticker
         { "chest_closed", "Assets/ui/Chest/chest_closed.png" }, { "chest_open", "Assets/ui/Chest/chest_open.png" }, { "map_chest", "Assets/Level-menu/map_chest.png" },
         { "daily_bowl", "Assets/ui/Daily/daily_bowl.png" }, { "daily_fish", "Assets/ui/Daily/daily_fish.png" }, { "daily_icon", "Assets/ui/Daily/daily_icon.png" },
+        { "daily_icon_done", "Assets/ui/Daily/daily_icon_done.png" }, { "daily_mat", "Assets/ui/Daily/daily_mat.png" }, { "daily_small", "Assets/ui/Daily/daily_small.png" },
+        { "ui_star", "Assets/ui/star.png" }, { "streak_flame", "Assets/ui/streak_flame.png" },
         { "milk_x2", "Assets/Sprites/Milk/milk_x2.png" },
-        { "mouse_idle", "Assets/Sprites/Mouse/mouse_idle.png" }, { "mouse_run", "Assets/Sprites/Mouse/mouse_run.png" }, { "mouse_caught", "Assets/Sprites/Mouse/mouse_caught.png" }, { "caught_sack", "Assets/Sprites/Mouse/caught_sack.png" },
-        { "caught_word", "Assets/Combos/Caught/caught_word.png" }, { "caught_paw", "Assets/Combos/Caught/caught_paw.png" }, { "badge_meet", "Assets/ui/badge_meet.png" },
+        // two special cats swapped together: the swirl that pulls them in and the star flash of the merge (white art, tinted in code)
+        { "fx_merge_swirl", "Assets/Sprites/FX/Merge/merge_swirl.png" }, { "fx_merge_star", "Assets/Sprites/FX/Merge/merge_star.png" },
+        { "mouse_idle", "Assets/Sprites/Mouse/mouse_idle.png" }, { "mouse_run_1", "Assets/Sprites/Mouse/mouse_run_1.png" }, { "mouse_run_2", "Assets/Sprites/Mouse/mouse_run_2.png" }, { "mouse_run_3", "Assets/Sprites/Mouse/mouse_run_3.png" }, { "mouse_run_4", "Assets/Sprites/Mouse/mouse_run_4.png" },
+        { "cheese_1", "Assets/Sprites/Mouse/cheese_1.png" }, { "cheese_2", "Assets/Sprites/Mouse/cheese_2.png" }, { "cheese_3", "Assets/Sprites/Mouse/cheese_3.png" }, { "net_empty", "Assets/Sprites/Mouse/net_empty.png" }, { "net_caught", "Assets/Sprites/Mouse/net_caught.png" }, { "mouse_run", "Assets/Sprites/Mouse/mouse_run.png" }, { "mouse_caught", "Assets/Sprites/Mouse/mouse_caught.png" }, { "caught_sack", "Assets/Sprites/Mouse/caught_sack.png" },
+        { "caught_word", "Assets/Combos/Caught/caught_word.png" }, { "badge_meet", "Assets/ui/badge_meet.png" },
         // milk bucket (static, tips over), its puddle and splashes
         { "milk_bucket", "Assets/Sprites/Milk/milk_bucket.png" }, { "milk_bucket_tipped", "Assets/Sprites/Milk/milk_bucket_tipped.png" }, { "milk_puddle", "Assets/Sprites/Milk/milk_puddle.png" },
         { "milk_splash_1", "Assets/Sprites/FX/Milk/milk_splash_1.png" }, { "milk_splash_2", "Assets/Sprites/FX/Milk/milk_splash_2.png" }, { "milk_splash_3", "Assets/Sprites/FX/Milk/milk_splash_3.png" },
@@ -57,11 +67,15 @@ public class GameArtBuilder : AssetPostprocessor
         { "bubble_1", "Assets/Sprites/FX/Foam/bubble_1.png" }, { "bubble_2", "Assets/Sprites/FX/Foam/bubble_2.png" }, { "bubble_3", "Assets/Sprites/FX/Foam/bubble_3.png" }, { "bubble_4", "Assets/Sprites/FX/Foam/bubble_4.png" },
         { "bubble_5", "Assets/Sprites/FX/Foam/bubble_5.png" }, { "bubble_6", "Assets/Sprites/FX/Foam/bubble_6.png" }, { "bubble_7", "Assets/Sprites/FX/Foam/bubble_7.png" }, { "bubble_8", "Assets/Sprites/FX/Foam/bubble_8.png" },
         { "mint_leaf", "Assets/Sprites/Cat-blockers/mint_leaf.png" },
-        { "dizzy_stars", "Assets/Sprites/Cat-blockers/dizzy_stars.png" },
         { "vase", "Assets/Sprites/Cat-blockers/vase.png" },
         { "vase_cracked", "Assets/Sprites/Cat-blockers/vase_cracked.png" },
         { "fish_bowl", "Assets/Sprites/Cat-blockers/fish_bowl.png" },
         { "fish", "Assets/Sprites/Cat-blockers/fish.png" },
+        // the bowl without its fish, and the fish cut into parts (all on one 512 canvas) so it can swim and wave its fins
+        { "fish_bowl_empty", "Assets/Sprites/Cat-blockers/FishAnim/fish_bowl_empty.png" },
+        { "fish_part_body", "Assets/Sprites/Cat-blockers/FishAnim/fish_body.png" }, { "fish_part_tail", "Assets/Sprites/Cat-blockers/FishAnim/fish_tail.png" },
+        { "fish_part_dorsal", "Assets/Sprites/Cat-blockers/FishAnim/fish_dorsal.png" }, { "fish_part_fins", "Assets/Sprites/Cat-blockers/FishAnim/fish_fins.png" },
+        { "fish_part_side", "Assets/Sprites/Cat-blockers/FishAnim/fish_side.png" },
         { "bowl_exit", "Assets/Sprites/Cat-blockers/bowl_exit.png" },
         // debris
         { "box_piece_1", "Assets/Sprites/FX/box_piece_1.png" }, { "box_piece_2", "Assets/Sprites/FX/box_piece_2.png" }, { "box_piece_3", "Assets/Sprites/FX/box_piece_3.png" },
@@ -69,8 +83,9 @@ public class GameArtBuilder : AssetPostprocessor
         { "petal_1", "Assets/Sprites/FX/petal_1.png" }, { "petal_2", "Assets/Sprites/FX/petal_2.png" }, { "petal_3", "Assets/Sprites/FX/petal_3.png" }, { "petal_4", "Assets/Sprites/FX/petal_4.png" },
         { "water_drop_1", "Assets/Sprites/FX/water_drop_1.png" }, { "water_drop_2", "Assets/Sprites/FX/water_drop_2.png" }, { "water_drop_3", "Assets/Sprites/FX/water_drop_3.png" },
         { "yarn_thread_1", "Assets/Sprites/FX/yarn_thread_1.png" }, { "yarn_thread_2", "Assets/Sprites/FX/yarn_thread_2.png" },
+        { "yarn_thread_3", "Assets/Sprites/FX/yarn_thread_3.png" }, { "yarn_thread_4", "Assets/Sprites/FX/yarn_thread_4.png" },
         // power-ups
-        { "pu_paw", "Assets/Sprites/power-ups/power-up-paw.png" },
+        { "pu_paw", "Assets/Sprites/power-ups/power-up-paw.png" }, { "pu_swap", "Assets/Sprites/power-ups/power-up-swap.png" },
         { "pu_bomb", "Assets/Sprites/power-ups/power-up-bomb.png" },
         { "pu_color", "Assets/Sprites/power-ups/power-up-color.png" },
         { "pu_moves", "Assets/ui/moves 1.png|Assets/Sprites/power-ups/power-up-moves.png" },
@@ -101,6 +116,23 @@ public class GameArtBuilder : AssetPostprocessor
         // level map (Assets/Level-menu)
         { "map_node_done", "Assets/Level-menu/map_node_done.png" }, { "map_node_current", "Assets/Level-menu/map_node_current.png" }, { "map_node_locked", "Assets/Level-menu/map_node_locked.png" },
         { "map_marker", "Assets/Level-menu/map_marker.png" },
+        // worlds (chapters of 20 levels): ground tile, gate, big props and small scatter. World N lives in Level-menu/Worlds/N/
+        { "world_1_floor", "Assets/Level-menu/Worlds/1/floor.png" }, { "world_1_gate", "Assets/Level-menu/Worlds/1/gate.png" }, { "world_1_prop_1", "Assets/Level-menu/Worlds/1/prop_1.png" }, { "world_1_prop_2", "Assets/Level-menu/Worlds/1/prop_2.png" }, { "world_1_prop_3", "Assets/Level-menu/Worlds/1/prop_3.png" }, { "world_1_prop_4", "Assets/Level-menu/Worlds/1/prop_4.png" }, { "world_1_prop_5", "Assets/Level-menu/Worlds/1/prop_5.png" }, { "world_1_prop_6", "Assets/Level-menu/Worlds/1/prop_6.png" }, { "world_1_prop_7", "Assets/Level-menu/Worlds/1/prop_7.png" }, { "world_1_small_1", "Assets/Level-menu/Worlds/1/small_1.png" }, { "world_1_small_2", "Assets/Level-menu/Worlds/1/small_2.png" }, { "world_1_small_3", "Assets/Level-menu/Worlds/1/small_3.png" }, { "world_1_small_4", "Assets/Level-menu/Worlds/1/small_4.png" }, { "world_1_small_5", "Assets/Level-menu/Worlds/1/small_5.png" }, { "world_1_small_6", "Assets/Level-menu/Worlds/1/small_6.png" },
+        { "world_2_floor", "Assets/Level-menu/Worlds/2/floor.png" }, { "world_2_gate", "Assets/Level-menu/Worlds/2/gate.png" }, { "world_2_prop_1", "Assets/Level-menu/Worlds/2/prop_1.png" }, { "world_2_prop_2", "Assets/Level-menu/Worlds/2/prop_2.png" }, { "world_2_prop_3", "Assets/Level-menu/Worlds/2/prop_3.png" }, { "world_2_prop_4", "Assets/Level-menu/Worlds/2/prop_4.png" }, { "world_2_prop_5", "Assets/Level-menu/Worlds/2/prop_5.png" }, { "world_2_prop_6", "Assets/Level-menu/Worlds/2/prop_6.png" }, { "world_2_prop_7", "Assets/Level-menu/Worlds/2/prop_7.png" }, { "world_2_prop_8", "Assets/Level-menu/Worlds/2/prop_8.png" }, { "world_2_small_1", "Assets/Level-menu/Worlds/2/small_1.png" }, { "world_2_small_2", "Assets/Level-menu/Worlds/2/small_2.png" }, { "world_2_small_3", "Assets/Level-menu/Worlds/2/small_3.png" }, { "world_2_small_4", "Assets/Level-menu/Worlds/2/small_4.png" }, { "world_2_small_5", "Assets/Level-menu/Worlds/2/small_5.png" }, { "world_2_small_6", "Assets/Level-menu/Worlds/2/small_6.png" },
+        { "world_3_floor", "Assets/Level-menu/Worlds/3/floor.png" }, { "world_3_gate", "Assets/Level-menu/Worlds/3/gate.png" }, { "world_3_prop_1", "Assets/Level-menu/Worlds/3/prop_1.png" }, { "world_3_prop_2", "Assets/Level-menu/Worlds/3/prop_2.png" }, { "world_3_prop_3", "Assets/Level-menu/Worlds/3/prop_3.png" }, { "world_3_prop_4", "Assets/Level-menu/Worlds/3/prop_4.png" }, { "world_3_prop_5", "Assets/Level-menu/Worlds/3/prop_5.png" }, { "world_3_prop_6", "Assets/Level-menu/Worlds/3/prop_6.png" }, { "world_3_prop_7", "Assets/Level-menu/Worlds/3/prop_7.png" }, { "world_3_prop_8", "Assets/Level-menu/Worlds/3/prop_8.png" }, { "world_3_small_1", "Assets/Level-menu/Worlds/3/small_1.png" }, { "world_3_small_2", "Assets/Level-menu/Worlds/3/small_2.png" }, { "world_3_small_3", "Assets/Level-menu/Worlds/3/small_3.png" }, { "world_3_small_4", "Assets/Level-menu/Worlds/3/small_4.png" }, { "world_3_small_5", "Assets/Level-menu/Worlds/3/small_5.png" }, { "world_3_small_6", "Assets/Level-menu/Worlds/3/small_6.png" },
+        { "world_4_floor", "Assets/Level-menu/Worlds/4/floor.png" }, { "world_4_gate", "Assets/Level-menu/Worlds/4/gate.png" }, { "world_4_prop_1", "Assets/Level-menu/Worlds/4/prop_1.png" }, { "world_4_prop_2", "Assets/Level-menu/Worlds/4/prop_2.png" }, { "world_4_prop_3", "Assets/Level-menu/Worlds/4/prop_3.png" }, { "world_4_prop_4", "Assets/Level-menu/Worlds/4/prop_4.png" }, { "world_4_prop_5", "Assets/Level-menu/Worlds/4/prop_5.png" }, { "world_4_prop_6", "Assets/Level-menu/Worlds/4/prop_6.png" }, { "world_4_prop_7", "Assets/Level-menu/Worlds/4/prop_7.png" }, { "world_4_prop_8", "Assets/Level-menu/Worlds/4/prop_8.png" }, { "world_4_small_1", "Assets/Level-menu/Worlds/4/small_1.png" }, { "world_4_small_2", "Assets/Level-menu/Worlds/4/small_2.png" }, { "world_4_small_3", "Assets/Level-menu/Worlds/4/small_3.png" }, { "world_4_small_4", "Assets/Level-menu/Worlds/4/small_4.png" }, { "world_4_small_5", "Assets/Level-menu/Worlds/4/small_5.png" }, { "world_4_small_6", "Assets/Level-menu/Worlds/4/small_6.png" },
+        { "world_5_floor", "Assets/Level-menu/Worlds/5/floor.png" }, { "world_5_gate", "Assets/Level-menu/Worlds/5/gate.png" }, { "world_5_prop_1", "Assets/Level-menu/Worlds/5/prop_1.png" }, { "world_5_prop_2", "Assets/Level-menu/Worlds/5/prop_2.png" }, { "world_5_prop_3", "Assets/Level-menu/Worlds/5/prop_3.png" }, { "world_5_prop_4", "Assets/Level-menu/Worlds/5/prop_4.png" }, { "world_5_prop_5", "Assets/Level-menu/Worlds/5/prop_5.png" }, { "world_5_prop_6", "Assets/Level-menu/Worlds/5/prop_6.png" }, { "world_5_prop_7", "Assets/Level-menu/Worlds/5/prop_7.png" }, { "world_5_prop_8", "Assets/Level-menu/Worlds/5/prop_8.png" }, { "world_5_small_1", "Assets/Level-menu/Worlds/5/small_1.png" }, { "world_5_small_2", "Assets/Level-menu/Worlds/5/small_2.png" }, { "world_5_small_3", "Assets/Level-menu/Worlds/5/small_3.png" }, { "world_5_small_4", "Assets/Level-menu/Worlds/5/small_4.png" }, { "world_5_small_5", "Assets/Level-menu/Worlds/5/small_5.png" }, { "world_5_small_6", "Assets/Level-menu/Worlds/5/small_6.png" },
+        { "world_6_floor", "Assets/Level-menu/Worlds/6/floor.png" }, { "world_6_gate", "Assets/Level-menu/Worlds/6/gate.png" }, { "world_6_prop_1", "Assets/Level-menu/Worlds/6/prop_1.png" }, { "world_6_prop_2", "Assets/Level-menu/Worlds/6/prop_2.png" }, { "world_6_prop_3", "Assets/Level-menu/Worlds/6/prop_3.png" }, { "world_6_prop_4", "Assets/Level-menu/Worlds/6/prop_4.png" }, { "world_6_prop_5", "Assets/Level-menu/Worlds/6/prop_5.png" }, { "world_6_prop_6", "Assets/Level-menu/Worlds/6/prop_6.png" }, { "world_6_prop_7", "Assets/Level-menu/Worlds/6/prop_7.png" }, { "world_6_prop_8", "Assets/Level-menu/Worlds/6/prop_8.png" }, { "world_6_small_1", "Assets/Level-menu/Worlds/6/small_1.png" }, { "world_6_small_2", "Assets/Level-menu/Worlds/6/small_2.png" }, { "world_6_small_3", "Assets/Level-menu/Worlds/6/small_3.png" }, { "world_6_small_4", "Assets/Level-menu/Worlds/6/small_4.png" }, { "world_6_small_5", "Assets/Level-menu/Worlds/6/small_5.png" }, { "world_6_small_6", "Assets/Level-menu/Worlds/6/small_6.png" },
+        { "world_7_floor", "Assets/Level-menu/Worlds/7/floor.png" }, { "world_7_gate", "Assets/Level-menu/Worlds/7/gate.png" }, { "world_7_prop_1", "Assets/Level-menu/Worlds/7/prop_1.png" }, { "world_7_prop_2", "Assets/Level-menu/Worlds/7/prop_2.png" }, { "world_7_prop_3", "Assets/Level-menu/Worlds/7/prop_3.png" }, { "world_7_prop_4", "Assets/Level-menu/Worlds/7/prop_4.png" }, { "world_7_prop_5", "Assets/Level-menu/Worlds/7/prop_5.png" }, { "world_7_prop_6", "Assets/Level-menu/Worlds/7/prop_6.png" }, { "world_7_prop_7", "Assets/Level-menu/Worlds/7/prop_7.png" }, { "world_7_prop_8", "Assets/Level-menu/Worlds/7/prop_8.png" }, { "world_7_small_1", "Assets/Level-menu/Worlds/7/small_1.png" }, { "world_7_small_2", "Assets/Level-menu/Worlds/7/small_2.png" }, { "world_7_small_3", "Assets/Level-menu/Worlds/7/small_3.png" }, { "world_7_small_4", "Assets/Level-menu/Worlds/7/small_4.png" }, { "world_7_small_5", "Assets/Level-menu/Worlds/7/small_5.png" }, { "world_7_small_6", "Assets/Level-menu/Worlds/7/small_6.png" },
+        { "world_8_floor", "Assets/Level-menu/Worlds/8/floor.png" }, { "world_8_gate", "Assets/Level-menu/Worlds/8/gate.png" }, { "world_8_prop_1", "Assets/Level-menu/Worlds/8/prop_1.png" }, { "world_8_prop_2", "Assets/Level-menu/Worlds/8/prop_2.png" }, { "world_8_prop_3", "Assets/Level-menu/Worlds/8/prop_3.png" }, { "world_8_prop_4", "Assets/Level-menu/Worlds/8/prop_4.png" }, { "world_8_prop_5", "Assets/Level-menu/Worlds/8/prop_5.png" }, { "world_8_prop_6", "Assets/Level-menu/Worlds/8/prop_6.png" }, { "world_8_prop_7", "Assets/Level-menu/Worlds/8/prop_7.png" }, { "world_8_prop_8", "Assets/Level-menu/Worlds/8/prop_8.png" }, { "world_8_small_1", "Assets/Level-menu/Worlds/8/small_1.png" }, { "world_8_small_2", "Assets/Level-menu/Worlds/8/small_2.png" }, { "world_8_small_3", "Assets/Level-menu/Worlds/8/small_3.png" }, { "world_8_small_4", "Assets/Level-menu/Worlds/8/small_4.png" }, { "world_8_small_5", "Assets/Level-menu/Worlds/8/small_5.png" }, { "world_8_small_6", "Assets/Level-menu/Worlds/8/small_6.png" },
+        { "world_9_floor", "Assets/Level-menu/Worlds/9/floor.png" }, { "world_9_gate", "Assets/Level-menu/Worlds/9/gate.png" }, { "world_9_prop_1", "Assets/Level-menu/Worlds/9/prop_1.png" }, { "world_9_prop_2", "Assets/Level-menu/Worlds/9/prop_2.png" }, { "world_9_prop_3", "Assets/Level-menu/Worlds/9/prop_3.png" }, { "world_9_prop_4", "Assets/Level-menu/Worlds/9/prop_4.png" }, { "world_9_prop_5", "Assets/Level-menu/Worlds/9/prop_5.png" }, { "world_9_prop_6", "Assets/Level-menu/Worlds/9/prop_6.png" }, { "world_9_prop_7", "Assets/Level-menu/Worlds/9/prop_7.png" }, { "world_9_prop_8", "Assets/Level-menu/Worlds/9/prop_8.png" }, { "world_9_small_1", "Assets/Level-menu/Worlds/9/small_1.png" }, { "world_9_small_2", "Assets/Level-menu/Worlds/9/small_2.png" }, { "world_9_small_3", "Assets/Level-menu/Worlds/9/small_3.png" }, { "world_9_small_4", "Assets/Level-menu/Worlds/9/small_4.png" }, { "world_9_small_5", "Assets/Level-menu/Worlds/9/small_5.png" }, { "world_9_small_6", "Assets/Level-menu/Worlds/9/small_6.png" },
+        { "world_10_floor", "Assets/Level-menu/Worlds/10/floor.png" }, { "world_10_gate", "Assets/Level-menu/Worlds/10/gate.png" }, { "world_10_prop_1", "Assets/Level-menu/Worlds/10/prop_1.png" }, { "world_10_prop_2", "Assets/Level-menu/Worlds/10/prop_2.png" }, { "world_10_prop_3", "Assets/Level-menu/Worlds/10/prop_3.png" }, { "world_10_prop_4", "Assets/Level-menu/Worlds/10/prop_4.png" }, { "world_10_prop_5", "Assets/Level-menu/Worlds/10/prop_5.png" }, { "world_10_prop_6", "Assets/Level-menu/Worlds/10/prop_6.png" }, { "world_10_prop_7", "Assets/Level-menu/Worlds/10/prop_7.png" }, { "world_10_prop_8", "Assets/Level-menu/Worlds/10/prop_8.png" }, { "world_10_small_1", "Assets/Level-menu/Worlds/10/small_1.png" }, { "world_10_small_2", "Assets/Level-menu/Worlds/10/small_2.png" }, { "world_10_small_3", "Assets/Level-menu/Worlds/10/small_3.png" }, { "world_10_small_4", "Assets/Level-menu/Worlds/10/small_4.png" }, { "world_10_small_5", "Assets/Level-menu/Worlds/10/small_5.png" }, { "world_10_small_6", "Assets/Level-menu/Worlds/10/small_6.png" },
+        { "world_11_floor", "Assets/Level-menu/Worlds/11/floor.png" }, { "world_11_gate", "Assets/Level-menu/Worlds/11/gate.png" }, { "world_11_prop_1", "Assets/Level-menu/Worlds/11/prop_1.png" }, { "world_11_prop_2", "Assets/Level-menu/Worlds/11/prop_2.png" }, { "world_11_prop_3", "Assets/Level-menu/Worlds/11/prop_3.png" }, { "world_11_prop_4", "Assets/Level-menu/Worlds/11/prop_4.png" }, { "world_11_prop_5", "Assets/Level-menu/Worlds/11/prop_5.png" }, { "world_11_prop_6", "Assets/Level-menu/Worlds/11/prop_6.png" }, { "world_11_prop_7", "Assets/Level-menu/Worlds/11/prop_7.png" }, { "world_11_prop_8", "Assets/Level-menu/Worlds/11/prop_8.png" }, { "world_11_small_1", "Assets/Level-menu/Worlds/11/small_1.png" }, { "world_11_small_2", "Assets/Level-menu/Worlds/11/small_2.png" }, { "world_11_small_3", "Assets/Level-menu/Worlds/11/small_3.png" }, { "world_11_small_4", "Assets/Level-menu/Worlds/11/small_4.png" }, { "world_11_small_5", "Assets/Level-menu/Worlds/11/small_5.png" }, { "world_11_small_6", "Assets/Level-menu/Worlds/11/small_6.png" },
+        { "world_12_floor", "Assets/Level-menu/Worlds/12/floor.png" }, { "world_12_gate", "Assets/Level-menu/Worlds/12/gate.png" }, { "world_12_prop_1", "Assets/Level-menu/Worlds/12/prop_1.png" }, { "world_12_prop_2", "Assets/Level-menu/Worlds/12/prop_2.png" }, { "world_12_prop_3", "Assets/Level-menu/Worlds/12/prop_3.png" }, { "world_12_prop_4", "Assets/Level-menu/Worlds/12/prop_4.png" }, { "world_12_prop_5", "Assets/Level-menu/Worlds/12/prop_5.png" }, { "world_12_prop_6", "Assets/Level-menu/Worlds/12/prop_6.png" }, { "world_12_prop_7", "Assets/Level-menu/Worlds/12/prop_7.png" }, { "world_12_prop_8", "Assets/Level-menu/Worlds/12/prop_8.png" }, { "world_12_small_1", "Assets/Level-menu/Worlds/12/small_1.png" }, { "world_12_small_2", "Assets/Level-menu/Worlds/12/small_2.png" }, { "world_12_small_3", "Assets/Level-menu/Worlds/12/small_3.png" }, { "world_12_small_4", "Assets/Level-menu/Worlds/12/small_4.png" }, { "world_12_small_5", "Assets/Level-menu/Worlds/12/small_5.png" }, { "world_12_small_6", "Assets/Level-menu/Worlds/12/small_6.png" },
+        // star gates between worlds: padlock (closed / open), the counter plate under it, the crown of a fully starred world, the "new world" ribbon, the glow under levels that still miss stars
+        { "ui_find_btn", "Assets/ui/find_btn.png" }, { "ui_find_arrow", "Assets/ui/find_arrow.png" },
+        { "ui_lock", "Assets/ui/Gate/lock.png" }, { "ui_lock_open", "Assets/ui/Gate/lock_open.png" }, { "ui_star_plate", "Assets/ui/Gate/plate.png" },
+        { "ui_crown", "Assets/ui/Gate/crown.png" }, { "ui_ribbon", "Assets/ui/Gate/ribbon.png" }, { "ui_glow_ring", "Assets/ui/Gate/glow_ring.png" },
         { "map_decor_1", "Assets/Level-menu/map_decor_1.png" }, { "map_decor_2", "Assets/Level-menu/map_decor_2.png" }, { "map_decor_3", "Assets/Level-menu/map_decor_3.png" }, { "map_decor_4", "Assets/Level-menu/map_decor_4.png" },
         { "map_decor_5", "Assets/Level-menu/map_decor_5.png" }, { "map_decor_6", "Assets/Level-menu/map_decor_6.png" }, { "map_decor_7", "Assets/Level-menu/map_decor_7.png" }, { "map_decor_8", "Assets/Level-menu/map_decor_8.png" },
         { "map_decor_9", "Assets/Level-menu/map_decor_9.png" }, { "map_decor_10", "Assets/Level-menu/map_decor_10.png" }, { "map_decor_11", "Assets/Level-menu/map_decor_11.png" }, { "map_decor_12", "Assets/Level-menu/map_decor_12.png" },
@@ -139,7 +171,7 @@ public class GameArtBuilder : AssetPostprocessor
         { "booster_wand", "Assets/Sprites/FX/Burn/Boosters/booster_wand.png" }, { "booster_slap", "Assets/Sprites/FX/Burn/Boosters/booster_slap.png" },
         { "booster_starburst", "Assets/Sprites/FX/Burn/Boosters/booster_starburst.png" }, { "booster_magic_circle", "Assets/Sprites/FX/Burn/Boosters/booster_magic_circle.png" },
         // Line cat blast (Sprites/FX/Burn/Line) - white, tinted in code
-        { "line_charge", "Assets/Sprites/FX/Burn/Line/line_charge.png|Assets/Sprites/FX/Burn/line/line_charge.png" }, { "line_beam", "Assets/Sprites/FX/Burn/Line/line_beam.png|Assets/Sprites/FX/Burn/line/line_beam.png" },
+        { "line_charge", "Assets/Sprites/FX/Burn/Line/line_charge.png|Assets/Sprites/FX/Burn/line/line_charge.png" }, { "line_beam", "Assets/Sprites/FX/Burn/Line/line_beam.png|Assets/Sprites/FX/Burn/line/line_beam.png" }, { "line_beam_x", "Assets/Sprites/FX/Burn/Line/line_beam_x.png" },
         { "line_head", "Assets/Sprites/FX/Burn/Line/line_head.png|Assets/Sprites/FX/Burn/line/line_head.png" }, { "line_claws", "Assets/Sprites/FX/Burn/Line/line_claws.png|Assets/Sprites/FX/Burn/line/line_claws.png" },
         { "line_spark_1", "Assets/Sprites/FX/Burn/Line/line_spark_1.png|Assets/Sprites/FX/Burn/line/line_spark_1.png" }, { "line_spark_2", "Assets/Sprites/FX/Burn/Line/line_spark_2.png|Assets/Sprites/FX/Burn/line/line_spark_2.png" },
         { "line_spark_3", "Assets/Sprites/FX/Burn/Line/line_spark_3.png|Assets/Sprites/FX/Burn/line/line_spark_3.png" }, { "line_spark_4", "Assets/Sprites/FX/Burn/Line/line_spark_4.png|Assets/Sprites/FX/Burn/line/line_spark_4.png" },
@@ -149,6 +181,13 @@ public class GameArtBuilder : AssetPostprocessor
         { "bokeh_dot", "Assets/Sprites/Background/bokeh_dot.png" },
         { "splash", "Assets/Sprites/splash.png" }, { "splash_blur", "Assets/Sprites/splash_blur.png" },
         { "ui_play_big", "Assets/ui/play_big.png" }, { "ui_play_big_pressed", "Assets/ui/play_big_pressed.png" },
+        // English versions of pictures with words on them: same key + "_en" (see Loc.Art)
+        { "ui_play_big_en", "Assets/ui/play_big_en.png" }, { "ui_play_big_pressed_en", "Assets/ui/play_big_pressed_en.png" },
+        { "banner_win_en", "Assets/ui/win_en.png" }, { "banner_lose_en", "Assets/ui/lose_en.png" }, { "badge_meet_en", "Assets/ui/badge_meet_en.png" },
+        { "caught_word_en", "Assets/Combos/Caught/caught_word_en.png" },
+        { "cmb_word_1_en", "Assets/Combos/Layers/combo_word_1_en.png" }, { "cmb_word_2_en", "Assets/Combos/Layers/combo_word_2_en.png" }, { "cmb_word_3_en", "Assets/Combos/Layers/combo_word_3_en.png" }, { "cmb_word_4_en", "Assets/Combos/Layers/combo_word_4_en.png" },
+        // language switch in Settings
+        { "ui_flag_ru", "Assets/ui/flag_ru.png" }, { "ui_flag_en", "Assets/ui/flag_en.png" },
     };
 
     // sound key used in code -> file(s) in Assets/Sounds (first existing wins; '|' separates alternatives)
@@ -161,7 +200,7 @@ public class GameArtBuilder : AssetPostprocessor
         { "chest_tap", "chest_tap" }, { "chest_open", "chest_open" }, { "meet_card", "meet_card" },
         { "explosion", "bomb|explosion" },                       // Bomb cat + Mega-bomb
         { "Line-Pop", "line-special|Line-Pop" },                  // Line cat
-        { "Pop", "collision|Pop" },                              // regular matches
+        { "Pop", "pop|collision|Pop" }, { "Chain", "chain|Chain" },   // cascades                              // regular matches
         { "Combo", "combo|Combo" },                              // combo notification ("Отлично!" banners)
         { "hunter", "hunter-speacial|hunter-special|hunter" },   // Hunter cat
         { "nope", "groaning|nope" },
@@ -169,7 +208,10 @@ public class GameArtBuilder : AssetPostprocessor
         { "mint_off", "mint_off|mint" },                          // catnip cleared off a cat (just the rustle)
         { "freez", "mint|freez" },                                // catnip spreads to a neighbour (rustle + sleepy purr)
         { "Hit", "hit-cardboard|Hit" },                           // box hit (also a tap on a locked level on the map)                              // unsuccessful swipe (cats go back)
-        { "swap_1", "swap_1" }, { "swap_2", "swap_2" }, { "swap_3", "swap_3" },   // successful swipe (3 takes, picked at random)
+        { "no_win", "no_win|lost" }, { "bowl_shuffle", "bowl_shuffle|swap_1" },   // daily bowls: empty pick, shuffling
+        { "swap_1", "swap_1" }, { "swap_2", "swap_2" }, { "swap_3", "swap_3" },
+        { "fish_plop", "fish_plop" }, { "board_shuffle", "board_shuffle" }, { "cat_drop", "cat_drop" },   // fish into its bowl, no-moves shuffle, cats dropping in
+        { "popup", "popup" }, { "celebrate", "celebrate" }, { "moves_low", "moves_low" }, { "purchase", "purchase" }, { "world_unlock", "world_unlock" },          // windows, buying with coins, a new world opens   // successful swipe (3 takes, picked at random)
     };
 
     static readonly string[] SoundNames =
@@ -227,7 +269,7 @@ public class GameArtBuilder : AssetPostprocessor
             settings.spriteBorder = new Vector4(0, 410, 0, 440);
             ti.SetTextureSettings(settings);
         }
-        ti.wrapMode = assetPath.EndsWith("bg_pattern_tile.png") ? TextureWrapMode.Repeat : TextureWrapMode.Clamp;
+        ti.wrapMode = assetPath.EndsWith("bg_pattern_tile.png") || (assetPath.Contains("/Worlds/") && assetPath.EndsWith("/floor.png")) ? TextureWrapMode.Repeat : TextureWrapMode.Clamp;
         ti.textureCompression = TextureImporterCompression.Compressed;
         ti.filterMode = FilterMode.Bilinear;
     }

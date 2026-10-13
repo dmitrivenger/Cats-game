@@ -136,6 +136,88 @@ public static class UIKit
         return b;
     }
 
+    // "watch a video" button: violet, with a white play triangle drawn in code (the fonts have no ▶ glyph)
+    public static readonly Color AdViolet = new Color(0.56f, 0.38f, 0.95f);
+    public static Button AdButton(Transform parent, string text, Vector2 anchor, Vector2 pos, Vector2 size, Action onClick)
+    {
+        var b = TextButton(parent, text, anchor, pos, size, AdViolet, onClick);
+        b.name = "btn_ad";
+        var lbl = b.GetComponentInChildren<Text>();
+        float tri = size.y * 0.42f;
+        if (lbl != null)
+        {
+            var lr = lbl.rectTransform; lr.anchoredPosition += new Vector2(tri * 0.85f, 0); lr.sizeDelta = new Vector2(size.x - tri * 2.6f, size.y);
+            // one line always: a long caption gets a smaller font instead of running into the triangle
+            lbl.horizontalOverflow = HorizontalWrapMode.Overflow;
+            int fs = lbl.fontSize;
+            while (fs > 18 && lbl.preferredWidth > lr.sizeDelta.x) { fs -= 2; lbl.fontSize = fs; }
+        }
+        var irt = Place(Rect("play", b.transform), new Vector2(0f, 0.5f), new Vector2(size.y * 0.55f, 0), new Vector2(tri, tri));
+        var icon = irt.gameObject.AddComponent<Image>();
+        icon.sprite = VideoIcon(); icon.raycastTarget = false; icon.color = Color.white;
+        irt.sizeDelta = new Vector2(tri * 1.2f, tri * 1.2f);
+        return b;
+    }
+
+    // "watch a video": a little white screen with a play triangle cut through it, on a stand
+    static Sprite videoIcon;
+    public static Sprite VideoIcon()
+    {
+        if (videoIcon != null) return videoIcon;
+        const int N = 96;
+        var t = new Texture2D(N, N, TextureFormat.RGBA32, false) { wrapMode = TextureWrapMode.Clamp, filterMode = FilterMode.Bilinear };
+        Vector2 a = new Vector2(38, 37), bb = new Vector2(38, 75), c = new Vector2(68, 56);     // the triangle (cut out)
+        for (int y = 0; y < N; y++)
+            for (int x = 0; x < N; x++)
+            {
+                var p = new Vector2(x + 0.5f, y + 0.5f);
+                float scr = RoundBox(p, new Vector2(48, 56), new Vector2(42, 32), 12f);          // the screen
+                float stand = RoundBox(p, new Vector2(48, 14), new Vector2(18, 5), 4f);           // its foot
+                float neck = RoundBox(p, new Vector2(48, 22), new Vector2(5, 6), 1f);
+                float inShape = Mathf.Clamp01(0.5f - Mathf.Min(scr, Mathf.Min(stand, neck)));
+                float tri = Mathf.Clamp01(Mathf.Min(Edge(p, a, bb), Mathf.Min(Edge(p, bb, c), Edge(p, c, a))) + 0.5f);
+                t.SetPixel(x, y, new Color(1, 1, 1, inShape * (1f - tri)));
+            }
+        t.Apply();
+        videoIcon = Sprite.Create(t, new Rect(0, 0, N, N), new Vector2(0.5f, 0.5f), 100f);
+        return videoIcon;
+    }
+
+    // signed distance to a rounded box (negative inside)
+    static float RoundBox(Vector2 p, Vector2 centre, Vector2 half, float r)
+    {
+        Vector2 q = new Vector2(Mathf.Abs(p.x - centre.x), Mathf.Abs(p.y - centre.y)) - half + new Vector2(r, r);
+        return new Vector2(Mathf.Max(q.x, 0), Mathf.Max(q.y, 0)).magnitude + Mathf.Min(Mathf.Max(q.x, q.y), 0) - r;
+    }
+
+    static Sprite playTri;
+    public static Sprite PlayTriangle()
+    {
+        if (playTri != null) return playTri;
+        const int N = 64;
+        var t = new Texture2D(N, N, TextureFormat.RGBA32, false) { wrapMode = TextureWrapMode.Clamp, filterMode = FilterMode.Bilinear };
+        // a rounded-ish triangle pointing right, anti-aliased by distance to the three edges
+        Vector2 a = new Vector2(14, 8), bb = new Vector2(14, 56), c = new Vector2(58, 32);
+        for (int y = 0; y < N; y++)
+            for (int x = 0; x < N; x++)
+            {
+                var p = new Vector2(x + 0.5f, y + 0.5f);
+                float d = Mathf.Min(Edge(p, a, bb), Mathf.Min(Edge(p, bb, c), Edge(p, c, a)));
+                float al = Mathf.Clamp01(d + 0.5f);
+                t.SetPixel(x, y, new Color(1, 1, 1, al));
+            }
+        t.Apply();
+        playTri = Sprite.Create(t, new Rect(0, 0, N, N), new Vector2(0.5f, 0.5f), 100f);
+        return playTri;
+    }
+
+    // signed distance to the edge a->b, positive inside a clockwise triangle
+    static float Edge(Vector2 p, Vector2 a, Vector2 b)
+    {
+        Vector2 e = b - a, n = new Vector2(e.y, -e.x).normalized;
+        return Vector2.Dot(p - a, n);
+    }
+
     public static Button TextButton(Transform parent, string text, Vector2 anchor, Vector2 pos, Vector2 size, Color color, Action onClick)
     {
         var rt = Place(Rect("btn_" + text, parent), anchor, pos, size);
@@ -147,7 +229,11 @@ public static class UIKit
         b.transition = Selectable.Transition.ColorTint;
         var face = Panel(rt, new Vector2(0.5f, 0.5f), Vector2.zero, size - new Vector2(12, 12), color, 45);
         face.raycastTarget = false;
-        Label(rt, text, (int)(size.y * 0.42f), Color.white, new Vector2(0.5f, 0.5f), Vector2.zero, size, true);
+        var lbl = Label(rt, text, (int)(size.y * 0.42f), Color.white, new Vector2(0.5f, 0.5f), Vector2.zero, size, true);
+        // a caption that doesn't fit stays on one line with a smaller font instead of running past the button
+        lbl.horizontalOverflow = HorizontalWrapMode.Overflow;
+        int fs = lbl.fontSize;
+        while (fs > 18 && lbl.preferredWidth > size.x - 36f) { fs -= 2; lbl.fontSize = fs; }
         rt.gameObject.AddComponent<Squish>();
         b.onClick.AddListener(() => { AudioManager.PlayClick(); onClick?.Invoke(); });
         return b;
@@ -180,8 +266,8 @@ public static class UIKit
 // Scales a button down a touch while pressed.
 public class Squish : MonoBehaviour, IPointerDownHandler, IPointerUpHandler
 {
-    public void OnPointerDown(PointerEventData e) { transform.localScale = Vector3.one * 0.92f; }
-    public void OnPointerUp(PointerEventData e) { transform.localScale = Vector3.one; }
+    public void OnPointerDown(PointerEventData e) { transform.localScale = new Vector3(Mathf.Sign(transform.localScale.x) * 0.92f, 0.92f, 1f); }   // keeps a mirrored button mirrored
+    public void OnPointerUp(PointerEventData e) { transform.localScale = new Vector3(Mathf.Sign(transform.localScale.x), 1f, 1f); }
 }
 
 // Same maths as CanvasScaler "Scale With Screen Size" in Expand mode (1080x1920), computed from the

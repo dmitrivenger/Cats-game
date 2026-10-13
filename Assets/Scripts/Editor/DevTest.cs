@@ -161,6 +161,7 @@ public static class DevTest
     // sensible bot (or the naive first-move bot), no power-ups, no mercy; logs win/lose, moves left
     // and coins earned per attempt to _claude_tmp/sim.txt. Level progress and balance are restored.
     static bool simOn, simSmart; static int simLevel, simTo, simRun, simRuns, simStage, simSavedLevel, simSavedBal, simBalBefore, simMoves;
+    static int simSavedStars, simSavedSpent; static readonly System.Collections.Generic.Dictionary<int, int> simStarKeys = new System.Collections.Generic.Dictionary<int, int>();
     static double simStageStart, simBusySince; static System.Random simRng; static StringBuilder simOut; public static string SimStatus = "";
     const System.Reflection.BindingFlags NP = System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance;
 
@@ -169,8 +170,10 @@ public static class DevTest
         var gc = Object.FindFirstObjectByType<GameController>();
         if (gc == null) return "no controller";
         simSavedLevel = Progress.Level; simSavedBal = Progress.Balance;
+        simSavedStars = Progress.StarsTotal; simSavedSpent = Progress.ChestSpent; simStarKeys.Clear();
+        for (int l = from; l <= to; l++) simStarKeys[l] = PlayerPrefs.GetInt("Kuzya.Stars." + l, -1);
         simLevel = from; simTo = to; simRuns = runs; simRun = 0; simStage = 0; simSmart = smart; simRng = new System.Random(12345);
-        simOut = new StringBuilder("level\trun\twin\tmovesLeft\tmovesUsed\tcoins\tgoals\n");
+        simOut = new StringBuilder("level\trun\twin\tmovesLeft\tmovesUsed\tcoins\tbudget\tgoals\n");
         Time.timeScale = speed; AudioListener.volume = 0f;
         simOn = true;
         EditorApplication.update -= SimTick; EditorApplication.update += SimTick;
@@ -185,7 +188,10 @@ public static class DevTest
         EditorApplication.update -= SimTick;
         Time.timeScale = 1f; AudioListener.volume = 1f;
         Progress.Level = simSavedLevel;
-        PlayerPrefs.SetInt("Kuzya.Balance", simSavedBal); PlayerPrefs.Save();
+        PlayerPrefs.SetInt("Kuzya.Balance", simSavedBal);
+        PlayerPrefs.SetInt("Kuzya.StarsTotal", simSavedStars); PlayerPrefs.SetInt("Kuzya.ChestStars", simSavedSpent);
+        foreach (var kv in simStarKeys) { if (kv.Value < 0) PlayerPrefs.DeleteKey("Kuzya.Stars." + kv.Key); else PlayerPrefs.SetInt("Kuzya.Stars." + kv.Key, kv.Value); }
+        PlayerPrefs.Save();
         for (int i = 1; i < 500; i++) PlayerPrefs.DeleteKey(LevelGen.MercyKey(i));
         System.IO.Directory.CreateDirectory("_claude_tmp");
         if (simOut != null) System.IO.File.WriteAllText("_claude_tmp/sim.txt", simOut.ToString());
@@ -244,7 +250,7 @@ public static class DevTest
         var goals = new StringBuilder();
         foreach (var g in def.goals) goals.Append(g.type).Append(':').Append(Mathf.Min(g.progress, g.target)).Append('/').Append(g.target).Append(' ');
         simOut.Append(simLevel).Append('\t').Append(simRun).Append('\t').Append(win ? 1 : 0).Append('\t').Append(movesLeft).Append('\t').Append(simMoves)
-              .Append('\t').Append(Progress.Balance - simBalBefore).Append('\t').Append(goals).Append('\n');
+              .Append('\t').Append(Progress.Balance - simBalBefore).Append('\t').Append(def.moves).Append('\t').Append(goals).Append('\n');
         System.IO.Directory.CreateDirectory("_claude_tmp");
         System.IO.File.WriteAllText("_claude_tmp/sim.txt", simOut.ToString());
         SimStatus = "level " + simLevel + " run " + simRun;
