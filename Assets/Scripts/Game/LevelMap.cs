@@ -212,8 +212,8 @@ public class LevelMap : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDrag
         BuildStarsChip();
         BuildPlayButtons();
         BuildDaily();
-        scroll = HomeScroll;
-        BuildHero();                 // current level a little below the middle of the screen
+        scroll = HomeScroll;                 // current level a little below the middle of the screen
+        if (HeroOn) BuildHero();
         Refresh(true);
         if (newStars > 0) StartCoroutine(FlyStars());
         if (Worlds.Locked(current)) StartCoroutine(GateAhead());
@@ -481,7 +481,7 @@ public class LevelMap : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDrag
         if (currentPulse != null) { float s = 1f + 0.06f * Mathf.Sin(t * 4f); currentPulse.localScale = new Vector3(s, s, 1f); }
         if (heroRt != null) UpdateHero(Time.unscaledDeltaTime, t);
         else if (markerRt == null && hopFrom > 0)
-        {   // no hero art: after a win the new current level simply pops
+        {   // no hero: after a win the new current level simply pops
             hopAge += Time.unscaledDeltaTime;
             if (hopAge > 0.6f) { hopFrom = 0; if (currentPulse != null) StartCoroutine(PopNode(currentPulse)); AudioManager.Play("balance", 0.6f); }
         }
@@ -1166,6 +1166,8 @@ public class LevelMap : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDrag
     Vector2 heroPos;
     int heroHopKind;               // 0 = arrival hop (pops the node), 1 = a little hop on the spot
     const float HeroH = 180f, HeroWalkSpeed = 520f, HeroStep = 70f;
+    // switched off (the walk looked odd): the map uses the original pulsing current-level node, which pops after a win
+    const bool HeroOn = false;
     static readonly string[] HeroWalk = { "hero_walk_1", "hero_walk_2", "hero_walk_3", "hero_walk_4" };
 
     static Vector2 HeroSpot(int level)
