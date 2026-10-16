@@ -71,13 +71,23 @@ public class Board : MonoBehaviour
     public Func<Vector3?> MouseSteal;                         // game takes one coin; returns where the coin flies from (null = none to take)
     public event Action<Vector3, int> MouseCaught;             // world pos, coins in the sack
     const int MouseStealEvery = 3, MouseMaxCoins = 5;
-    Piece mouseOn;
-    Transform mouseT, mouseBody;
-    SpriteRenderer mouseSr;
-    readonly List<SpriteRenderer> mousePile = new List<SpriteRenderer>();
-    int mouseCoins, mouseMoves, mouseFace = 1;
-    bool mouseHopping;
-    public bool MouseActive => mouseT != null && mouseOn != null;
+    // one mouse on the board (sometimes two): each keeps its own seat, sack and animation state
+    class Mouse
+    {
+        public Piece on;
+        public Transform t, body;
+        public SpriteRenderer sr;
+        public readonly List<SpriteRenderer> pile = new List<SpriteRenderer>();
+        public int coins, face = 1;
+        public bool hopping;
+        public float nextFidget, fidgetT = -1f, trailNext;
+        public bool Active => t != null && on != null;
+    }
+    readonly List<Mouse> mice = new List<Mouse>();
+    int mouseMoves;
+    public bool MouseActive { get { foreach (var m in mice) if (m.Active) return true; return false; } }
+    public int MiceFree { get { int n = 0; foreach (var m in mice) if (m.Active) n++; return n; } }
+    bool MouseSits(Piece p) { foreach (var m in mice) if (m.on == p && m.t != null) return true; return false; }
     // laser dot: a red dot on one cell. Clear the cat standing on it to catch it; every move it jumps somewhere
     // else (always to a cell some move can clear). The level asks to catch it a few times.
     Vector2Int laserCell = new Vector2Int(-1, -1);
@@ -85,7 +95,7 @@ public class Board : MonoBehaviour
     bool laserCaught;
     Transform laserT;
     public Vector2Int LaserCell => laserLeft > 0 ? laserCell : new Vector2Int(-1, -1);
-    public int MouseCoins => mouseCoins;
+    public int MouseCoins { get { int n = 0; foreach (var m in mice) if (m.Active) n += m.coins; return n; } }
 
     // ======================================================= setup
     const float ExitDrop = 0.62f;      // fish exit bowl: below the centre of the lowest cell, in cells
@@ -112,7 +122,7 @@ public class Board : MonoBehaviour
         milk = new int[cols, rows]; milkSr = new SpriteRenderer[cols, rows]; milkFresh = new bool[cols, rows];
         tileSr = new SpriteRenderer[cols, rows]; tileBase = new Vector3[cols, rows];
         guiding = false; guideRoot = null; guideLit.Clear();
-        mouseOn = null; mouseT = null; mouseBody = null; mouseSr = null; mousePile.Clear(); mouseCoins = 0; mouseMoves = 0; mouseHopping = false;
+        mice.Clear(); mouseMoves = 0;
         laserCell = new Vector2Int(-1, -1); laserLeft = 0; laserCaught = false; laserT = null;
 
         BuildTiles();
@@ -316,7 +326,7 @@ public class Board : MonoBehaviour
         }
         PlaceFoam();
         EnsureMovesExist(false);
-        if (def.mouse) PlaceMouse();
+        if (def.mouse) for (int i = 0; i < Mathf.Max(1, def.mice); i++) PlaceMouse();
         if (def.lasers > 0) { laserLeft = def.lasers; laserCell = PickLaserCell(); LaserVisual(true); }
     }
 
@@ -620,7 +630,7 @@ public class Board : MonoBehaviour
         var free = new List<Piece>(); var second = new List<Piece>();
         foreach (var p in grid)
         {
-            if (p == null || !p.PlainCat || p == mouseOn) continue;
+            if (p == null || !p.PlainCat || MouseSits(p)) continue;
             if (foam[p.x, p.y] > 0) second.Add(p); else free.Add(p);
         }
         Shuffle(free); Shuffle(second); free.AddRange(second);
@@ -1484,11 +1494,12 @@ public class Board : MonoBehaviour
                 laserCaught = true; Vector3 lp = CellPos(p.x, p.y); float lt3 = ctx.When(p);
                 StartCoroutine(Later(lt3 > 0f ? lt3 : delay, () => LaserCatch(lp)));
             }
-            if (p == mouseOn && mouseT != null)
-            {   // the cat the mouse rides on is gone: caught!
-                mouseOn = null; float lt2 = ctx.When(p);
-                StartCoroutine(Later(lt2 > 0f ? lt2 : delay, CatchMouse));
-            }
+            foreach (var mm in mice)
+                if (mm.on == p && mm.t != null)
+                {   // the cat the mouse rides on is gone: caught!
+                    mm.on = null; float lt2 = ctx.When(p); var caught = mm;
+                    StartCoroutine(Later(lt2 > 0f ? lt2 : delay, () => CatchMouse(caught)));
+                }
             if (milk[p.x, p.y] > 0 && p.kind == PieceKind.Cat)
             {   // the cat laps up the milk: a coin, that bit of the puddle is gone, and the cat counts twice for a colour task
                 if (p.special == Special.None) CatCleared?.Invoke(p.color, p.transform.position);
@@ -2011,142 +2022,138 @@ public class Board : MonoBehaviour
         var seats = new List<Piece>();
         for (int x = 0; x < cols; x++)
             for (int y = 2; y < rows - 1; y++)
-                if (Live(x, y) && MouseSeat(grid[x, y])) seats.Add(grid[x, y]);
+                if (Live(x, y) && MouseSeat(grid[x, y]) && !MouseSits(grid[x, y]) && !MouseNear(x, y, 3)) seats.Add(grid[x, y]);
         if (seats.Count == 0) return;
-        mouseOn = seats[rng.Next(seats.Count)];
-        mouseT = new GameObject("Mouse").transform; mouseT.SetParent(transform, false);
-        mouseBody = new GameObject("body").transform; mouseBody.SetParent(mouseT, false);
-        mouseSr = new GameObject("img").AddComponent<SpriteRenderer>(); mouseSr.transform.SetParent(mouseBody, false);   // FitSprite scales this child; the body carries the animation scale
-        mouseSr.sortingOrder = 30;                  // over the cats, under the FX
-        BuildMouseParts();
-        MouseIdleLook();
-        mouseT.position = mouseOn.transform.position + MouseOffset;
-        mouseFace = 1;
+        var m = new Mouse();
+        m.on = seats[rng.Next(seats.Count)];
+        m.t = new GameObject("Mouse").transform; m.t.SetParent(transform, false);
+        m.body = new GameObject("body").transform; m.body.SetParent(m.t, false);
+        m.sr = new GameObject("img").AddComponent<SpriteRenderer>(); m.sr.transform.SetParent(m.body, false);   // FitSprite scales this child; the body carries the animation scale
+        m.sr.sortingOrder = 30;                  // over the cats, under the FX
+        m.nextFidget = Time.time + UnityEngine.Random.Range(1.5f, 3f); m.fidgetT = -1f;
+        MouseIdleLook(m);
+        m.t.position = m.on.transform.position + MouseOffset;
+        m.face = 1;
+        mice.Add(m);
     }
 
-    // ---- the mouse comes alive: its tail (a separate piece of the art) swishes, a soft glow keeps it
-    //      readable on grey cats, it fidgets now and then and the coin in its sack glints
-    Transform mouseTail, mouseGlint; SpriteRenderer mouseTailSr, mouseGlowSr, mouseGlintSr;
-    float mouseNextFidget, mouseFidgetT = -1f;
-
-    void BuildMouseParts()
-    {   // the new mouse art is complete (tail and sack drawn in); only the fidget timer is set up here
-        mouseTail = null; mouseGlint = null; mouseGlowSr = null;
-        mouseNextFidget = Time.time + UnityEngine.Random.Range(1.5f, 3f); mouseFidgetT = -1f;
+    // another mouse within `dist` cells (so two mice start apart and don't share a cat)
+    bool MouseNear(int x, int y, int dist)
+    {
+        foreach (var m in mice) if (m.on != null && Mathf.Abs(m.on.x - x) < dist && Mathf.Abs(m.on.y - y) < dist) return true;
+        return false;
     }
 
     // running: four frames of the run cycle, a trail of yellow smoke and bits of cheese behind
-    float mouseTrailNext;
-    void MouseRunFrame(SpriteRenderer sr, Transform at, float dir)
+    void MouseRunFrame(Mouse m, SpriteRenderer sr, Transform at, float dir)
     {
         if (sr == null) return;
         int f = 1 + (int)(Time.time * 14f) % 4;
         string key = GameArt.I.Has("mouse_run_" + f) ? "mouse_run_" + f : "mouse_run";
         if (sr.sprite != GameArt.I.S(key)) Kit.FitSpriteAs(sr, key, "mouse_run_1", cell * MouseSize, 1f);
-        if (at != null && Time.time >= mouseTrailNext)
+        if (at != null && Time.time >= m.trailNext)
         {
-            mouseTrailNext = Time.time + 0.04f;
+            m.trailNext = Time.time + 0.04f;
             FX.MouseTrail(at.position + new Vector3(-dir * cell * 0.22f, -cell * 0.2f, 0), cell, dir);
         }
     }
 
-    void MouseIdleLook()
+    void MouseIdleLook(Mouse m)
     {
-        if (mouseSr == null) return;
-        Kit.FitSprite(mouseSr, "mouse_idle", cell * MouseSize, 1f);
-        if (mouseTail != null) mouseTail.gameObject.SetActive(true);
-        if (mouseGlint != null) mouseGlint.gameObject.SetActive(true);
-    }
-
-    static void MouseRunLook(Transform body)
-    {   // the running / caught art has its own tail and sack
-        if (body == null) return;
-        var tl = body.Find("tail"); if (tl != null) tl.gameObject.SetActive(false);
-        var gl = body.Find("glint"); if (gl != null) gl.gameObject.SetActive(false);
+        if (m.sr == null) return;
+        Kit.FitSprite(m.sr, "mouse_idle", cell * MouseSize, 1f);
     }
 
     void LateUpdate()
     {
-        if (mouseT == null) return;
-        if (!mouseHopping && mouseOn != null) mouseT.position = mouseOn.transform.position + MouseOffset;
         float tm = Time.time;
-        if (mouseGlowSr != null) mouseGlowSr.color = new Color(1f, 0.97f, 0.85f, 0.32f + 0.08f * Mathf.Sin(tm * 2.2f));
-        if (mouseTail != null) mouseTail.localRotation = Quaternion.Euler(0, 0, 9f * Mathf.Sin(tm * 3.1f) + 4f * Mathf.Sin(tm * 7.3f));
-        if (mouseGlintSr != null)
+        foreach (var m in mice)
         {
-            float g = Mathf.Max(0f, Mathf.Sin(tm * 2.6f)); g = g * g * g;
-            mouseGlintSr.color = new Color(1f, 0.95f, 0.6f, g);
-            mouseGlint.localScale = Vector3.one * (0.5f + 0.7f * g);
-            mouseGlint.localRotation = Quaternion.Euler(0, 0, tm * 90f);
-        }
-        if (mouseBody != null && !mouseHopping)
-        {   // idle: breathes and looks a bit shifty; now and then a nervous little bounce with a glance round
-            float s = Mathf.Sin(tm * 5f);
-            float jump = 0f, glance = 0f;
-            if (mouseFidgetT < 0f && tm > mouseNextFidget) { mouseFidgetT = 0f; mouseNextFidget = tm + UnityEngine.Random.Range(2.5f, 5f); }
-            if (mouseFidgetT >= 0f)
-            {
-                mouseFidgetT += Time.deltaTime; float k = mouseFidgetT / 0.7f;
-                if (k >= 1f) mouseFidgetT = -1f;
-                else { jump = Mathf.Max(0f, Mathf.Sin(Mathf.Min(1f, k * 2.2f) * Mathf.PI)); glance = Mathf.Sin(k * Mathf.PI * 3f) * (1f - k); }
+            if (m.t == null) continue;
+            if (!m.hopping && m.on != null) m.t.position = m.on.transform.position + MouseOffset;
+            if (m.body != null && !m.hopping)
+            {   // idle: breathes and looks a bit shifty; now and then a nervous little bounce with a glance round
+                float ph = m.GetHashCode() % 100 * 0.1f;   // two mice don't breathe in step
+                float s = Mathf.Sin(tm * 5f + ph);
+                float jump = 0f, glance = 0f;
+                if (m.fidgetT < 0f && tm > m.nextFidget) { m.fidgetT = 0f; m.nextFidget = tm + UnityEngine.Random.Range(2.5f, 5f); }
+                if (m.fidgetT >= 0f)
+                {
+                    m.fidgetT += Time.deltaTime; float k = m.fidgetT / 0.7f;
+                    if (k >= 1f) m.fidgetT = -1f;
+                    else { jump = Mathf.Max(0f, Mathf.Sin(Mathf.Min(1f, k * 2.2f) * Mathf.PI)); glance = Mathf.Sin(k * Mathf.PI * 3f) * (1f - k); }
+                }
+                m.body.localScale = new Vector3(m.face * (1f + 0.04f * s - 0.06f * jump), 1f - 0.04f * s + 0.08f * jump, 1f);
+                m.body.localRotation = Quaternion.Euler(0, 0, 4f * Mathf.Sin(tm * 1.7f + ph) + 12f * glance);
+                m.body.localPosition = new Vector3(0, cell * 0.08f * jump, 0);
             }
-            mouseBody.localScale = new Vector3(mouseFace * (1f + 0.04f * s - 0.06f * jump), 1f - 0.04f * s + 0.08f * jump, 1f);
-            mouseBody.localRotation = Quaternion.Euler(0, 0, 4f * Mathf.Sin(tm * 1.7f) + 12f * glance);
-            mouseBody.localPosition = new Vector3(0, cell * 0.08f * jump, 0);
         }
     }
 
+    // after every move each mouse hops; every few moves each one steals a coin
     void MouseTurn()
     {
         mouseMoves++;
-        Vector3? from = null;
-        if (mouseMoves % MouseStealEvery == 0 && mouseCoins < MouseMaxCoins && MouseSteal != null)
+        var taken = new HashSet<Piece>();
+        int i = 0;
+        foreach (var m in mice.ToArray())
         {
-            from = MouseSteal();
-            if (from.HasValue) mouseCoins++;
+            if (!m.Active) continue;
+            Vector3? from = null;
+            if (mouseMoves % MouseStealEvery == 0 && m.coins < MouseMaxCoins && MouseSteal != null)
+            {
+                from = MouseSteal();
+                if (from.HasValue) m.coins++;
+            }
+            StartCoroutine(MouseTurnRoutine(m, from, taken, i * 0.18f));
+            i++;
         }
-        StartCoroutine(MouseTurnRoutine(from));
     }
 
-    IEnumerator MouseTurnRoutine(Vector3? stealFrom)
+    IEnumerator MouseTurnRoutine(Mouse m, Vector3? stealFrom, HashSet<Piece> taken, float wait)
     {
-        if (stealFrom.HasValue) yield return StealCoin(stealFrom.Value);
-        if (!MouseActive) yield break;
-        // hop to a neighbouring plain cat (diagonals too)
+        if (wait > 0f) yield return new WaitForSeconds(wait);
+        if (stealFrom.HasValue) yield return StealCoin(m, stealFrom.Value);
+        if (!m.Active) yield break;
+        // hop to a neighbouring plain cat (diagonals too) that no other mouse sits on or is heading for
         var opts = new List<Piece>();
         for (int dx = -1; dx <= 1; dx++)
             for (int dy = -1; dy <= 1; dy++)
-                if ((dx != 0 || dy != 0) && MouseSeat(At(mouseOn.x + dx, mouseOn.y + dy))) opts.Add(At(mouseOn.x + dx, mouseOn.y + dy));
+            {
+                var q = At(m.on.x + dx, m.on.y + dy);
+                if ((dx != 0 || dy != 0) && MouseSeat(q) && !MouseSits(q) && !taken.Contains(q)) opts.Add(q);
+            }
         if (opts.Count == 0) yield break;
-        yield return MouseHop(opts[rng.Next(opts.Count)]);
+        var to = opts[rng.Next(opts.Count)];
+        taken.Add(to);
+        yield return MouseHop(m, to);
     }
 
-    IEnumerator MouseHop(Piece to)
+    IEnumerator MouseHop(Mouse m, Piece to)
     {
-        mouseHopping = true;
-        mouseOn = to;
-        Vector3 a = mouseT.position;
+        m.hopping = true;
+        m.on = to;
+        Vector3 a = m.t.position;
         float dx = to.transform.position.x + MouseOffset.x - a.x;
-        if (Mathf.Abs(dx) > 0.01f) mouseFace = dx < 0 ? -1 : 1;   // the art faces right
-        Kit.FitSprite(mouseSr, "mouse_run", cell * MouseSize, 1f);
-        MouseRunLook(mouseBody);
-        mouseBody.localRotation = Quaternion.identity; mouseBody.localPosition = Vector3.zero;
+        if (Mathf.Abs(dx) > 0.01f) m.face = dx < 0 ? -1 : 1;   // the art faces right
+        Kit.FitSprite(m.sr, "mouse_run", cell * MouseSize, 1f);
+        m.body.localRotation = Quaternion.identity; m.body.localPosition = Vector3.zero;
         AudioManager.Play("mouse_hop", 0.35f);
         yield return Kit.Tween(0.42f, k =>
         {
-            if (mouseT == null) return;
-            Vector3 b = (mouseOn != null ? mouseOn.transform.position : a - MouseOffset) + MouseOffset;
-            mouseT.position = Vector3.Lerp(a, b, k) + new Vector3(0, cell * 0.25f * Mathf.Sin(k * Mathf.PI), 0);
-            MouseRunFrame(mouseSr, mouseT, mouseFace);
+            if (m.t == null) return;
+            Vector3 b = (m.on != null ? m.on.transform.position : a - MouseOffset) + MouseOffset;
+            m.t.position = Vector3.Lerp(a, b, k) + new Vector3(0, cell * 0.25f * Mathf.Sin(k * Mathf.PI), 0);
+            MouseRunFrame(m, m.sr, m.t, m.face);
             float sq = k > 0.85f ? 1f - 0.15f * Mathf.Sin((k - 0.85f) / 0.15f * Mathf.PI) : 1f;
-            if (mouseBody != null) mouseBody.localScale = new Vector3(mouseFace * (2f - sq), sq, 1f);
+            if (m.body != null) m.body.localScale = new Vector3(m.face * (2f - sq), sq, 1f);
         });
-        MouseIdleLook();
-        mouseHopping = false;
+        MouseIdleLook(m);
+        m.hopping = false;
     }
 
     // a coin leaves the balance and flies into the mouse's sack
-    IEnumerator StealCoin(Vector3 from)
+    IEnumerator StealCoin(Mouse m, Vector3 from)
     {
         var go = new GameObject("stolen");
         var sr = new GameObject("img").AddComponent<SpriteRenderer>(); sr.transform.SetParent(go.transform, false);
@@ -2157,44 +2164,44 @@ public class Board : MonoBehaviour
         AudioManager.Play("mouse_steal", 0.8f);
         yield return Kit.Tween(0.7f, k =>
         {
-            Vector3 to = mouseT != null ? mouseT.position : from;
+            Vector3 to = m.t != null ? m.t.position : from;
             Vector3 p = Vector3.Lerp(Vector3.Lerp(from, mid, k), Vector3.Lerp(mid, to, k), k);
             go.transform.position = p;
             go.transform.localScale = Vector3.one * Mathf.Lerp(1f, 0.6f, k);
             go.transform.localRotation = Quaternion.Euler(0, 0, k * 540f);
         }, Kit.EaseInOut);
         Destroy(go);
-        if (mouseT == null) yield break;
+        if (m.t == null) yield break;
         AudioManager.Play("balance", 0.5f);
-        RefreshMousePile();
+        RefreshMousePile(m);
         // a greedy little hug of the sack
-        yield return Kit.Tween(0.22f, k => { if (mouseBody != null) { float s = 1f + 0.18f * Mathf.Sin(k * Mathf.PI); mouseBody.localScale = new Vector3(mouseFace * s, s, 1f); } });
+        yield return Kit.Tween(0.22f, k => { if (m.body != null) { float s = 1f + 0.18f * Mathf.Sin(k * Mathf.PI); m.body.localScale = new Vector3(m.face * s, s, 1f); } });
     }
 
     // the stolen coins lie in a little heap at the mouse's feet
-    void RefreshMousePile()
+    void RefreshMousePile(Mouse m)
     {
-        if (mouseT == null) return;
-        while (mousePile.Count < mouseCoins)
+        if (m.t == null) return;
+        while (m.pile.Count < m.coins)
         {
-            int i = mousePile.Count;
-            var holder = new GameObject("coin").transform; holder.SetParent(mouseT, false);
+            int i = m.pile.Count;
+            var holder = new GameObject("coin").transform; holder.SetParent(m.t, false);
             holder.localPosition = new Vector3(cell * (0.08f + 0.06f * (i % 3)), cell * (-0.2f + 0.05f * (i / 3)), 0);
             var sr = new GameObject("img").AddComponent<SpriteRenderer>(); sr.transform.SetParent(holder, false);
             Kit.FitSprite(sr, "ui_balance", cell * 0.16f, 1f);   // FitSprite owns the child's scale; PopIn animates the holder
             sr.sortingOrder = 31;
-            mousePile.Add(sr);
+            m.pile.Add(sr);
             StartCoroutine(PopIn(holder));
         }
     }
 
-    void CatchMouse()
+    void CatchMouse(Mouse m)
     {
-        if (mouseT == null) return;
-        Vector3 pos = mouseT.position;
-        int coins = mouseCoins;
-        var t = mouseT; var body = mouseBody; var sr = mouseSr;
-        mouseT = null; mouseOn = null; mouseBody = null; mouseSr = null; mousePile.Clear(); mouseCoins = 0;
+        if (m.t == null) return;
+        Vector3 pos = m.t.position;
+        int coins = m.coins;
+        var t = m.t; var body = m.body; var sr = m.sr;
+        m.t = null; m.on = null; m.body = null; m.sr = null; m.pile.Clear(); m.coins = 0;
         StartCoroutine(MouseCaughtAnim(t, body, sr));
         MouseCaught?.Invoke(pos, coins);
     }
@@ -2202,7 +2209,6 @@ public class Board : MonoBehaviour
     IEnumerator MouseCaughtAnim(Transform t, Transform body, SpriteRenderer sr)
     {
         if (sr != null) Kit.FitSprite(sr, "mouse_caught", cell * 0.65f, 1f);
-        MouseRunLook(body);
         if (body != null) { body.localScale = Vector3.one; body.localRotation = Quaternion.identity; }
         Vector3 a = t.position;
         var srs = t.GetComponentsInChildren<SpriteRenderer>();
@@ -2219,15 +2225,21 @@ public class Board : MonoBehaviour
         if (t != null) Destroy(t.gameObject);
     }
 
-    // level over and the mouse is still free: it scampers off the board with its loot
+    // level over and a mouse is still free: every free mouse scampers off the board with its loot
     public IEnumerator MouseRunAway()
     {
-        if (mouseT == null) yield break;
-        var t = mouseT; var body = mouseBody; var sr = mouseSr;
-        mouseT = null; mouseOn = null; mouseBody = null; mouseSr = null; mousePile.Clear();
+        var running = new List<Coroutine>();
+        foreach (var m in mice)
+            if (m.t != null) running.Add(StartCoroutine(RunAwayOne(m)));
+        foreach (var c in running) yield return c;
+    }
+
+    IEnumerator RunAwayOne(Mouse m)
+    {
+        var t = m.t; var body = m.body; var sr = m.sr;
+        m.t = null; m.on = null; m.body = null; m.sr = null; m.pile.Clear();
         int dir = t.position.x < WorldRect.center.x ? -1 : 1;
         if (sr != null) Kit.FitSprite(sr, "mouse_run", cell * MouseSize, 1f);
-        MouseRunLook(body);
         if (body != null) { body.localScale = new Vector3(dir, 1f, 1f); body.localRotation = Quaternion.identity; body.localPosition = Vector3.zero; }
         AudioManager.Play("mouse_run", 0.8f);
         Vector3 a = t.position;
@@ -2236,7 +2248,7 @@ public class Board : MonoBehaviour
         {
             if (t == null) return;
             t.position = a + new Vector3(dir * dist * Kit.EaseInCubic(k) * 0.6f + dir * dist * 0.4f * k, cell * 0.12f * Mathf.Abs(Mathf.Sin(k * Mathf.PI * 5f)), 0);
-            MouseRunFrame(sr, t, dir);
+            MouseRunFrame(m, sr, t, dir);
         });
         if (t != null) Destroy(t.gameObject);
     }

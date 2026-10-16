@@ -353,7 +353,8 @@ public class GameController : MonoBehaviour
         if (board.MouseActive)
         {   // the mouse wasn't caught: it runs off with whatever it stole
             int lost = board.MouseCoins;
-            Toast(Loc.T(lost > 0 ? "MouseGoneCoins" : "MouseGone"));
+            bool many = board.MiceFree > 1;
+            Toast(Loc.T(many ? (lost > 0 ? "MiceGoneCoins" : "MiceGone") : (lost > 0 ? "MouseGoneCoins" : "MouseGone")));
             yield return board.MouseRunAway();
         }
         // with spare moves the "cat party" plays its own short fanfare first and the big "win" comes with the

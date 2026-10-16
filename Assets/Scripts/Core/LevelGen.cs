@@ -25,6 +25,7 @@ public class LevelDef
     public int foam, foamThick;
     public int milk;                     // milk buckets (a bonus, not a goal): tipped over they spill coin puddles
     public bool mouse;                   // mouse thief rides the cats and steals coins
+    public int mice = 1;                 // how many mice on a mouse level: sometimes two (TwoMiceFrom)
     public int theme;
     public bool rest;
     public string shape = "Rect";
@@ -53,6 +54,7 @@ public static class LevelGen
     public const int Colors = 5;
 
     // When each mechanic first appears (easiest -> hardest, as agreed).
+    public const int TwoMiceFrom = 39;
     public const int BoxUnlock = 3, YarnUnlock = 5, VaseUnlock = 8, FishUnlock = 11, MintUnlock = 14, FoamUnlock = 16, MilkUnlock = 12, MouseUnlock = 26;
     public const int LeashUnlock = 31, HouseUnlock = 41, LaserUnlock = 51;   // not on a rest level (every 5th): the new thing must show up on its own level
     // "events" (milk bucket / mouse thief): at most one per level, on every 3rd level; from MouseUnlock
@@ -288,7 +290,12 @@ public static class LevelGen
         // ---- event: milk bucket or mouse thief (never both) ----
         if (IsEventLevel(level))
         {
-            if (mouseLevel && d.goals.Count < 3) d.mouse = true;
+            if (mouseLevel && d.goals.Count < 3)
+            {
+                d.mouse = true;
+                // every other mouse level from TwoMiceFrom: two mice at once (39, 51, 63, 87...)
+                d.mice = level >= TwoMiceFrom && (level / 3) % 4 == 1 ? 2 : 1;
+            }
             else { var mr = new System.Random(level * 3571 + 7); d.milk = d.rest ? 1 + mr.Next(2) : 1; }
         }
         return d;
