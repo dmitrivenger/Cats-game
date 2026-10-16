@@ -29,7 +29,8 @@ public class LevelDef
     public int theme;
     public bool rest;
     public string shape = "Rect";
-    public bool hardShape;               // one of the harder shapes (more holes): a few extra moves
+    public bool hardShape;
+    public bool hard;                    // a "hard level": marked red on the map, more to do with fewer moves (IsHardLevel)               // one of the harder shapes (more holes): a few extra moves
     public bool[,] mask;                 // [x, y], y = 0 is the bottom row; false = no cell there
     public int LiveCells { get { int n = 0; foreach (var b in mask) if (b) n++; return n; } }
     public List<LevelGoal> goals = new List<LevelGoal>();
@@ -63,15 +64,39 @@ public static class LevelGen
 
     public static bool IsRestLevel(int level) => level >= 7 && level % 5 == 0;
 
+    // ---- hard levels: one in every ten from level 18 (…8), two from level 40 (…3 and …8); never a rest
+    // level or the level a new mechanic first shows up on. Marked on the map; the player is meant to
+    // need a booster or a continue here. ----
+    public const int HardFrom = 18, HardTwiceFrom = 40;
+    public const float HardBlockers = 1.25f, HardTargets = 1.25f;
+    public const int HardMovesLess = 3;
+    public static bool IsHardLevel(int level)
+    {
+        if (level < HardFrom || IsRestLevel(level) || IsUnlockLevel(level)) return false;
+        int r = level % 10;
+        return r == 8 || (level >= HardTwiceFrom && r == 3);
+    }
+    static bool IsUnlockLevel(int level) =>
+        level == BoxUnlock || level == YarnUnlock || level == VaseUnlock || level == FishUnlock || level == MintUnlock || level == FoamUnlock
+        || level == MilkUnlock || level == MouseUnlock || level == LeashUnlock || level == HouseUnlock || level == LaserUnlock || level == TwoMiceFrom || level == ComplexShapesFrom;
+
+    // ---- the middle game asks for more than the first levels: from level 15 a little fewer moves,
+    // from level 21 a little more to do (onboarding 1-14 keeps its gentle tuning) ----
+    public const float LateMoves = 0.9f, LatePressure = 1.1f;
+    static float Pressure(int level, bool hard) => (level >= ComplexShapesFrom ? LatePressure : 1f) * (hard ? HardBlockers : 1f);
+
     // ---- mercy (Marbly: rubber-banding after losses on the same level) ----
     public static string MercyKey(int level) => "Kuzya.Losses." + level;
     public static int LossStreak(int level) => PlayerPrefs.GetInt(MercyKey(level), 0);
     public static void RegisterLoss(int level) { PlayerPrefs.SetInt(MercyKey(level), LossStreak(level) + 1); PlayerPrefs.Save(); }
     public static void RegisterWin(int level) { PlayerPrefs.DeleteKey(MercyKey(level)); PlayerPrefs.Save(); }
-    static float MercyTargetMult(int level) => Mathf.Max(0.75f, 1f - 0.05f * LossStreak(level));
-    static float MercyBlockerMult(int level) => Mathf.Max(0.5f, 1f - 0.15f * LossStreak(level));
-    // +1 move every 2 losses (up to +2), then +1 for every loss after the 4th: at most +5
-    static int MercyExtraMoves(int level) { int s = LossStreak(level); return Mathf.Min(2, s / 2) + Mathf.Clamp(s - 4, 0, 3); }
+    // Mercy is gentle and starts late: the first two losses change nothing (that's where boosters and
+    // continues come in); from the 3rd loss a little less to do each time, never below 75% of blockers /
+    // 88% of targets, and +1 move every 2 losses from the 3rd, at most +3.
+    static int MercySteps(int level) => Mathf.Max(0, LossStreak(level) - 2);
+    static float MercyTargetMult(int level) => Mathf.Max(0.88f, 1f - 0.03f * MercySteps(level));
+    static float MercyBlockerMult(int level) => Mathf.Max(0.75f, 1f - 0.07f * MercySteps(level));
+    static int MercyExtraMoves(int level) => Mathf.Min(3, (MercySteps(level) + 1) / 2);
 
     // Casual target: ~45-50% first-attempt win from level 5 (Marbly's calibration point = 1.0),
     // with an easy onboarding ramp. Marbly itself was tuned harder (20-25%); lower these to
@@ -167,7 +192,8 @@ public static class LevelGen
         d.theme = (level - 1) % 6;
         // a gentle ramp: 25 moves early on, 23 from level 15 (fish levels get extra moves below)
         d.mercyMoves = MercyExtraMoves(level);
-        d.moves = Mathf.RoundToInt((level < 15 ? 25 : 23) * MovesFactor) + d.mercyMoves;
+        d.hard = IsHardLevel(level);
+        d.moves = Mathf.RoundToInt((level < 15 ? 25 : 23) * MovesFactor * (level >= 15 ? LateMoves : 1f)) - (d.hard ? HardMovesLess : 0) + d.mercyMoves;
         d.mask = MaskFor(ShapeIndexFor(level), out d.shape);
         d.hardShape = ShapeIndexFor(level) >= SimpleShapes;
         float area = d.LiveCells / (float)(Cols * Rows);   // smaller board -> fewer blockers, lower targets
@@ -184,6 +210,12 @@ public static class LevelGen
         d.leashes = Mathf.RoundToInt(RampedCount(level, 61, LeashUnlock, 3, 4, 0.8f) * Difficulty);
         d.houses = level >= HouseUnlock ? (level - HouseUnlock >= 30 && new System.Random(level * 389 + 5).Next(3) == 0 ? 2 : 1) : 0;   // a second house now and then, later on
         d.lasers = level >= LaserUnlock ? Mathf.Min(5, 3 + (level - LaserUnlock) / 40) : 0;
+        {   // the middle game and hard levels: more of every blocker
+            float pr = Pressure(level, d.hard);
+            d.boxes = Mathf.RoundToInt(d.boxes * pr); d.yarns = Mathf.RoundToInt(d.yarns * pr); d.vases = Mathf.RoundToInt(d.vases * pr);
+            d.mints = Mathf.RoundToInt(d.mints * pr); d.foam = Mathf.RoundToInt(d.foam * pr); d.leashes = Mathf.RoundToInt(d.leashes * pr);
+            if (d.hard && d.lasers > 0) d.lasers++;
+        }
 
         // Variety cap: at most 2 blocker types before level 15, 3 after. Keep the newest.
         var types = new List<(GoalType t, int unlock)>();
@@ -239,7 +271,7 @@ public static class LevelGen
         // mercy also softens foam and fish: less foam each loss, one fish fewer after 3 losses
         if (d.foam > 0) d.foam = Mathf.Max(2, Mathf.RoundToInt(d.foam * MercyBlockerMult(level)));
         if (d.fish > 1 && LossStreak(level) >= 3) { d.fish--; d.moves += 3; d.mercyMoves += 3; }   // a gift: doesn't count towards stars   // keep that fish's moves: the level must not get shorter
-        int maxTotal = Mathf.RoundToInt(d.LiveCells * 0.35f);
+        int maxTotal = Mathf.RoundToInt(d.LiveCells * (d.hard ? 0.42f : 0.35f));
         while (d.BlockerTotal > maxTotal)
         {
             if (d.boxes >= d.yarns && d.boxes >= d.vases && d.boxes > 0) d.boxes--;
@@ -268,7 +300,8 @@ public static class LevelGen
         if (d.lasers > 0) d.moves += 2; // the dot has to be chased
         if (d.hardShape) d.moves += HardShapeMoves;   // holes make matches harder to find
 
-        float scale = Difficulty * WinRateMult(level) * MercyTargetMult(level) * Mathf.Lerp(0.55f, 1f, area);
+        float scale = Difficulty * WinRateMult(level) * MercyTargetMult(level) * Mathf.Lerp(0.55f, 1f, area)
+                      * (level >= ComplexShapesFrom ? LatePressure : 1f) * (d.hard ? HardTargets : 1f);
         float blockerCost = 1f - 0.018f * d.BlockerTotal - 0.05f * d.fish - 0.01f * d.foam;
         // Colour tasks fill the level up when there are few blockers (there are no score tasks: the player
         // can't steer a score, but "collect 18 ginger cats" is something to play for).

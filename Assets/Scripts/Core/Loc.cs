@@ -51,6 +51,10 @@ public static class Loc
     static readonly Dictionary<string, string> Ru = new Dictionary<string, string>
     {
         { "Level", "Уровень {0}" },
+        { "LevelHard", "Сложный уровень {0}" },
+        { "Gift.Title", "Подарок дня" }, { "Gift.Sub", "Заходи каждый день: на 7-й день сундук!" },
+        { "Gift.Day", "День {0}" }, { "Gift.Take", "Забрать" }, { "Gift.Double", "x2" },
+        { "Gift.Thanks", "До завтра!" }, { "Gift.ThanksX2", "Вдвойне! До завтра!" },
         { "Moves", "ХОДЫ" },
         { "Score", "ОЧКИ" },
         { "Tap", "Нажми, чтобы начать" },
@@ -220,6 +224,10 @@ public static class Loc
     static readonly Dictionary<string, string> En = new Dictionary<string, string>
     {
         { "Level", "Level {0}" },
+        { "LevelHard", "Hard level {0}" },
+        { "Gift.Title", "Daily gift" }, { "Gift.Sub", "Come back every day: a chest on day 7!" },
+        { "Gift.Day", "Day {0}" }, { "Gift.Take", "Take" }, { "Gift.Double", "x2" },
+        { "Gift.Thanks", "See you tomorrow!" }, { "Gift.ThanksX2", "Double! See you tomorrow!" },
         { "Moves", "MOVES" },
         { "Score", "SCORE" },
         { "Tap", "Tap to start" },

@@ -1103,6 +1103,16 @@ MonoBehaviour:
       width: 0.9453125
       height: 0.953125
     stamp: 639263596399021992
+  - key: bubble_cap
+    path: Assets/Sprites/Foam/bubble_cap.png
+    sprite: {fileID: 21300000, guid: 8983c42eeb1b34161a6df1be5f814d07, type: 3}
+    content:
+      serializedVersion: 2
+      x: 0.015625
+      y: 0.023809524
+      width: 0.96875
+      height: 0.95238096
+    stamp: 639277706646058721
   - key: bubble_8
     path: Assets/Sprites/FX/Foam/bubble_8.png
     sprite: {fileID: 21300000, guid: a5981e4e21eaf4a8bb129292c49150ec, type: 3}
@@ -1823,6 +1833,156 @@ MonoBehaviour:
       width: 0.8515625
       height: 0.92578125
     stamp: 639261363026515100
+  - key: map_node_hard
+    path: Assets/Level-menu/map_node_hard.png
+    sprite: {fileID: 21300000, guid: b062d9d409020448d9cab7456fd71f18, type: 3}
+    content:
+      serializedVersion: 2
+      x: 0.00390625
+      y: 0.004032258
+      width: 0.9921875
+      height: 0.9919355
+    stamp: 639277723742287807
+  - key: hard_badge
+    path: Assets/Level-menu/hard_badge.png
+    sprite: {fileID: 21300000, guid: f1dba3ff6d9c74e339692b752cba29c4, type: 3}
+    content:
+      serializedVersion: 2
+      x: 0.00390625
+      y: 0.004310345
+      width: 0.9921875
+      height: 0.9913793
+    stamp: 639277723733775140
+  - key: hero_stand
+    path: Assets/Level-menu/Hero/hero_stand.png
+    sprite: {fileID: 21300000, guid: 7cfc901c786334dff89cac16cc65308c, type: 3}
+    content:
+      serializedVersion: 2
+      x: 0.00390625
+      y: 0.004854369
+      width: 0.98828125
+      height: 0.99029124
+    stamp: 639277723665474938
+  - key: hero_jump
+    path: Assets/Level-menu/Hero/hero_jump.png
+    sprite: {fileID: 21300000, guid: 7aaa10053c7814e89b2d1f7020f89f95, type: 3}
+    content:
+      serializedVersion: 2
+      x: 0.0078125
+      y: 0.012820513
+      width: 0.984375
+      height: 0.97863245
+    stamp: 639277723702751691
+  - key: hero_land
+    path: Assets/Level-menu/Hero/hero_land.png
+    sprite: {fileID: 21300000, guid: cad1a56a63dfc4a1a913ebc42f1775b2, type: 3}
+    content:
+      serializedVersion: 2
+      x: 0.0078125
+      y: 0.013274336
+      width: 0.984375
+      height: 0.9778761
+    stamp: 639277723711705701
+  - key: hero_wave
+    path: Assets/Level-menu/Hero/hero_wave.png
+    sprite: {fileID: 21300000, guid: 7d6ea7bc0d37f4a7ab78404d7c0d586e, type: 3}
+    content:
+      serializedVersion: 2
+      x: 0.0078125
+      y: 0.013043478
+      width: 0.984375
+      height: 0.9782609
+    stamp: 639277723726649789
+  - key: hero_walk_1
+    path: Assets/Level-menu/Hero/hero_walk_1.png
+    sprite: {fileID: 21300000, guid: fac94c35b2cac4492a6e678f7c5d7a8e, type: 3}
+    content:
+      serializedVersion: 2
+      x: 0.01171875
+      y: 0.012711864
+      width: 0.97265625
+      height: 0.970339
+    stamp: 639277723684017305
+  - key: hero_walk_2
+    path: Assets/Level-menu/Hero/hero_walk_2.png
+    sprite: {fileID: 21300000, guid: 5533db09d60d8444aa225bac01d3be19, type: 3}
+    content:
+      serializedVersion: 2
+      x: 0.01171875
+      y: 0.012711864
+      width: 0.97265625
+      height: 0.970339
+    stamp: 639277723676202575
+  - key: hero_walk_3
+    path: Assets/Level-menu/Hero/hero_walk_3.png
+    sprite: {fileID: 21300000, guid: a96063dc5e7f3444bbf30ba230164cb1, type: 3}
+    content:
+      serializedVersion: 2
+      x: 0.01171875
+      y: 0.012711864
+      width: 0.9765625
+      height: 0.970339
+    stamp: 639277723694000652
+  - key: hero_walk_4
+    path: Assets/Level-menu/Hero/hero_walk_4.png
+    sprite: {fileID: 21300000, guid: 73b02cb1b25ef44a5ab3c768860f10ef, type: 3}
+    content:
+      serializedVersion: 2
+      x: 0.01171875
+      y: 0.012711864
+      width: 0.9765625
+      height: 0.970339
+    stamp: 639277723717757976
+  - key: daily_gift_1
+    path: Assets/Level-menu/DailyGift/daily_gift_1.png
+    sprite: {fileID: 21300000, guid: 242f77047839742cc80044e87b4ceb93, type: 3}
+    content:
+      serializedVersion: 2
+      x: 0.010869565
+      y: 0.010416667
+      width: 0.9836956
+      height: 0.9791667
+    stamp: 639277723623893890
+  - key: daily_gift_2
+    path: Assets/Level-menu/DailyGift/daily_gift_2.png
+    sprite: {fileID: 21300000, guid: 1026da4c0bf2e43a5b9bcf261be235ec, type: 3}
+    content:
+      serializedVersion: 2
+      x: 0.010416667
+      y: 0.015957447
+      width: 0.984375
+      height: 0.9734042
+    stamp: 639277723649437137
+  - key: daily_gift_3
+    path: Assets/Level-menu/DailyGift/daily_gift_3.png
+    sprite: {fileID: 21300000, guid: 62be9e13d8b94480aa4146620260e2cf, type: 3}
+    content:
+      serializedVersion: 2
+      x: 0.011764706
+      y: 0.010416667
+      width: 0.9823529
+      height: 0.984375
+    stamp: 639277723656732475
+  - key: daily_chest
+    path: Assets/Level-menu/DailyGift/daily_chest.png
+    sprite: {fileID: 21300000, guid: 9c31d4d6d9cb24756bc0238dd94827ce, type: 3}
+    content:
+      serializedVersion: 2
+      x: 0.00390625
+      y: 0.009708738
+      width: 0.9921875
+      height: 0.9854369
+    stamp: 639277723639984275
+  - key: daily_claimed
+    path: Assets/Level-menu/DailyGift/daily_claimed.png
+    sprite: {fileID: 21300000, guid: 99a551ba1d57947579f0ead72ee7bd7f, type: 3}
+    content:
+      serializedVersion: 2
+      x: 0.0078125
+      y: 0.016393442
+      width: 0.9921875
+      height: 0.97540987
+    stamp: 639277723630475055
   - key: world_1_floor
     path: Assets/Level-menu/Worlds/1/floor.png
     sprite: {fileID: 21300000, guid: f4d2f349853ed4d0cada79fd064acd6a, type: 3}

@@ -38,7 +38,7 @@ public static class Progress
         foreach (PowerUpType t in Enum.GetValues(typeof(PowerUpType))) PlayerPrefs.DeleteKey(Key(t));
         for (int i = 1; i < 500; i++) PlayerPrefs.DeleteKey(LevelGen.MercyKey(i));
         for (int i = 1; i < 2000; i++) PlayerPrefs.DeleteKey(StarKey(i));
-        foreach (var k in new[] { "StarsTotal", "ChestStars", "Chest", "Daily.Last", "Daily.LastN", "Daily.Streak", "Daily.Weeks", "GateOpen", "WinStreak", "Tut.1", "Tut.2", "Tut.3" }) PlayerPrefs.DeleteKey(P + k);
+        foreach (var k in new[] { "StarsTotal", "ChestStars", "Chest", "Daily.Last", "Daily.LastN", "Daily.Streak", "Daily.Weeks", "Gift.Last", "Gift.Day", "GateOpen", "WinStreak", "Tut.1", "Tut.2", "Tut.3" }) PlayerPrefs.DeleteKey(P + k);
     }
 
     public static int Level
@@ -173,6 +173,31 @@ public static class Progress
         return day;
     }
 
+    // ---- Daily login gift: one per calendar day, seven days in a row (the 7th is a chest), a missed day
+    // starts the row again from day 1. Turning the clock back gives nothing. ----
+    public const int GiftDays = 7;
+    static int GiftLast => PlayerPrefs.GetInt(P + "Gift.Last", -1);
+    public static bool GiftReady => Today > GiftLast;
+    // today's day of the row, 1..7 (when today's gift is taken: the day just taken)
+    public static int GiftDay
+    {
+        get
+        {
+            int last = GiftLast, got = PlayerPrefs.GetInt(P + "Gift.Day", 0);
+            if (last == Today) return Mathf.Clamp(got, 1, GiftDays);
+            if (last == Today - 1 && got < GiftDays) return got + 1;
+            return 1;
+        }
+    }
+    public static int GiftClaim()
+    {
+        int day = GiftDay;
+        PlayerPrefs.SetInt(P + "Gift.Last", Today);
+        PlayerPrefs.SetInt(P + "Gift.Day", day);
+        PlayerPrefs.Save();
+        return day;
+    }
+
     public static void AddCharge(PowerUpType t)
     {
         if (Charges(t) >= MaxCharges) return;
@@ -189,11 +214,11 @@ public static class Progress
     {
         switch (t)
         {
-            case PowerUpType.Paw: return 50;
-            case PowerUpType.MegaBomb: return 80;
-            case PowerUpType.ColorBlast: return 70;
-            case PowerUpType.Swap: return 60;
-            default: return 60;
+            case PowerUpType.Paw: return 60;
+            case PowerUpType.MegaBomb: return 100;
+            case PowerUpType.ColorBlast: return 90;
+            case PowerUpType.Swap: return 70;
+            default: return 80;      // +5 moves
         }
     }
 

@@ -27,7 +27,7 @@ public class Ads : MonoBehaviour, IUnityAdsInitializationListener, IUnityAdsLoad
     public const int InterstitialFromLevel = 6;
     const float InterstitialCooldown = 180f;          // seconds between two full-screen ads
     const float AfterRewardedQuiet = 90f;              // no full-screen ad right after a rewarded one
-    public const int CoinReward = 15;                  // "not enough coins" -> watch an ad
+    public const int CoinReward = 25;                  // "not enough coins" -> watch an ad
     public const int CoinAdsPerDay = 5;
 
     const string ConsentKey = "Kuzya.AdsConsent";      // -1 not asked, 0 plain ads, 1 personalised

@@ -212,7 +212,8 @@ public class LevelMap : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDrag
         BuildStarsChip();
         BuildPlayButtons();
         BuildDaily();
-        scroll = HomeScroll;                 // current level a little below the middle of the screen
+        scroll = HomeScroll;
+        BuildHero();                 // current level a little below the middle of the screen
         Refresh(true);
         if (newStars > 0) StartCoroutine(FlyStars());
         if (Worlds.Locked(current)) StartCoroutine(GateAhead());
@@ -478,8 +479,9 @@ public class LevelMap : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDrag
             dailyBtn.localRotation = Quaternion.Euler(0, 0, ready ? 5f * Mathf.Sin(t * 1.9f) : 0f);
         }
         if (currentPulse != null) { float s = 1f + 0.06f * Mathf.Sin(t * 4f); currentPulse.localScale = new Vector3(s, s, 1f); }
-        if (markerRt == null && hopFrom > 0)
-        {   // no marker any more: after a win the new current level simply pops
+        if (heroRt != null) UpdateHero(Time.unscaledDeltaTime, t);
+        else if (markerRt == null && hopFrom > 0)
+        {   // no hero art: after a win the new current level simply pops
             hopAge += Time.unscaledDeltaTime;
             if (hopAge > 0.6f) { hopFrom = 0; if (currentPulse != null) StartCoroutine(PopNode(currentPulse)); AudioManager.Play("balance", 0.6f); }
         }
@@ -809,6 +811,7 @@ public class LevelMap : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDrag
             }
         if (added) { SortByDepth(decorLayer); SortByDepth(nodeLayer); }
         if (markerRt != null) markerRt.SetAsLastSibling();
+        if (heroRt != null) heroRt.SetAsLastSibling();
         ApplyDrum();
     }
 
@@ -1108,7 +1111,8 @@ public class LevelMap : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDrag
     GameObject Node(int level)
     {
         bool done = level < current, cur = level == current && !Worlds.Locked(level);
-        string key = done ? "map_node_done" : cur ? "map_node_current" : "map_node_locked";
+        bool hard = !done && LevelGen.IsHardLevel(level) && GameArt.I.Has("map_node_hard");   // red with flames until it's beaten
+        string key = done ? "map_node_done" : hard ? "map_node_hard" : cur ? "map_node_current" : "map_node_locked";
         float size = cur ? CurrentSize : NodeSize;
         var holder = UIKit.Place(UIKit.Rect("node" + level, nodeLayer), new Vector2(0.5f, 0.5f), P(YOf(level)), new Vector2(size, size));
         Button b;
@@ -1121,7 +1125,12 @@ public class LevelMap : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDrag
         // number sits in the middle of the disc (the ears push the disc centre a little lower)
         var num = UIKit.Label(b.transform, level.ToString(), level >= 100 ? 50 : 60, done || cur ? Color.white : new Color(0.55f, 0.58f, 0.72f),
                               new Vector2(0.5f, 0.5f), new Vector2(0, -size * 0.04f), new Vector2(size, size * 0.6f), true);
-        if (!done && !cur) num.GetComponent<Outline>().effectColor = new Color(1f, 1f, 1f, 0.6f);
+        if (!done && !cur && !hard) num.GetComponent<Outline>().effectColor = new Color(1f, 1f, 1f, 0.6f);
+        if (hard)
+        {
+            num.color = Color.white;
+            if (!cur) b.GetComponent<Image>().color = new Color(0.82f, 0.78f, 0.82f);    // not reached yet: a little dimmer
+        }
         if (cur) currentPulse = b.transform;
         if (done && GameArt.I.Has("ui_star"))
         {   // the level's best result: three little stars in a shallow arc under the node, missing ones are dark
@@ -1142,6 +1151,200 @@ public class LevelMap : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDrag
         Vector2 c = P(YOf(level));
         float side = c.x > 0 ? -1f : 1f;
         return c + new Vector2(side * (CurrentSize * 0.5f + 95f), 55f + 12f * Mathf.Abs(Mathf.Sin(t * 3f)));
+    }
+
+    // ---------------------------------------------------------------- the hero cat
+    // A fluffy ginger cat stands beside the current level. After a win it walks there from the level just
+    // won: steps off, follows the road (four walk frames, a bounce on every step, little dust puffs), and at
+    // the new level hops up, lands with a squash, pops the node and waves. Standing, it breathes, turns
+    // towards the level, now and then waves or hops on the spot; a tap makes it hop too.
+    RectTransform heroRt, heroBody; Image heroImg;
+    enum HeroMode { Idle, Wait, Walk, Hop, Wave }
+    HeroMode heroMode;
+    float heroT, heroNextAct, heroDist, heroLen, heroStepAt, heroFace = 1f;
+    readonly List<Vector2> heroPath = new List<Vector2>();
+    Vector2 heroPos;
+    int heroHopKind;               // 0 = arrival hop (pops the node), 1 = a little hop on the spot
+    const float HeroH = 180f, HeroWalkSpeed = 520f, HeroStep = 70f;
+    static readonly string[] HeroWalk = { "hero_walk_1", "hero_walk_2", "hero_walk_3", "hero_walk_4" };
+
+    static Vector2 HeroSpot(int level)
+    {   // beside the node, on the side away from the road's bend, so it never covers the next level
+        Vector2 c = P(YOf(level));
+        float side = c.x > 0 ? -1f : 1f;
+        return c + new Vector2(side * (CurrentSize * 0.5f + 90f), 30f);
+    }
+
+    void BuildHero()
+    {
+        if (!GameArt.I.Has("hero_stand")) return;
+        heroRt = UIKit.Rect("hero", nodeLayer);
+        heroRt.anchorMin = heroRt.anchorMax = new Vector2(0.5f, 0.5f); heroRt.pivot = new Vector2(0.5f, 0f);   // pivot at the feet
+        heroRt.sizeDelta = new Vector2(HeroH * 1.1f, HeroH);
+        heroBody = UIKit.Rect("body", heroRt);
+        heroBody.anchorMin = heroBody.anchorMax = new Vector2(0.5f, 0f); heroBody.pivot = new Vector2(0.5f, 0f);
+        heroBody.sizeDelta = new Vector2(HeroH * 1.1f, HeroH); heroBody.anchoredPosition = Vector2.zero;
+        heroImg = heroBody.gameObject.AddComponent<Image>(); heroImg.preserveAspect = true; heroImg.raycastTarget = true;
+        var btn = heroBody.gameObject.AddComponent<Button>(); btn.transition = Selectable.Transition.None;
+        btn.onClick.AddListener(() => { if (heroMode == HeroMode.Idle) StartHop(1); });
+        HeroSprite("hero_stand");
+        if (hopFrom > 0 && hopFrom < current)
+        {   // walk from the level just won: off the old spot, along the road, to the new spot
+            heroPath.Clear();
+            heroPath.Add(HeroSpot(hopFrom));
+            float y0 = YOf(hopFrom) + 70f, y1 = YOf(current) - 70f;
+            for (float y = y0; y < y1; y += 30f) heroPath.Add(P(y) + new Vector2(0, -20f));
+            heroPath.Add(HeroSpot(current));
+            heroLen = 0f; for (int i = 1; i < heroPath.Count; i++) heroLen += Vector2.Distance(heroPath[i - 1], heroPath[i]);
+            heroPos = heroPath[0]; heroDist = 0f; heroStepAt = 0f;
+            heroMode = HeroMode.Wait; heroT = 0f;
+        }
+        else { heroPos = HeroSpot(current); heroMode = HeroMode.Idle; heroNextAct = 2.5f; FaceNode(); }
+        Project(heroRt, heroPos, 1f, Vector2.one);
+    }
+
+    void HeroSprite(string key)
+    {
+        var sp = GameArt.I.S(key);
+        if (sp != null && heroImg.sprite != sp) heroImg.sprite = sp;
+    }
+
+    void FaceNode()
+    {   // standing beside the node: look towards it (the art faces right)
+        heroFace = P(YOf(current)).x > heroPos.x ? 1f : -1f;
+    }
+
+    Vector2 PathAt(float d)
+    {
+        for (int i = 1; i < heroPath.Count; i++)
+        {
+            float seg = Vector2.Distance(heroPath[i - 1], heroPath[i]);
+            if (d <= seg || i == heroPath.Count - 1) return Vector2.Lerp(heroPath[i - 1], heroPath[i], seg > 0f ? Mathf.Clamp01(d / seg) : 1f);
+            d -= seg;
+        }
+        return heroPath[heroPath.Count - 1];
+    }
+
+    void StartHop(int kind) { heroMode = HeroMode.Hop; heroHopKind = kind; heroT = 0f; }
+
+    void UpdateHero(float dt, float t)
+    {
+        heroT += dt;
+        float bob = 0f, sx = 1f, sy = 1f, rot = 0f;
+        switch (heroMode)
+        {
+            case HeroMode.Wait:      // the win screen has just closed: a breath, then off it goes
+                HeroSprite("hero_stand");
+                heroFace = PathAt(40f).x >= heroPos.x ? 1f : -1f;
+                sy = 1f + 0.02f * Mathf.Sin(t * 4f);
+                if (heroT > 0.35f) { heroMode = HeroMode.Walk; heroT = 0f; }
+                break;
+            case HeroMode.Walk:
+            {
+                float speed = HeroWalkSpeed * Mathf.Clamp01(0.35f + heroT * 2.5f);          // a quick start
+                if (heroLen - heroDist < 120f) speed *= Mathf.Lerp(0.55f, 1f, (heroLen - heroDist) / 120f);   // slows down to arrive
+                heroDist = Mathf.Min(heroLen, heroDist + speed * dt);
+                Vector2 np = PathAt(heroDist);
+                if (Mathf.Abs(np.x - heroPos.x) > 0.5f) heroFace = Mathf.Lerp(heroFace, np.x > heroPos.x ? 1f : -1f, 1f - Mathf.Exp(-14f * dt));
+                heroPos = np;
+                float ph = heroDist / HeroStep;                                   // one step every HeroStep units
+                HeroSprite(HeroWalk[(int)(ph * 2f) % 4]);
+                float stepK = ph - Mathf.Floor(ph);
+                bob = 12f * Mathf.Abs(Mathf.Sin(stepK * Mathf.PI));               // up and down on every step
+                sy = 1f - 0.04f * Mathf.Cos(stepK * Mathf.PI * 2f); sx = 2f - sy;
+                rot = 3f * Mathf.Sin(ph * Mathf.PI) * -Mathf.Sign(heroFace);
+                if (heroDist >= heroStepAt) { heroStepAt += HeroStep; HeroDust(heroPos, 1); }
+                if (heroDist >= heroLen) { StartHop(0); }
+                break;
+            }
+            case HeroMode.Hop:
+            {   // up (jump frame) - down - squash on landing (land frame)
+                float up = heroHopKind == 0 ? 0.42f : 0.32f, hgt = heroHopKind == 0 ? 90f : 55f;
+                if (heroT < up)
+                {
+                    float k = heroT / up;
+                    HeroSprite("hero_jump");
+                    bob = hgt * Mathf.Sin(k * Mathf.PI);
+                    sy = 1.06f; sx = 0.95f;
+                }
+                else
+                {
+                    float k = Mathf.Clamp01((heroT - up) / 0.22f);
+                    if (heroT - dt < up)
+                    {   // the landing
+                        HeroDust(heroPos, 3);
+                        if (heroHopKind == 0)
+                        {
+                            hopFrom = 0;
+                            if (currentPulse != null) StartCoroutine(PopNode(currentPulse));
+                            AudioManager.Play("balance", 0.6f);
+                        }
+                        AudioManager.Play("cat_drop", 0.35f);
+                    }
+                    HeroSprite("hero_land");
+                    float sq = Mathf.Sin(k * Mathf.PI);
+                    sy = 1f - 0.12f * sq; sx = 1f + 0.1f * sq;
+                    if (k >= 1f)
+                    {
+                        FaceNode();
+                        if (heroHopKind == 0) { heroMode = HeroMode.Wave; heroT = 0f; }
+                        else { heroMode = HeroMode.Idle; heroT = 0f; heroNextAct = UnityEngine.Random.Range(5f, 9f); }
+                    }
+                }
+                break;
+            }
+            case HeroMode.Wave:          // a happy wave, the paw going to and fro (the whole cat rocks a little)
+                HeroSprite("hero_wave");
+                rot = 4f * Mathf.Sin(heroT * 9f) * Mathf.Clamp01(1.4f - heroT);
+                sy = 1f + 0.02f * Mathf.Sin(heroT * 9f);
+                if (heroT > 1.4f) { heroMode = HeroMode.Idle; heroT = 0f; heroNextAct = UnityEngine.Random.Range(4f, 8f); }
+                break;
+            default:                     // idle: breathes; now and then waves or hops on the spot
+                HeroSprite("hero_stand");
+                sy = 1f + 0.025f * Mathf.Sin(t * 3.2f); sx = 1f - 0.012f * Mathf.Sin(t * 3.2f);
+                rot = 1.5f * Mathf.Sin(t * 1.3f);
+                heroPos = Vector2.Lerp(heroPos, HeroSpot(current), 1f - Mathf.Exp(-6f * dt));
+                if (heroT > heroNextAct)
+                {
+                    if (UnityEngine.Random.value < 0.6f) { heroMode = HeroMode.Wave; heroT = 0f; }
+                    else StartHop(1);
+                }
+                break;
+        }
+        Project(heroRt, heroPos, 1f, Vector2.one);
+        heroBody.anchoredPosition = new Vector2(0f, bob);
+        heroBody.localScale = new Vector3(heroFace * sx, sy, 1f);
+        heroBody.localRotation = Quaternion.Euler(0, 0, rot);
+    }
+
+    // a few soft puffs of dust at the cat's feet (they live in map space, so they keep their place)
+    void HeroDust(Vector2 at, int n)
+    {
+        for (int i = 0; i < n; i++)
+        {
+            var d = UIKit.Rect("dust", nodeLayer);
+            d.anchorMin = d.anchorMax = new Vector2(0.5f, 0.5f);
+            d.sizeDelta = new Vector2(34f, 34f);
+            var img = d.gameObject.AddComponent<Image>(); img.sprite = Kit.RoundedRect(64, 31); img.raycastTarget = false;
+            img.color = new Color(1f, 0.95f, 0.85f, 0.75f);
+            Vector2 p = at + new Vector2(-heroFace * 35f + UnityEngine.Random.Range(-25f, 25f), UnityEngine.Random.Range(-4f, 8f));
+            Vector2 v = new Vector2(-heroFace * UnityEngine.Random.Range(20f, 60f) + UnityEngine.Random.Range(-40f, 40f), UnityEngine.Random.Range(15f, 45f));
+            StartCoroutine(DustPuff(d, img, p, v));
+        }
+        if (heroRt != null) heroRt.SetAsLastSibling();
+    }
+
+    IEnumerator DustPuff(RectTransform d, Image img, Vector2 p, Vector2 v)
+    {
+        float a = 0f, life = 0.55f;
+        while (a < life && d != null)
+        {
+            a += Time.unscaledDeltaTime; float k = a / life;
+            Project(d, p + v * a, 0.6f + 1.1f * k, Vector2.one);
+            img.color = new Color(1f, 0.95f, 0.85f, 0.75f * (1f - k) * (1f - k));
+            yield return null;
+        }
+        if (d != null) Destroy(d.gameObject);
     }
 
     IEnumerator PopNode(Transform n)

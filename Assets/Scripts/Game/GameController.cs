@@ -21,6 +21,11 @@ public class GameController : MonoBehaviour
     int lastWinCoins;
     int lastStars, lastStarsNew;      // stars of the win just shown, and how many of them are new for this level
     bool boughtMoves;                 // +5 moves were used on this attempt: the win is worth one star
+    // continues after running out of moves: one for a video per attempt; with coins as often as the
+    // player likes, but each one in the same attempt costs ContinueStep more
+    bool adContinueUsed; int coinContinues;
+    const int ContinueStep = 40;
+    int ContinuePrice => Progress.Price(PowerUpType.ExtraMoves) + ContinueStep * coinContinues;
     // Global coin knob: every payout is scaled by this; the fractions carry over, so over a session the
     // player gets exactly this share of the original amounts (0.8 = 20% fewer coins).
     const float CoinRate = 0.51f;          // all coin income: 20% lower again than the 0.64 before (ad rewards stay as they are)
@@ -171,7 +176,7 @@ public class GameController : MonoBehaviour
         if (balanceIcon != null) balanceIcon.localScale = Vector3.one;
         foreach (Transform c in popupRoot) Destroy(c.gameObject);
         map = null;
-        level = lvl; lossCounted = false; boughtMoves = false; startBought.Clear();
+        level = lvl; lossCounted = false; boughtMoves = false; startBought.Clear(); adContinueUsed = false; coinContinues = 0;
         if (lvl > 3) tutReplay = false;
         def = LevelGen.Build(level);
         moves = def.moves;
@@ -847,7 +852,7 @@ public class GameController : MonoBehaviour
     const int StartCatsUnlock = 8;
     static readonly Special[] StartCatType = { Special.Line, Special.Bomb, Special.Rainbow };
     static readonly string[] StartCatKey = { "special_line", "special_bomb", "special_rainbow" };
-    static readonly int[] StartCatPrice = { 30, 45, 70 };
+    static readonly int[] StartCatPrice = { 40, 60, 90 };
     readonly bool[] startPick = new bool[3];
     readonly List<Special> startBought = new List<Special>();
     bool adCat;                                   // a free random cat was earned with a video on this card
@@ -858,7 +863,14 @@ public class GameController : MonoBehaviour
         if (meet != null) { ShowMeet(meet, ShowLevelIntro); return; }
         bool shop = level >= StartCatsUnlock;
         float up = shop ? 105f : 0f;                      // the goals move up to make room for the row of cats
-        var root = OpenPopup(Loc.T("Level", level), shop ? (Art ? 1440 : 1040) : (Art ? 1040 : 620), out var body, false);
+        var root = OpenPopup(def.hard ? Loc.T("LevelHard", level) : Loc.T("Level", level), shop ? (Art ? 1440 : 1040) : (Art ? 1040 : 620), out var body, false);
+        if (def.hard && GameArt.I.Has("hard_badge"))
+        {   // a hard level: the angry cat badge sits on the window's corner and shakes a little
+            var badge = UIKit.Image(body, "hard_badge", new Vector2(0f, 1f), new Vector2(118, -340), new Vector2(150, 150));
+            badge.preserveAspect = true;
+            StartCoroutine(HardBadge(badge.rectTransform));
+            AudioManager.Play("groaning", 0.5f);
+        }
         int streak = Progress.WinStreak;
         if (shop)
         {   // win streak: three medals and the gift they lead to
@@ -961,6 +973,21 @@ public class GameController : MonoBehaviour
                     StartCoroutine(UIKit.PopIn(given.transform, 0.3f));
                     AudioManager.Play("balance", 0.6f);
                 }));
+        }
+    }
+
+    IEnumerator HardBadge(RectTransform b)
+    {
+        yield return UIKit.PopIn(b, 0.4f);
+        float t = 0f;
+        while (b != null)
+        {   // a short angry shake every couple of seconds
+            t += Time.unscaledDeltaTime;
+            float k = t % 2.2f;
+            b.localRotation = Quaternion.Euler(0, 0, k < 0.45f ? 9f * Mathf.Sin(k * 40f) * (1f - k / 0.45f) : 0f);
+            float s = 1f + (k < 0.45f ? 0.06f * Mathf.Sin(k / 0.45f * Mathf.PI) : 0f);
+            b.localScale = new Vector3(s, s, 1f);
+            yield return null;
         }
     }
 
@@ -1292,6 +1319,16 @@ public class GameController : MonoBehaviour
         map.onGateOpened = () => { bool c = mapClosable; CloseMap(false); ShowMap(c); };
         // a chest just became available: after the marker's hop, it opens by itself
         if (Progress.PendingChest > 0) StartCoroutine(AutoChest(hopFrom > 0 ? 1.5f : 0.6f));
+        if (Progress.GiftReady && Progress.Level >= 2) StartCoroutine(AutoGift(hopFrom > 0 ? 3.2f : 0.8f));
+    }
+
+    // the daily login gift opens by itself on the map once a day, after the cat's walk and any chest
+    IEnumerator AutoGift(float delay)
+    {
+        yield return new WaitForSecondsRealtime(delay);
+        while (map != null && (chestRoot != null || Progress.PendingChest > 0 || popupRoot.Find("DailyBowls") != null)) yield return new WaitForSecondsRealtime(0.3f);
+        if (map == null || !Progress.GiftReady || popupRoot.Find("DailyGift") != null) yield break;
+        DailyGift.Open(popupRoot, null);
     }
 
     // daily "three bowls": one go a day; after it the icon on the map turns grey until tomorrow
@@ -1471,7 +1508,7 @@ public class GameController : MonoBehaviour
         if (hasBanner) bannerKey = Loc.Art(bannerKey);
         var root = OpenPopup(hasBanner ? null : (win ? Loc.T("Win") : Loc.T("Lose")), Art ? 1300 : 1080, out var body, false);
         ResultBackdrop(root, win);
-        bool adMoves = !win && Ads.CanReward;          // a lost level can be continued for a video
+        bool adMoves = !win && Ads.CanReward && !adContinueUsed;   // a lost level can be continued for a video, once per attempt
         if (hasBanner) StartCoroutine(UIKit.PopIn(UIKit.Image(body, bannerKey, new Vector2(0.5f, 1f), new Vector2(0, Art ? -129 : 40), Art ? new Vector2(900, 507) : new Vector2(820, 420)).transform, 0.45f));
         // the level's tasks with how far the player got: done ones get a check mark, unfinished ones show progress in soft red
         int gn = def.goals.Count;
@@ -1528,13 +1565,14 @@ public class GameController : MonoBehaviour
         else
         {
             int charges = Progress.Charges(PowerUpType.ExtraMoves);
-            int price = Progress.Price(PowerUpType.ExtraMoves);
+            int price = ContinuePrice;
             bool can = charges > 0 || Progress.Balance >= price;
             string label = charges > 0 ? Loc.T("Continue") : string.Format(Loc.T("Continue.Buy"), price);
             var cont = UIKit.TextButton(body, label, new Vector2(0.5f, 0f), new Vector2(0, BottomY(ResultBtnY) + 160), new Vector2(520, adMoves ? 100 : 110), can ? new Color(0.3f, 0.8f, 0.4f) : new Color(0.55f, 0.55f, 0.6f), () =>
             {
-                if (Progress.Charges(PowerUpType.ExtraMoves) == 0 && !Progress.Buy(PowerUpType.ExtraMoves)) { NotEnoughCoins(); return; }
-                Progress.Consume(PowerUpType.ExtraMoves);
+                if (Progress.Charges(PowerUpType.ExtraMoves) > 0) Progress.Consume(PowerUpType.ExtraMoves);
+                else if (Progress.TrySpend(ContinuePrice)) coinContinues++;
+                else { NotEnoughCoins(); return; }
                 moves += ExtraMovesAmount; ended = false; boughtMoves = true;
                 RefreshTexts(); RefreshPowerUps();
                 ClosePopup(root);
@@ -1546,6 +1584,7 @@ public class GameController : MonoBehaviour
                     Ads.ShowRewarded(ok =>
                     {
                         if (!ok || !ended) return;
+                        adContinueUsed = true;
                         moves += ExtraMovesAmount; ended = false; boughtMoves = true;
                         RefreshTexts(); RefreshPowerUps();
                         ClosePopup(root);
