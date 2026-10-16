@@ -168,21 +168,21 @@ MonoBehaviour:
     sprite: {fileID: 21300000, guid: a5d4c930c7cea44e9b07f16dea50da42, type: 3}
     content:
       serializedVersion: 2
-      x: 0.01953125
+      x: 0.05078125
       y: 0.01171875
-      width: 0.96484375
-      height: 0.98046875
-    stamp: 639268238308913020
+      width: 0.90234375
+      height: 0.94921875
+    stamp: 639277641574766860
   - key: special_line_an
     path: Assets/Sprites/cat-cross-an.png
     sprite: {fileID: 21300000, guid: 693f775b6124f418d86512ce12702fdc, type: 3}
     content:
       serializedVersion: 2
-      x: 0.01953125
+      x: 0.05078125
       y: 0.01171875
-      width: 0.9609375
+      width: 0.90234375
       height: 0.98046875
-    stamp: 639268238318203768
+    stamp: 639277641586004059
   - key: special_bomb
     path: Assets/Sprites/cat-bomb.png
     sprite: {fileID: 21300000, guid: 18cf825039feb44838d65d9b4db375c2, type: 3}
@@ -1133,6 +1133,126 @@ MonoBehaviour:
       width: 0.609375
       height: 0.9609375
     stamp: 639261979329697876
+  - key: leash_full_back
+    path: Assets/Sprites/Cat-blockers/Leash/leash_full_back.png
+    sprite: {fileID: 21300000, guid: da840a438aca84098970f5b3d69886bb, type: 3}
+    content:
+      serializedVersion: 2
+      x: 0.11328125
+      y: 0.078125
+      width: 0.8671875
+      height: 0.7421875
+    stamp: 639277659890442636
+  - key: leash_full_front
+    path: Assets/Sprites/Cat-blockers/Leash/leash_full_front.png
+    sprite: {fileID: 21300000, guid: 066ad675ea258490cb59e30078760456, type: 3}
+    content:
+      serializedVersion: 2
+      x: 0.11328125
+      y: 0.078125
+      width: 0.87109375
+      height: 0.50390625
+    stamp: 639277659898566539
+  - key: leash_torn_back
+    path: Assets/Sprites/Cat-blockers/Leash/leash_torn_back.png
+    sprite: {fileID: 21300000, guid: 750347323931c4f7e8e7bc852336f5ff, type: 3}
+    content:
+      serializedVersion: 2
+      x: 0.08203125
+      y: 0.08203125
+      width: 0.91796875
+      height: 0.76171875
+    stamp: 639277659907004925
+  - key: leash_torn_front
+    path: Assets/Sprites/Cat-blockers/Leash/leash_torn_front.png
+    sprite: {fileID: 21300000, guid: e36b7b62c704b4dbfb75061b78fae5f9, type: 3}
+    content:
+      serializedVersion: 2
+      x: 0.1171875
+      y: 0.08203125
+      width: 0.8828125
+      height: 0.59765625
+    stamp: 639277659915166270
+  - key: goal_leash
+    path: Assets/Sprites/Cat-blockers/Leash/goal_leash.png
+    sprite: {fileID: 21300000, guid: 26d7a1003ad6e41a4ae4263b9f2c036c, type: 3}
+    content:
+      serializedVersion: 2
+      x: 0.0078125
+      y: 0.00896861
+      width: 0.9921875
+      height: 0.9865471
+    stamp: 639277659881461792
+  - key: cat_house_1
+    path: Assets/Sprites/Cat-blockers/House/cat_house_1.png
+    sprite: {fileID: 21300000, guid: 8dc5a33b0a5d2418f813199dba80da63, type: 3}
+    content:
+      serializedVersion: 2
+      x: 0.01953125
+      y: 0.03125
+      width: 0.96484375
+      height: 0.8828125
+    stamp: 639277659830030721
+  - key: cat_house_2
+    path: Assets/Sprites/Cat-blockers/House/cat_house_2.png
+    sprite: {fileID: 21300000, guid: d194b49e5296a491fa3fbbd2693cf38c, type: 3}
+    content:
+      serializedVersion: 2
+      x: 0.01953125
+      y: 0.03125
+      width: 0.96484375
+      height: 0.79296875
+    stamp: 639277659838318535
+  - key: cat_house_3
+    path: Assets/Sprites/Cat-blockers/House/cat_house_3.png
+    sprite: {fileID: 21300000, guid: 805cf28134ac54971aec7464bb65945e, type: 3}
+    content:
+      serializedVersion: 2
+      x: 0.01953125
+      y: 0.03125
+      width: 0.96484375
+      height: 0.8125
+    stamp: 639277659849352444
+  - key: cat_house_4
+    path: Assets/Sprites/Cat-blockers/House/cat_house_4.png
+    sprite: {fileID: 21300000, guid: 4f63d9fe085104b9e824a13d09a1078e, type: 3}
+    content:
+      serializedVersion: 2
+      x: 0.015625
+      y: 0.02734375
+      width: 0.96875
+      height: 0.85546875
+    stamp: 639277659857899059
+  - key: goal_cat_house
+    path: Assets/Sprites/Cat-blockers/House/goal_cat_house.png
+    sprite: {fileID: 21300000, guid: acff2d2ef9ee64673b4206f2dfd25766, type: 3}
+    content:
+      serializedVersion: 2
+      x: 0.0078125
+      y: 0.0088495575
+      width: 0.9921875
+      height: 0.99115044
+    stamp: 639277659863486860
+  - key: kitten_pop
+    path: Assets/Sprites/Cat-blockers/House/kitten_pop.png
+    sprite: {fileID: 21300000, guid: 0eaccfe6cae5f45708c54391ff349352, type: 3}
+    content:
+      serializedVersion: 2
+      x: 0.005952381
+      y: 0.005
+      width: 0.99404764
+      height: 0.995
+    stamp: 639277659874155535
+  - key: goal_laser
+    path: Assets/Sprites/Cat-blockers/Laser/goal_laser.png
+    sprite: {fileID: 21300000, guid: 41a0609f85f5c4e7da3d0e528527592a, type: 3}
+    content:
+      serializedVersion: 2
+      x: 0
+      y: 0
+      width: 1
+      height: 1
+    stamp: 639277659921507910
   - key: fish_bowl
     path: Assets/Sprites/Cat-blockers/fish_bowl.png
     sprite: {fileID: 21300000, guid: ff58414904b934c9bbebc56465c8ea39, type: 3}
@@ -4183,6 +4303,16 @@ MonoBehaviour:
       width: 0.9609375
       height: 0.76
     stamp: 639261978416104415
+  - key: hunter_bomb
+    path: Assets/Sprites/FX/Burn/Hunter/hunter_bomb.png
+    sprite: {fileID: 21300000, guid: fae22a3c96bb444b0bf6852d9250fc75, type: 3}
+    content:
+      serializedVersion: 2
+      x: 0.00877193
+      y: 0.0078125
+      width: 0.98245615
+      height: 0.984375
+    stamp: 639277634688833208
   - key: hunter_feather_1
     path: Assets/Sprites/FX/Burn/Hunter/hunter_feather_1.png
     sprite: {fileID: 21300000, guid: d3f76b798729d4a1691e2d40a1ff4fba, type: 3}

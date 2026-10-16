@@ -62,7 +62,9 @@ public class Board : MonoBehaviour
     SpriteRenderer[,] milkSr;
     const int MilkLife = 5;                 // a puddle lasts exactly five moves after the one that spilled it
     bool[,] milkFresh;                      // spilled during the current move: does not dry at the end of it
-    static bool Hittable(Piece n) => n.kind == PieceKind.Vase || n.kind == PieceKind.Milk || n.cover == Cover.Box || n.cover == Cover.Mint;
+    static bool Hittable(Piece n) => n.kind == PieceKind.Vase || n.kind == PieceKind.Milk || n.kind == PieceKind.House || n.cover == Cover.Box || n.cover == Cover.Mint || n.cover == Cover.Leash;
+    // a cat that stays in its cell when its row is matched (the yarn / leash takes the hit instead)
+    static bool Tied(Piece p) => p.cover == Cover.Yarn || p.cover == Cover.Leash;
     const int MintSpreadEvery = 3;
     // mouse thief: rides on a cat, hops to a neighbour after every move and every few moves steals a coin
     // from the balance into its sack. Clearing the cat it sits on catches it: the coins come back doubled.
@@ -76,6 +78,13 @@ public class Board : MonoBehaviour
     int mouseCoins, mouseMoves, mouseFace = 1;
     bool mouseHopping;
     public bool MouseActive => mouseT != null && mouseOn != null;
+    // laser dot: a red dot on one cell. Clear the cat standing on it to catch it; every move it jumps somewhere
+    // else (always to a cell some move can clear). The level asks to catch it a few times.
+    Vector2Int laserCell = new Vector2Int(-1, -1);
+    int laserLeft;
+    bool laserCaught;
+    Transform laserT;
+    public Vector2Int LaserCell => laserLeft > 0 ? laserCell : new Vector2Int(-1, -1);
     public int MouseCoins => mouseCoins;
 
     // ======================================================= setup
@@ -104,6 +113,7 @@ public class Board : MonoBehaviour
         tileSr = new SpriteRenderer[cols, rows]; tileBase = new Vector3[cols, rows];
         guiding = false; guideRoot = null; guideLit.Clear();
         mouseOn = null; mouseT = null; mouseBody = null; mouseSr = null; mousePile.Clear(); mouseCoins = 0; mouseMoves = 0; mouseHopping = false;
+        laserCell = new Vector2Int(-1, -1); laserLeft = 0; laserCaught = false; laserT = null;
 
         BuildTiles();
         FillInitial();
@@ -176,6 +186,7 @@ public class Board : MonoBehaviour
     {
         int n = 0;
         if (t == GoalType.Foam) { foreach (var f in foam) if (f > 0) n++; return n; }
+        if (t == GoalType.Laser) return laserLeft;
         foreach (var p in grid)
         {
             if (p == null) continue;
@@ -183,6 +194,8 @@ public class Board : MonoBehaviour
             else if (t == GoalType.Box && p.cover == Cover.Box) n++;
             else if (t == GoalType.Yarn && p.cover == Cover.Yarn) n++;
             else if (t == GoalType.Mint && p.cover == Cover.Mint) n++;
+            else if (t == GoalType.Leash && p.cover == Cover.Leash) n++;
+            else if (t == GoalType.House && p.HouseAnchor) n++;
         }
         return n;
     }
@@ -243,6 +256,7 @@ public class Board : MonoBehaviour
             return new Vector2Int(-1, -1);
         }
 
+        for (int i = 0; i < def.houses; i++) PlaceHouse();
         for (int i = 0; i < def.vases; i++)
         {
             var c = Take(v => v.y > 0 && v.y < rows - 1);
@@ -275,6 +289,12 @@ public class Board : MonoBehaviour
             if (c.x < 0) break;
             var p = grid[c.x, c.y]; p.cover = Cover.Mint; p.Refresh();
         }
+        for (int i = 0; i < def.leashes; i++)
+        {
+            var c = Take(v => v.y < rows - 1);
+            if (c.x < 0) break;
+            var p = grid[c.x, c.y]; p.cover = Cover.Leash; p.coverHp = 2; p.Refresh();
+        }
         // fish: first one on the top row, the rest arrive from the top as each is delivered
         if (def.fish > 0)
         {
@@ -297,6 +317,238 @@ public class Board : MonoBehaviour
         PlaceFoam();
         EnsureMovesExist(false);
         if (def.mouse) PlaceMouse();
+        if (def.lasers > 0) { laserLeft = def.lasers; laserCell = PickLaserCell(); LaserVisual(true); }
+    }
+
+    // ---- cat house: a 2x2 piece of four cells. Every hit (a match next to it, a blast) takes one layer off;
+    // after four the house falls apart and a kitten jumps out.
+    const int HouseLayers = 4;
+    void PlaceHouse()
+    {
+        var spots = new List<Vector2Int>();
+        for (int x = 0; x + 1 < cols; x++)
+            for (int y = 1; y + 2 < rows; y++)        // not on the bottom row, and never in the top row (cats must still drop in)
+            {
+                bool ok = true;
+                for (int dx = 0; dx < 2 && ok; dx++)
+                    for (int dy = 0; dy < 2 && ok; dy++)
+                        ok = Live(x + dx, y + dy) && grid[x + dx, y + dy] != null && grid[x + dx, y + dy].PlainCat;
+                if (ok) spots.Add(new Vector2Int(x, y));
+            }
+        if (spots.Count == 0) return;
+        // keep it off the edges when possible: more cells around it to make matches in
+        spots.Sort((a, b) => Edge(a).CompareTo(Edge(b)));
+        int Edge(Vector2Int v) => (v.x == 0 || v.x + 1 == cols - 1 ? 1 : 0) + (v.y == 1 ? 1 : 0);
+        int best = Edge(spots[0]); var good = spots.FindAll(v => Edge(v) == best);
+        var at = good[rng.Next(good.Count)];
+        Piece anchor = null;
+        for (int dy = 0; dy < 2; dy++)
+            for (int dx = 0; dx < 2; dx++)
+            {
+                int x = at.x + dx, y = at.y + dy;
+                Destroy(grid[x, y].gameObject);
+                var hp = NewPiece(PieceKind.House, -1, x, y);
+                Put(hp, x, y);
+                if (anchor == null) anchor = hp;
+                hp.house = anchor;
+            }
+        anchor.houseHp = HouseLayers;
+        foreach (var q in HousePieces(anchor)) q.Refresh();
+    }
+
+    List<Piece> HousePieces(Piece anchor)
+    {
+        var l = new List<Piece>();
+        foreach (var q in grid) if (q != null && q.kind == PieceKind.House && q.house == anchor) l.Add(q);
+        return l;
+    }
+
+    Vector3 HouseCentre(Piece a) => CellPos(a.x, a.y) + new Vector3(cell * 0.5f, cell * 0.5f, 0);
+
+    void HitHouse(Piece any)
+    {
+        var a = any.house;
+        if (a == null || a.dead) return;
+        a.houseHp--;
+        Vector3 c = HouseCentre(a);
+        AudioManager.Play("Hit", 0.8f);
+        FX.Burst(c, new Color(0.86f, 0.74f, 0.98f), cell * 1.4f, 10);     // lilac fluff
+        FX.LandDust(c + new Vector3(0, -cell * 0.6f, 0), cell * 1.6f);
+        FX.Shake(cell * 0.06f, 0.15f);
+        Bonus?.Invoke(20);
+        if (a.houseHp > 0) { a.Refresh(); StartCoroutine(HouseWobble(a)); return; }
+        // the last layer: the house falls apart and a kitten jumps out
+        foreach (var q in HousePieces(a)) { q.dead = true; grid[q.x, q.y] = null; }
+        StartCoroutine(HouseBreak(a, c));
+        GoalHit?.Invoke(GoalType.House, c);
+    }
+
+    IEnumerator HouseWobble(Piece a)
+    {
+        var v = a.visual; Vector3 pivot = new Vector3(cell * 0.5f, 0f, 0f);
+        yield return Kit.Tween(0.45f, k =>
+        {
+            if (v == null) return;
+            float w = Mathf.Exp(-k * 5f) * Mathf.Cos(k * Mathf.PI * 5f);
+            v.localScale = new Vector3(1f + 0.08f * w, 1f - 0.1f * w, 1f);
+            v.localPosition = pivot * (1f - v.localScale.x);              // squash around the house's own centre, feet on the floor
+        });
+        if (v != null) { v.localScale = Vector3.one; v.localPosition = Vector3.zero; }
+    }
+
+    IEnumerator HouseBreak(Piece a, Vector3 c)
+    {
+        AudioManager.Play("vase", 0.9f);
+        FX.Burst(c, new Color(1f, 0.95f, 0.85f), cell * 2.2f, 18);
+        FX.Shake(cell * 0.1f, 0.25f);
+        StartCoroutine(KittenPop(c));
+        var pieces = new List<Piece>(); foreach (var q in FindObjectsByType<Piece>(FindObjectsSortMode.None)) if (q.house == a) pieces.Add(q);
+        yield return Kit.Tween(0.3f, k =>
+        {
+            if (a == null) return;
+            float s = 1f + 0.25f * k; a.visual.localScale = new Vector3(s, s, 1f);
+            a.visual.localPosition = new Vector3(cell * 0.5f, cell * 0.5f, 0) * (1f - s);
+            var col = a.body.color; col.a = 1f - k; a.body.color = col;
+        });
+        foreach (var q in pieces) if (q != null) Destroy(q.gameObject);
+    }
+
+    IEnumerator KittenPop(Vector3 c)
+    {
+        if (!GameArt.I.Has("kitten_pop")) yield break;
+        var holder = new GameObject("kitten").transform; holder.position = c;
+        var sr = new GameObject("img").AddComponent<SpriteRenderer>(); sr.transform.SetParent(holder, false);
+        Kit.FitSprite(sr, "kitten_pop", cell * 1.5f, 1f); sr.sortingOrder = FX.FxOrder + 2;
+        AudioManager.Play("celebrate", 0.5f);
+        yield return Kit.Tween(1.1f, k =>
+        {
+            if (holder == null) return;
+            float up = Mathf.Sin(Mathf.Min(1f, k * 1.4f) * Mathf.PI * 0.5f);                  // jumps up and hangs there for a moment
+            holder.position = c + new Vector3(Mathf.Sin(k * 9f) * cell * 0.05f, up * cell * 1.3f, 0);
+            float s = Kit.EaseOutBack(Mathf.Min(1f, k * 3f)); holder.localScale = new Vector3(s, s, 1f);
+            holder.rotation = Quaternion.Euler(0, 0, Mathf.Sin(k * 12f) * 8f);
+            var col = sr.color; col.a = k < 0.75f ? 1f : 1f - (k - 0.75f) / 0.25f; sr.color = col;
+        });
+        if (holder != null) Destroy(holder.gameObject);
+    }
+
+    // ---- laser dot
+    // the cells some move would clear right now (where the dot can land so it can always be caught)
+    List<Vector2Int> ClearableCells()
+    {
+        var set = new HashSet<Vector2Int>();
+        for (int x = 0; x < cols; x++)
+            for (int y = 0; y < rows; y++)
+                for (int d = 0; d < 2; d++)
+                {
+                    int bx = x + (d == 0 ? 1 : 0), by = y + (d == 1 ? 1 : 0);
+                    if (!In(bx, by)) continue;
+                    var a = grid[x, y]; var b = grid[bx, by];
+                    if (a == null || b == null || !a.Movable || !b.Movable || a.special != Special.None || b.special != Special.None) continue;
+                    grid[x, y] = b; grid[bx, by] = a;
+                    if (a.MatchColor >= 0 && WouldMatchAt(bx, by, a.MatchColor)) set.Add(new Vector2Int(bx, by));
+                    if (b.MatchColor >= 0 && WouldMatchAt(x, y, b.MatchColor)) set.Add(new Vector2Int(x, y));
+                    grid[x, y] = a; grid[bx, by] = b;
+                }
+        return new List<Vector2Int>(set);
+    }
+
+    Vector2Int PickLaserCell()
+    {
+        var cands = ClearableCells();
+        cands.RemoveAll(v => v == laserCell);
+        if (cands.Count == 0)
+        {   // no move clears anything (a shuffle is coming): any plain cat will do
+            for (int x = 0; x < cols; x++) for (int y = 0; y < rows; y++) { var p = At(x, y); if (p != null && p.kind == PieceKind.Cat && new Vector2Int(x, y) != laserCell) cands.Add(new Vector2Int(x, y)); }
+            if (cands.Count == 0) return laserCell;
+        }
+        // it runs away: prefer a spot at least two cells from where it was
+        if (laserCell.x >= 0)
+        {
+            var far = cands.FindAll(v => Mathf.Abs(v.x - laserCell.x) + Mathf.Abs(v.y - laserCell.y) >= 3);
+            if (far.Count > 0) cands = far;
+        }
+        return cands[rng.Next(cands.Count)];
+    }
+
+    SpriteRenderer laserGlow, laserCore, laserHalo;
+    static readonly Vector3 LaserSpot = new Vector3(0.12f, -0.2f, 0f);     // on the cat's tummy, so the face stays visible
+    void LaserVisual(bool appear)
+    {
+        if (laserT == null)
+        {
+            laserT = new GameObject("laser").transform; laserT.SetParent(transform, false);
+            SpriteRenderer Dot(string n, int order) { var r = new GameObject(n).AddComponent<SpriteRenderer>(); r.transform.SetParent(laserT, false); r.sprite = Kit.SoftCircle(64); r.sortingOrder = order; return r; }
+            laserHalo = Dot("halo", 15); laserGlow = Dot("glow", 16); laserCore = Dot("core", 17);
+            float u = laserGlow.sprite.bounds.size.x;
+            laserHalo.transform.localScale = Vector3.one * (cell * 0.75f / u);
+            laserGlow.transform.localScale = Vector3.one * (cell * 0.36f / u);
+            laserCore.transform.localScale = Vector3.one * (cell * 0.13f / u);
+            laserCore.color = new Color(1f, 0.93f, 0.93f, 1f);
+            StartCoroutine(LaserLive(laserT));
+        }
+        laserT.position = CellPos(laserCell.x, laserCell.y) + LaserSpot * cell;
+        if (appear) StartCoroutine(PopIn(laserT));
+    }
+
+    // the dot never sits still: it trembles a little, its glow throbs and a faint ring breathes round it
+    IEnumerator LaserLive(Transform t)
+    {
+        float seed = UnityEngine.Random.value * 10f;
+        while (t != null)
+        {
+            float tm = Time.time + seed;
+            if (laserGlow != null)
+            {
+                laserGlow.color = new Color(1f, 0.05f, 0.1f, 0.75f + 0.2f * Mathf.Sin(tm * 9f));
+                float h = Mathf.Repeat(tm * 0.9f, 1f);
+                laserHalo.color = new Color(1f, 0.15f, 0.2f, 0.35f * (1f - h));
+                float u = laserHalo.sprite.bounds.size.x;
+                laserHalo.transform.localScale = Vector3.one * (cell * Mathf.Lerp(0.35f, 0.9f, h) / u);
+                var j = new Vector3(Mathf.Sin(tm * 13f), Mathf.Cos(tm * 11f), 0) * cell * 0.025f;
+                laserGlow.transform.localPosition = laserCore.transform.localPosition = j;
+            }
+            yield return null;
+        }
+    }
+
+    void LaserCatch(Vector3 pos)
+    {
+        if (laserLeft <= 0) return;
+        laserLeft--;
+        AudioManager.Play("mouse_caught", 0.6f);
+        FX.Burst(pos, new Color(1f, 0.3f, 0.3f), cell, 12);
+        GoalHit?.Invoke(GoalType.Laser, pos);
+        if (laserT != null) StartCoroutine(LaserHide(laserT, laserLeft <= 0));
+    }
+
+    IEnumerator LaserHide(Transform t, bool gone)
+    {
+        yield return Kit.Tween(0.18f, k => { if (t != null) t.localScale = Vector3.one * (1f - k); });
+        if (gone && t != null) { Destroy(t.gameObject); laserT = null; }
+    }
+
+    // after every move the dot darts to a new cell (caught or not)
+    IEnumerator LaserJump()
+    {
+        if (laserLeft <= 0 || laserT == null) { laserCaught = false; yield break; }
+        var to = PickLaserCell();
+        bool wasCaught = laserCaught; laserCaught = false;
+        Vector3 a = laserT.position, b = CellPos(to.x, to.y) + LaserSpot * cell;
+        laserCell = to;
+        if (wasCaught)
+        {   // it was "pounced on": pops up again in its new spot
+            laserT.position = b;
+            yield return Kit.Tween(0.2f, k => { if (laserT != null) laserT.localScale = Vector3.one * Kit.EaseOutBack(k); });
+            yield break;
+        }
+        Vector3 mid = (a + b) * 0.5f + new Vector3(0, cell * 0.8f, 0);
+        yield return Kit.Tween(0.3f, k =>
+        {
+            if (laserT == null) return;
+            laserT.position = Vector3.Lerp(Vector3.Lerp(a, mid, k), Vector3.Lerp(mid, b, k), Kit.EaseInOut(k));
+        });
+        if (laserT != null) laserT.position = b;
     }
 
     void Shuffle<T>(List<T> list)
@@ -611,6 +863,7 @@ public class Board : MonoBehaviour
         DryMilk();
         if (MouseActive) MouseTurn();
         DebugPhase = "shuffle"; if (!HasPossibleMove()) yield return ShuffleBoard();
+        DebugPhase = "laser"; if (laserLeft > 0) yield return LaserJump();
         DebugPhase = "resolved"; MoveResolved?.Invoke(clearedThisMove);
         Busy = false; quietPops = false;
         ResetIdle();
@@ -647,7 +900,7 @@ public class Board : MonoBehaviour
             case PowerUpType.Paw:
                 yield return FX.PawSlam(pos, cell);
                 AudioManager.Play("hummer");
-                if (p.kind == PieceKind.Vase || p.kind == PieceKind.Milk) ctx.hits.Add(p);
+                if (p.kind == PieceKind.Vase || p.kind == PieceKind.Milk || p.kind == PieceKind.House) ctx.hits.Add(p);
                 else { if (p.cover != Cover.None) { ReleaseCover(p, pos); } ctx.clear.Add(p); if (p.special != Special.None) Trigger(p, ctx, true); }
                 break;
             case PowerUpType.MegaBomb:
@@ -666,6 +919,7 @@ public class Board : MonoBehaviour
         yield return Gravity();
         yield return ResolveLoop(null);
         if (!HasPossibleMove()) yield return ShuffleBoard();
+        if (laserCaught) yield return LaserJump();
         MoveResolved?.Invoke(clearedThisMove);
         Busy = false; quietPops = false;
     }
@@ -752,6 +1006,7 @@ public class Board : MonoBehaviour
         }
         yield return ResolveLoop(new HashSet<Vector2Int> { a, b });
         if (!HasPossibleMove()) yield return ShuffleBoard();
+        if (laserCaught) yield return LaserJump();
         MoveResolved?.Invoke(clearedThisMove);
         Busy = false; quietPops = false;
     }
@@ -838,7 +1093,7 @@ public class Board : MonoBehaviour
     }
 
     struct LineShot { public int x, y; public bool row; public float t; public int r; }
-    struct HunterShot { public int x, y, tx, ty; public float t; }
+    struct HunterShot { public int x, y, tx, ty; public float t; public bool bomb; }
 
     // The Hunter picks the piece the level most wants gone and shoots it (optionally carrying a Line / Bomb there).
     void HunterShoot(int ox, int oy, float t0, Ctx ctx, Special carry)
@@ -855,12 +1110,18 @@ public class Board : MonoBehaviour
         }
         if (best == null) return;
         float arrive = FX.HunterCharge + FX.HunterFly(Vector2.Distance(new Vector2(ox, oy), new Vector2(best.x, best.y)));
-        ctx.hunters.Add(new HunterShot { x = ox, y = oy, tx = best.x, ty = best.y, t = t0 });
+        ctx.hunters.Add(new HunterShot { x = ox, y = oy, tx = best.x, ty = best.y, t = t0, bomb = carry == Special.Bomb });
         float hit = t0 + arrive;
         if (carry == Special.Line) LineShoot(best.x, best.y, rng.Next(2) == 0, hit, ctx);
-        else if (carry == Special.Bomb) BombShoot(best.x, best.y, 1, hit, ctx);
+        else if (carry == Special.Bomb)
+        {   // the arrow carries a little bomb on its tip: the arrow takes the target out, then the bomb goes off there (5x5)
+            Affect(best.x, best.y, ctx, hit);
+            BombShoot(best.x, best.y, 2, hit + HunterBombFuse, ctx);
+        }
         else Affect(best.x, best.y, ctx, hit);
     }
+
+    const float HunterBombFuse = 0.14f;   // between the arrow's hit and the bomb going off
 
     // horn blast: the four neighbours
     void HunterHorn(int x, int y, float t0, Ctx ctx)
@@ -915,7 +1176,7 @@ public class Board : MonoBehaviour
             if (runs.Count == 0) break;
             step++;
             var lens = new List<int>();
-            foreach (var r in runs) { int n = 0; foreach (var p in r.cells) if (p.cover != Cover.Yarn) n++; lens.Add(Mathf.Max(n, 2)); }
+            foreach (var r in runs) { int n = 0; foreach (var p in r.cells) if (!Tied(p)) n++; lens.Add(Mathf.Max(n, 2)); }
             CascadeStep?.Invoke(step, lens);
 
             var ctx = new Ctx();
@@ -924,6 +1185,7 @@ public class Board : MonoBehaviour
                 foreach (var p in r.cells)
                 {
                     if (p.cover == Cover.Yarn) ctx.yarn.Add(p);
+                    else if (p.cover == Cover.Leash) ctx.hits.Add(p);
                     else { ctx.clear.Add(p); ctx.seed.Add(p); }
                     foreach (var n in Neighbours(p.x, p.y))
                         if (Hittable(n))
@@ -970,8 +1232,8 @@ public class Board : MonoBehaviour
         {
             if (r.square || used.Contains(r) || r.cells.Count < 4) continue;
             Piece at = null;
-            if (preferred != null) foreach (var p in r.cells) if (preferred.Contains(new Vector2Int(p.x, p.y)) && p.cover != Cover.Yarn) { at = p; break; }
-            if (at == null) foreach (var p in r.cells) if (p.cover != Cover.Yarn) { at = p; if (p == r.cells[r.cells.Count / 2]) break; }
+            if (preferred != null) foreach (var p in r.cells) if (preferred.Contains(new Vector2Int(p.x, p.y)) && !Tied(p)) { at = p; break; }
+            if (at == null) foreach (var p in r.cells) if (!Tied(p)) { at = p; if (p == r.cells[r.cells.Count / 2]) break; }
             if (at == null) continue;
             spawns.Add(new Spawn { x = at.x, y = at.y, type = r.cells.Count >= 5 ? Special.Rainbow : Special.Line, lineRow = r.horizontal });
             used.Add(r);
@@ -986,8 +1248,8 @@ public class Board : MonoBehaviour
             foreach (var p in r.cells) if (claimed.Contains(p)) { taken = true; break; }
             if (taken) continue;
             Piece at = null;
-            if (preferred != null) foreach (var p in r.cells) if (preferred.Contains(new Vector2Int(p.x, p.y)) && p.cover != Cover.Yarn) { at = p; break; }
-            if (at == null) foreach (var p in r.cells) if (p.cover != Cover.Yarn) { at = p; break; }
+            if (preferred != null) foreach (var p in r.cells) if (preferred.Contains(new Vector2Int(p.x, p.y)) && !Tied(p)) { at = p; break; }
+            if (at == null) foreach (var p in r.cells) if (!Tied(p)) { at = p; break; }
             if (at == null) continue;
             foreach (var p in r.cells) claimed.Add(p);
             spawns.Add(new Spawn { x = at.x, y = at.y, type = Special.Hunter });
@@ -1202,7 +1464,7 @@ public class Board : MonoBehaviour
             FX.LineBlast(CellPos(l.x, l.y), l.row, cell, neg, pos, l.t);
         }
         foreach (var bb in ctx.bombs) FX.BombBlast(CellPos(bb.x, bb.y), cell, bb.r, bb.t);
-        foreach (var hs in ctx.hunters) FX.HunterBlast(CellPos(hs.x, hs.y), CellPos(hs.tx, hs.ty), cell, hs.t);
+        foreach (var hs in ctx.hunters) FX.HunterBlast(CellPos(hs.x, hs.y), CellPos(hs.tx, hs.ty), cell, hs.t, hs.bomb);
         foreach (var rb in ctx.rainbows)
         {
             var pts = new List<Vector3>();
@@ -1217,6 +1479,11 @@ public class Board : MonoBehaviour
             p.dead = true;
             grid[p.x, p.y] = null;
             clearedThisMove++;
+            if (laserLeft > 0 && !laserCaught && p.x == laserCell.x && p.y == laserCell.y)
+            {   // the cat on the red dot is cleared: the dot is caught
+                laserCaught = true; Vector3 lp = CellPos(p.x, p.y); float lt3 = ctx.When(p);
+                StartCoroutine(Later(lt3 > 0f ? lt3 : delay, () => LaserCatch(lp)));
+            }
             if (p == mouseOn && mouseT != null)
             {   // the cat the mouse rides on is gone: caught!
                 mouseOn = null; float lt2 = ctx.When(p);
@@ -1240,10 +1507,13 @@ public class Board : MonoBehaviour
             else { StartCoroutine(PopRoutine(p, delay)); delay += 0.018f; }
         }
 
-        // blockers take one hit each (on a line: when the beam gets there)
+        // blockers take one hit each (on a line: when the beam gets there); a cat house takes one hit per blast,
+        // however many of its four cells were reached
+        var housesHit = new HashSet<Piece>();
         foreach (var h in ctx.hits)
             if (!h.dead)
             {
+                if (h.kind == PieceKind.House && !housesHit.Add(h.house)) continue;
                 float lt = ctx.When(h); latest = Mathf.Max(latest, lt);
                 Vector2Int? src = ctx.hitFrom.TryGetValue(h, out var s0) ? s0 : (Vector2Int?)null;
                 StartCoroutine(Later(lt, () => { if (!h.dead) Hit(h, src); }));
@@ -1302,6 +1572,20 @@ public class Board : MonoBehaviour
     {
         Vector3 pos = h.transform.position;
         if (h.kind == PieceKind.Milk) { TipBucket(h, from); return; }
+        if (h.kind == PieceKind.House) { HitHouse(h); return; }
+        if (h.cover == Cover.Leash)
+        {
+            h.coverHp--;
+            AudioManager.Play("Chain", 0.8f);
+            if (h.coverHp <= 0) ReleaseCover(h, pos);
+            else
+            {   // first hit: the leash frays
+                h.Refresh();
+                StartCoroutine(h.Pulse(0.12f, 0.3f));
+                FX.Burst(pos + new Vector3(0, -cell * 0.1f, 0), new Color(0.9f, 0.3f, 0.25f), cell * 0.8f, 6);
+            }
+            return;
+        }
         if (h.kind == PieceKind.Vase)
         {
             AudioManager.Play("vase");
@@ -2045,6 +2329,12 @@ public class Board : MonoBehaviour
                 AudioManager.Play("Chain", 0.8f);
                 FX.LeafFall(pos, new[] { "yarn_thread_1", "yarn_thread_3", "yarn_thread_4", "yarn_thread_2", "yarn_thread_3", "yarn_thread_4" }, cell, 13);   // the strand snaps into bits that flutter down
                 Bonus?.Invoke(20); GoalHit?.Invoke(GoalType.Yarn, pos); break;
+            case Cover.Leash:
+                // the leash snaps: bits of red strap fly off, the bell jingles away
+                AudioManager.Play("Chain", 0.9f);
+                FX.Burst(pos + new Vector3(0, -cell * 0.1f, 0), new Color(0.92f, 0.28f, 0.22f), cell * 1.1f, 12);
+                FX.Burst(pos + new Vector3(-cell * 0.2f, -cell * 0.3f, 0), new Color(1f, 0.84f, 0.3f), cell * 0.6f, 5);
+                Bonus?.Invoke(20); GoalHit?.Invoke(GoalType.Leash, pos); break;
             case Cover.Mint:
                 AudioManager.Play("mint_off", 0.8f);
                 FX.LeafFall(pos, "mint_leaf", cell, 14);
@@ -2346,7 +2636,7 @@ public class Board : MonoBehaviour
     float ScoreSwap(int ax, int ay, int bx, int by)
     {
         var a = grid[ax, ay]; var b = grid[bx, by];
-        int Prio(Piece p) => p == null ? 0 : TargetPriority != null ? TargetPriority(p) : (p.kind == PieceKind.Vase || p.cover != Cover.None ? 3 : 1);
+        int Prio(Piece p) => p == null ? 0 : TargetPriority != null ? TargetPriority(p) : (p.kind == PieceKind.Vase || p.kind == PieceKind.House || p.cover != Cover.None ? 3 : 1);
         if (a.special != Special.None || b.special != Special.None)
         {
             float s = 45f;
@@ -2386,7 +2676,7 @@ public class Board : MonoBehaviour
                 {
                     var q = m + n; if (!In(q.x, q.y) || !seen.Add(q)) continue;
                     var qp = At(q.x, q.y);
-                    if (qp != null && (qp.kind == PieceKind.Vase || qp.cover != Cover.None)) s += Prio(qp);
+                    if (qp != null && (qp.kind == PieceKind.Vase || qp.kind == PieceKind.House || qp.cover != Cover.None || (qp.x == laserCell.x && qp.y == laserCell.y && laserLeft > 0))) s += Prio(qp);
                 }
                 for (int yy = m.y + 1; yy < rows; yy++) { var f = At(m.x, yy); if (f != null && f.kind == PieceKind.Fish) { s += 14f + Mathf.Max(0, 4 - (yy - m.y)) * 3f; break; } }   // clearing under a fish drops it
             }
@@ -2418,7 +2708,7 @@ public class Board : MonoBehaviour
             for (int x = 0; x < cols; x++)
             {
                 var p = grid[x, y];
-                sb.Append(p == null ? '.' : p.kind == PieceKind.Vase ? 'V' : p.kind == PieceKind.Fish ? 'F' : p.special != Special.None ? p.special.ToString()[0] : p.cover == Cover.Box ? 'b' : p.cover == Cover.Yarn ? 'y' : p.cover == Cover.Mint ? 'm' : (char)('0' + p.color));
+                sb.Append(p == null ? '.' : p.kind == PieceKind.Vase ? 'V' : p.kind == PieceKind.House ? 'H' : p.kind == PieceKind.Fish ? 'F' : p.cover == Cover.Leash ? 'l' : p.special != Special.None ? p.special.ToString()[0] : p.cover == Cover.Box ? 'b' : p.cover == Cover.Yarn ? 'y' : p.cover == Cover.Mint ? 'm' : (char)('0' + p.color));
             }
             sb.Append('\n');
         }

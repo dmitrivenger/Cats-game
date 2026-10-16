@@ -131,6 +131,9 @@ public static class Loc
         { "Guide.Locked", "Встретится на уровне {0}" },
         { "Guide.O.mouse", "Каждые 3 хода крадёт монетку. Убери кота, на котором она сидит!" },
         { "Guide.O.mint", "Кот с мятой спит и не двигается, а мята расползается. Собирай котов рядом с ним!" },
+        { "Guide.O.leash", "Кот не двигается. Два удара рядом или ряд с ним — и он свободен." },
+        { "Guide.O.house", "Четыре удара рядом — и домик развалится." },
+        { "Guide.O.laser", "Убери кота, на котором стоит точка. Она прыгает каждый ход!" },
         { "Guide.Boosters", "Бустеры" },
         { "Guide.PU.Paw.T", "Лапка" },
         { "Guide.PU.Paw.X", "Убирает одного кота или бьёт по препятствию." },
@@ -179,6 +182,7 @@ public static class Loc
         { "Goal.Mint", "Мята" },
         { "Goal.Vase", "Вазы" },
         { "Goal.Fish", "Рыбки" },
+        { "Goal.Leash", "Поводки" }, { "Goal.House", "Домики" }, { "Goal.Laser", "Лазер" },
         { "PU.Paw", "Лапка" },
         { "PU.MegaBomb", "Бомба" },
         { "PU.ColorBlast", "Цвет" },
@@ -203,6 +207,12 @@ public static class Loc
         { "Meet.foam.Text", "Убирай котиков, которые стоят на пене, — и она лопнет." },
         { "Meet.mouse.Title", "Мышка-воришка" },
         { "Meet.mouse.Text", "Каждые 3 хода она крадёт у тебя монетку! Убери котика, на котором она сидит, — и она больше ничего не украдёт." },
+        { "Meet.leash.Title", "Поводок" },
+        { "Meet.leash.Text", "Котик на поводке не может сдвинуться. Собери его в ряд или собирай котиков рядом — два рывка, и поводок порвётся!" },
+        { "Meet.house.Title", "Кошачий домик" },
+        { "Meet.house.Text", "Большой домик на четыре клетки. Собирай котиков рядом с ним — после четырёх ударов он развалится, и оттуда выпрыгнет котёнок!" },
+        { "Meet.laser.Title", "Лазерная точка" },
+        { "Meet.laser.Text", "Красная точка прыгает по полю после каждого хода. Убери котика, на котором она стоит, — и ты её поймал!" },
     };
 
     static readonly Dictionary<string, string> En = new Dictionary<string, string>
@@ -288,6 +298,9 @@ public static class Loc
         { "Guide.Locked", "You'll meet it on level {0}" },
         { "Guide.O.mouse", "Steals a coin every 3 moves. Clear the cat it sits on!" },
         { "Guide.O.mint", "A cat with catnip sleeps and won't move, and the catnip spreads. Match cats next to it!" },
+        { "Guide.O.leash", "The cat can't move. Two hits next to it, or a row with it, set it free." },
+        { "Guide.O.house", "Four hits next to it and the house falls apart." },
+        { "Guide.O.laser", "Clear the cat the dot is on. It jumps every move!" },
         { "Guide.Boosters", "Boosters" },
         { "Guide.PU.Paw.T", "Paw" },
         { "Guide.PU.Paw.X", "Removes one cat or hits an obstacle." },
@@ -336,6 +349,7 @@ public static class Loc
         { "Goal.Mint", "Catnip" },
         { "Goal.Vase", "Vases" },
         { "Goal.Fish", "Fish" },
+        { "Goal.Leash", "Leashes" }, { "Goal.House", "Cat houses" }, { "Goal.Laser", "Laser dot" },
         { "PU.Paw", "Paw" },
         { "PU.MegaBomb", "Bomb" },
         { "PU.ColorBlast", "Colour" },
@@ -360,6 +374,12 @@ public static class Loc
         { "Meet.foam.Text", "Clear the cats standing on foam and the foam pops." },
         { "Meet.mouse.Title", "Sneaky mouse" },
         { "Meet.mouse.Text", "Every 3 moves it steals a coin! Clear the cat it sits on to stop it." },
+        { "Meet.leash.Title", "Leash" },
+        { "Meet.leash.Text", "A cat on a leash can't be moved. Match it in a row or match cats next to it: two tugs and the leash snaps!" },
+        { "Meet.house.Title", "Cat house" },
+        { "Meet.house.Text", "A big house on four cells. Match cats next to it: after four hits it falls apart and a kitten jumps out!" },
+        { "Meet.laser.Title", "Laser dot" },
+        { "Meet.laser.Text", "The red dot jumps around after every move. Clear the cat it's sitting on to catch it!" },
     };
 
     public static string T(string key)

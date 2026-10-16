@@ -373,12 +373,12 @@ public class FX : MonoBehaviour
     public static float HunterFly(float cells) => 0.2f + 0.025f * cells;
     public static readonly Color HunterGlow = new Color(0.42f, 0.88f, 0.42f);
 
-    public static void HunterBlast(Vector3 o, Vector3 target, float cell, float delay)
+    public static void HunterBlast(Vector3 o, Vector3 target, float cell, float delay, bool bomb = false)
     {
-        Host.StartCoroutine(HunterRoutine(o, target, cell, delay));
+        Host.StartCoroutine(HunterRoutine(o, target, cell, delay, bomb));
     }
 
-    static IEnumerator HunterRoutine(Vector3 o, Vector3 tgt, float cell, float delay)
+    static IEnumerator HunterRoutine(Vector3 o, Vector3 tgt, float cell, float delay, bool bomb)
     {
         if (delay > 0) yield return new WaitForSeconds(delay);
         Vector3 d = tgt - o;
@@ -417,6 +417,11 @@ public class FX : MonoBehaviour
                 tr.colorGradient = g; tr.sortingOrder = FxOrder + 7;
             }
         }
+        // hunter + bomb: a little bomb rides on the arrow's tip, wobbling, its fuse sparking
+        Transform tipBomb = null; SpriteRenderer tbsr = null;
+        if (bomb && arrow != null && GameArt.I.Has("hunter_bomb"))
+            tipBomb = Make("hunter_bomb", o, cell * 0.62f, FxOrder + 9, Color.white, out tbsr);
+        float nextSpark = 0f;
         Vector3 perp = new Vector3(-d.y, d.x, 0).normalized; if (perp.y < 0) perp = -perp;
         Vector3 ctrl = (o + tgt) * 0.5f + perp * d.magnitude * 0.18f;
         float age = 0f;
@@ -430,8 +435,26 @@ public class FX : MonoBehaviour
                 arrow.position = Vector3.Lerp(a, b, k);
                 Vector3 tan = b - a;
                 arrow.rotation = Quaternion.Euler(0, 0, Mathf.Atan2(tan.y, tan.x) * Mathf.Rad2Deg);
+                if (tipBomb != null)
+                {
+                    tipBomb.position = arrow.position + arrow.right * cell * 0.5f;
+                    tipBomb.rotation = Quaternion.Euler(0, 0, Mathf.Sin(age * 40f) * 12f);
+                    float bs = 1f + 0.08f * Mathf.Sin(age * 55f);
+                    tipBomb.localScale = new Vector3(bs, bs, 1f);
+                    if (age >= nextSpark && GameArt.I.Has("fx_sparkle"))
+                    {   // fuse sparks trail behind
+                        nextSpark = age + 0.035f;
+                        Layer("fx_sparkle", tipBomb.position + new Vector3(cell * 0.12f, cell * 0.24f, 0f), cell, FxOrder + 9, BombHot, 0f, 0.25f,
+                            UnityEngine.Random.Range(0f, 90f), 0f, k => 0.22f * (1f - k), k => 1f - k,
+                            (Vector3)(UnityEngine.Random.insideUnitCircle * cell * 0.25f));
+                    }
+                }
             }
             yield return null;
+        }
+        if (tipBomb != null)
+        {   // it hits: the bomb swells for an instant, then the board's blast takes over
+            Host.StartCoroutine(TipBombPop(tipBomb, tbsr));
         }
 
         // ---- hit ----
@@ -462,6 +485,20 @@ public class FX : MonoBehaviour
             }
             if (arrow != null) Destroy(arrow.gameObject);
         }
+    }
+
+    static IEnumerator TipBombPop(Transform t, SpriteRenderer sr)
+    {
+        float age = 0f, life = 0.14f;
+        while (age < life && t != null)
+        {
+            age += Time.deltaTime;
+            float k = age / life, s = 1f + 0.9f * k;
+            t.localScale = new Vector3(s, s, 1f);
+            var c = Color.Lerp(Color.white, BombHot, k); c.a = 1f - k * k; sr.color = c;
+            yield return null;
+        }
+        if (t != null) Destroy(t.gameObject);
     }
 
     static IEnumerator Needle(Vector3 o, float cell, float ang, Color c)
@@ -854,16 +891,18 @@ public class FX : MonoBehaviour
 
     static IEnumerator EmblemRoutine(Transform t, SpriteRenderer sr)
     {
-        float life = 0.8f, age = 0f, rot = UnityEngine.Random.Range(-8f, 8f);
+        float life = 0.6f, age = 0f, rot = UnityEngine.Random.Range(-8f, 8f);
+        Vector3 p0 = t.position; float rise = sr.bounds.size.y * 0.9f;   // pops, then floats up and away so the combo itself stays in view
         while (age < life)
         {
             age += Time.deltaTime;
             if (t == null) yield break;
             float k = age / life;
-            float s = k < 0.22f ? Kit.EaseOutBack(k / 0.22f) : 1f + 0.12f * (k - 0.22f);
+            float s = k < 0.25f ? Kit.EaseOutBack(k / 0.25f) : 1f - 0.35f * (k - 0.25f);
             t.localScale = new Vector3(s, s, 1f);
+            t.position = p0 + Vector3.up * rise * Kit.EaseInCubic(Mathf.Clamp01((k - 0.2f) / 0.8f));
             t.rotation = Quaternion.Euler(0, 0, rot * (1f - k));
-            var c = sr.color; c.a = k < 0.6f ? 1f : 1f - (k - 0.6f) / 0.4f; sr.color = c;
+            var c = sr.color; c.a = k < 0.35f ? 1f : 1f - (k - 0.35f) / 0.65f; sr.color = c;
             yield return null;
         }
         if (t != null) Destroy(t.gameObject);

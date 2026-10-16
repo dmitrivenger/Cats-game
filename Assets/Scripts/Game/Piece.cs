@@ -1,9 +1,9 @@
 using System.Collections;
 using UnityEngine;
 
-public enum PieceKind { Cat, Fish, Vase, Milk }
+public enum PieceKind { Cat, Fish, Vase, Milk, House }
 public enum Special { None, Line, Bomb, Rainbow, Hunter }
-public enum Cover { None, Box, Yarn, Mint }
+public enum Cover { None, Box, Yarn, Mint, Leash }
 
 // One thing sitting in a board cell: a cat (optionally special, optionally under a cover),
 // a fish bowl (walks down to the bottom to be collected) or a vase (static obstacle).
@@ -14,7 +14,11 @@ public class Piece : MonoBehaviour
     public Special special;
     public bool lineRow;            // Line: which way it fires when triggered indirectly
     public Cover cover;
-    public int coverHp;             // Box: 2 -> 1 -> free
+    public int coverHp;             // Box / Leash: 2 -> 1 -> free
+    // cat house (2x2): four pieces share one anchor (the bottom-left one); the anchor keeps the hits left and draws the art
+    public Piece house;
+    public int houseHp;
+    public bool HouseAnchor => kind == PieceKind.House && house == this;
     public int x, y;
     public bool dead;
 
@@ -53,11 +57,12 @@ public class Piece : MonoBehaviour
 
     // ---- rules ----
     public bool Movable => !dead && (kind == PieceKind.Fish || (kind == PieceKind.Cat && (cover == Cover.None || cover == Cover.Yarn)));
-    public bool Falls => !dead && kind != PieceKind.Vase && kind != PieceKind.Milk && !(kind == PieceKind.Cat && (cover == Cover.Box || cover == Cover.Mint));
+    public bool Falls => !dead && kind != PieceKind.Vase && kind != PieceKind.Milk && kind != PieceKind.House && !(kind == PieceKind.Cat && (cover == Cover.Box || cover == Cover.Mint || cover == Cover.Leash));
     public bool IsStatic => !Falls;
     // Specials are "colourless" (the art is one cream cat for every colour) - they never join a
     // colour run; they fire when swiped, tapped, or caught in another blast (Marbly rule).
-    public int MatchColor => (!dead && kind == PieceKind.Cat && special == Special.None && (cover == Cover.None || cover == Cover.Yarn)) ? color : -1;
+    // a leashed cat can't be moved, but cats brought next to it still make a row with it
+    public int MatchColor => (!dead && kind == PieceKind.Cat && special == Special.None && (cover == Cover.None || cover == Cover.Yarn || cover == Cover.Leash)) ? color : -1;
     public bool PlainCat => kind == PieceKind.Cat && special == Special.None && cover == Cover.None;
 
     // how much of the cell the art fills. The special cats' art includes things sticking out of the body
@@ -346,6 +351,7 @@ public class Piece : MonoBehaviour
             case PieceKind.Fish: return SwimArt ? "fish_bowl_empty" : "fish_bowl";
             case PieceKind.Vase: return "vase";
             case PieceKind.Milk: return "milk_bucket";
+            case PieceKind.House: return "cat_house_" + Mathf.Clamp(houseHp, 1, 4);
         }
         switch (special)
         {
@@ -362,6 +368,17 @@ public class Piece : MonoBehaviour
 
     public void Refresh()
     {
+        if (kind == PieceKind.House)
+        {   // one big picture over all four cells, drawn by the anchor (bottom-left cell); the other three draw nothing
+            over.sprite = null; extra.sprite = null; back.sprite = null;
+            SetRays(false); SetSleep(false); SetSwimmer(false); SetBoxEyes(false);
+            if (!HouseAnchor) { body.sprite = null; return; }
+            string hk = "cat_house_" + Mathf.Clamp(houseHp, 1, 4);
+            Kit.FitSpriteAs(body, hk, "cat_house_4", cell * 2f, 0.98f, new Vector2(cell * 0.5f, cell * 0.5f));
+            if (body.sprite == null) Placeholder();
+            body.color = Color.white;
+            return;
+        }
         if (kind == PieceKind.Cat && cover == Cover.Box)   // a smaller cat sitting low under the box: only the belly and paws show below it
             Kit.FitSpriteAs(body, BodyKey(), LayoutKey(), cell, InBoxFill, new Vector2(0, -cell * InBoxDrop));
         else Kit.FitSpriteAs(body, BodyKey(), LayoutKey(), cell, kind == PieceKind.Vase || kind == PieceKind.Milk ? 0.9f : BodyFill);
@@ -396,6 +413,13 @@ public class Piece : MonoBehaviour
                     break;
                 case Cover.Mint:
                     break;                                    // the sleepy face is the body art; "Zzz" and the mist are SetSleep
+                case Cover.Leash:
+                    // a red collar round the cat's neck with the leash hanging off it: the far half of the collar behind the cat,
+                    // the near half (buckle, bell, leash) in front. Torn after the first hit.
+                    string lk = coverHp >= 2 ? "leash_full" : "leash_torn";
+                    FitCanvas(back, lk + "_back", cell * LeashSize);
+                    FitCanvas(over, lk + "_front", cell * LeashSize);
+                    break;
             }
         }
     }
@@ -412,6 +436,19 @@ public class Piece : MonoBehaviour
     }
 
     const float YarnFill = 1.0f, YarnDrop = 0.2f;
+    const float LeashSize = 1.04f;                          // the leash art's square canvas, in cells
+
+    // a picture drawn on a shared square canvas (front / back halves): the whole canvas is `size` wide, centred
+    static void FitCanvas(SpriteRenderer sr, string key, float size)
+    {
+        var s = GameArt.I.S(key);
+        sr.sprite = s;
+        if (s == null) return;
+        float w = s.rect.width / s.pixelsPerUnit;
+        float k = size / Mathf.Max(0.0001f, w);
+        sr.transform.localScale = new Vector3(k, k, 1f);
+        sr.transform.localPosition = Vector3.zero;
+    }
     const float InBoxFill = 0.92f, InBoxDrop = 0f;          // the cat under the box keeps its normal size
 
     public void SetAngry(bool on)

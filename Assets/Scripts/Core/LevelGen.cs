@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public enum GoalType { Score, Color, Box, Yarn, Mint, Vase, Fish, Foam }
+public enum GoalType { Score, Color, Box, Yarn, Mint, Vase, Fish, Foam, Leash, House, Laser }
 
 public class LevelGoal
 {
@@ -19,6 +19,9 @@ public class LevelDef
     public int moves;
     public int mercyMoves;               // part of `moves` that is a gift after losses (does not count towards stars)
     public int boxes, yarns, mints, vases, fish;
+    public int leashes;                  // cats on a leash (2 hits, can't be moved)
+    public int houses;                   // cat houses, 2x2 cells each (4 hits)
+    public int lasers;                   // how many times the laser dot has to be caught (one dot on the board)
     public int foam, foamThick;
     public int milk;                     // milk buckets (a bonus, not a goal): tipped over they spill coin puddles
     public bool mouse;                   // mouse thief rides the cats and steals coins
@@ -28,7 +31,7 @@ public class LevelDef
     public bool[,] mask;                 // [x, y], y = 0 is the bottom row; false = no cell there
     public int LiveCells { get { int n = 0; foreach (var b in mask) if (b) n++; return n; } }
     public List<LevelGoal> goals = new List<LevelGoal>();
-    public int BlockerTotal => boxes + yarns + mints + vases;
+    public int BlockerTotal => boxes + yarns + mints + vases + leashes + houses * 4;
 }
 
 // Port of Marbly's LevelGenerator: one ever-increasing level index -> deterministic level
@@ -50,6 +53,7 @@ public static class LevelGen
 
     // When each mechanic first appears (easiest -> hardest, as agreed).
     public const int BoxUnlock = 3, YarnUnlock = 5, VaseUnlock = 8, FishUnlock = 11, MintUnlock = 14, FoamUnlock = 16, MilkUnlock = 12, MouseUnlock = 26;
+    public const int LeashUnlock = 31, HouseUnlock = 41, LaserUnlock = 51;   // not on a rest level (every 5th): the new thing must show up on its own level
     // "events" (milk bucket / mouse thief): at most one per level, on every 3rd level; from MouseUnlock
     // they take turns. The mouse never comes on a level that already has three tasks.
     public static bool IsEventLevel(int level) => level >= MilkUnlock && level % 3 == 0;
@@ -157,6 +161,9 @@ public static class LevelGen
         d.boxes = Mathf.RoundToInt(d.boxes * Difficulty); d.yarns = Mathf.RoundToInt(d.yarns * Difficulty);
         d.vases = Mathf.RoundToInt(d.vases * Difficulty); d.mints = Mathf.RoundToInt(d.mints * Difficulty);
         d.fish = level >= FishUnlock ? Mathf.Min(3, 1 + (level - FishUnlock) / 8) : 0;   // fish are the slowest goal: grow slowly, max 3
+        d.leashes = Mathf.RoundToInt(RampedCount(level, 61, LeashUnlock, 3, 4, 0.8f) * Difficulty);
+        d.houses = level >= HouseUnlock ? (level - HouseUnlock >= 30 && new System.Random(level * 389 + 5).Next(3) == 0 ? 2 : 1) : 0;   // a second house now and then, later on
+        d.lasers = level >= LaserUnlock ? Mathf.Min(5, 3 + (level - LaserUnlock) / 40) : 0;
 
         // Variety cap: at most 2 blocker types before level 15, 3 after. Keep the newest.
         var types = new List<(GoalType t, int unlock)>();
@@ -166,6 +173,9 @@ public static class LevelGen
         if (d.fish > 0) types.Add((GoalType.Fish, FishUnlock));
         if (d.mints > 0) types.Add((GoalType.Mint, MintUnlock));
         if (d.foam > 0) types.Add((GoalType.Foam, FoamUnlock));
+        if (d.leashes > 0) types.Add((GoalType.Leash, LeashUnlock));
+        if (d.houses > 0) types.Add((GoalType.House, HouseUnlock));
+        if (d.lasers > 0) types.Add((GoalType.Laser, LaserUnlock));
         // a mouse level keeps to two tasks (catching the mouse is the third thing to think about)
         bool mouseLevel = IsEventLevel(level) && level >= MouseUnlock && (level / 3) % 2 == 1 && !d.rest;
         int cap = level >= 20 && !mouseLevel ? 3 : 2;   // the HUD has three goal medallions; three blocker kinds only from level 20
@@ -184,14 +194,18 @@ public static class LevelGen
         if (!keep.Contains(GoalType.Fish)) d.fish = 0;
         if (!keep.Contains(GoalType.Mint)) d.mints = 0;
         if (!keep.Contains(GoalType.Foam)) d.foam = 0;
+        if (!keep.Contains(GoalType.Leash)) d.leashes = 0;
+        if (!keep.Contains(GoalType.House)) d.houses = 0;
+        if (!keep.Contains(GoalType.Laser)) d.lasers = 0;
         if (keep.Count >= 3)
         {   // three different tasks at once: each one is a bit smaller so the level stays fair
             d.boxes = Mathf.RoundToInt(d.boxes * 0.7f); d.yarns = Mathf.RoundToInt(d.yarns * 0.7f);
             d.vases = Mathf.RoundToInt(d.vases * 0.7f); d.mints = Mathf.RoundToInt(d.mints * 0.7f);
             d.foam = Mathf.RoundToInt(d.foam * 0.7f); d.fish = Mathf.Max(d.fish > 0 ? 1 : 0, d.fish - 1);
+            d.leashes = Mathf.RoundToInt(d.leashes * 0.7f); d.houses = Mathf.Min(d.houses, 1); d.lasers = Mathf.Max(d.lasers > 0 ? 2 : 0, d.lasers - 1);
         }
 
-        if (d.rest) { d.boxes = Mathf.Min(d.boxes, 2); d.yarns = d.vases = d.mints = 0; d.fish = Mathf.Min(d.fish, 1); d.foam = Mathf.Min(d.foam, 4); }
+        if (d.rest) { d.boxes = Mathf.Min(d.boxes, 2); d.yarns = d.vases = d.mints = 0; d.fish = Mathf.Min(d.fish, 1); d.foam = Mathf.Min(d.foam, 4); d.leashes = Mathf.Min(d.leashes, 2); d.houses = 0; d.lasers = 0; }
         d.foam = Mathf.Min(d.foam, Mathf.RoundToInt(d.LiveCells * 0.4f));
         d.foamThick = 0;   // all foam pops with a single hit (no thick 2-layer foam)
 
@@ -199,6 +213,8 @@ public static class LevelGen
         float m = MercyBlockerMult(level) * Mathf.Lerp(0.6f, 1f, area);
         d.boxes = Mathf.RoundToInt(d.boxes * m); d.yarns = Mathf.RoundToInt(d.yarns * m);
         d.vases = Mathf.RoundToInt(d.vases * m); d.mints = Mathf.Max(d.mints > 0 ? 1 : 0, Mathf.RoundToInt(d.mints * m));
+        d.leashes = Mathf.RoundToInt(d.leashes * m);
+        if (d.lasers > 2 && LossStreak(level) >= 2) d.lasers--;           // mercy: one catch fewer
         // mercy also softens foam and fish: less foam each loss, one fish fewer after 3 losses
         if (d.foam > 0) d.foam = Mathf.Max(2, Mathf.RoundToInt(d.foam * MercyBlockerMult(level)));
         if (d.fish > 1 && LossStreak(level) >= 3) { d.fish--; d.moves += 3; d.mercyMoves += 3; }   // a gift: doesn't count towards stars   // keep that fish's moves: the level must not get shorter
@@ -208,7 +224,10 @@ public static class LevelGen
             if (d.boxes >= d.yarns && d.boxes >= d.vases && d.boxes > 0) d.boxes--;
             else if (d.vases >= d.yarns && d.vases > 0) d.vases--;
             else if (d.yarns > 0) d.yarns--;
-            else d.mints--;
+            else if (d.leashes > 0) d.leashes--;
+            else if (d.mints > 0) d.mints--;
+            else if (d.houses > 1) d.houses--;
+            else break;
         }
 
         // ---- goals ----
@@ -218,9 +237,14 @@ public static class LevelGen
         if (d.fish > 0) d.goals.Add(new LevelGoal { type = GoalType.Fish, target = d.fish });
         if (d.mints > 0) d.goals.Add(new LevelGoal { type = GoalType.Mint, target = d.mints });
         if (d.foam > 0) d.goals.Add(new LevelGoal { type = GoalType.Foam, target = d.foam });
+        if (d.leashes > 0) d.goals.Add(new LevelGoal { type = GoalType.Leash, target = d.leashes });
+        if (d.houses > 0) d.goals.Add(new LevelGoal { type = GoalType.House, target = d.houses });
+        if (d.lasers > 0) d.goals.Add(new LevelGoal { type = GoalType.Laser, target = d.lasers });
 
         d.moves += 3 * d.fish;   // each fish has to travel the whole board: give it time
         if (d.foam > 0) d.moves += 2;   // foam is cleared cell by cell
+        d.moves += 2 * d.houses;        // four hits each
+        if (d.lasers > 0) d.moves += 2; // the dot has to be chased
 
         float scale = Difficulty * WinRateMult(level) * MercyTargetMult(level) * Mathf.Lerp(0.55f, 1f, area);
         float blockerCost = 1f - 0.018f * d.BlockerTotal - 0.05f * d.fish - 0.01f * d.foam;

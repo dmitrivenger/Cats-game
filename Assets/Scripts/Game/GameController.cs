@@ -184,7 +184,7 @@ public class GameController : MonoBehaviour
         usedRect = BoardWorldRect();
         board.Setup(def, usedRect);
         foreach (var g in def.goals)
-            if (g.type == GoalType.Box || g.type == GoalType.Yarn || g.type == GoalType.Mint || g.type == GoalType.Vase || g.type == GoalType.Foam)
+            if (BoardCounted(g.type))
                 g.target = Mathf.Max(1, board.Count(g.type));
         BuildGoals();
         RefreshTexts();
@@ -209,11 +209,15 @@ public class GameController : MonoBehaviour
             board.AddStartSpecials(startBought);        // the rebuilt board keeps the cats the player paid for
             board.InputLocked = locked;
             foreach (var g in def.goals)
-                if (g.type == GoalType.Box || g.type == GoalType.Yarn || g.type == GoalType.Mint || g.type == GoalType.Vase || g.type == GoalType.Foam)
+                if (BoardCounted(g.type))
                 { g.target = Mathf.Max(1, board.Count(g.type)); g.progress = 0; }
             BuildGoals();
         }
     }
+
+    // goals whose target is what actually made it onto the board
+    static bool BoardCounted(GoalType t) => t == GoalType.Box || t == GoalType.Yarn || t == GoalType.Mint || t == GoalType.Vase || t == GoalType.Foam
+                                         || t == GoalType.Leash || t == GoalType.House || t == GoalType.Laser;
 
     void OnMoveCommitted()
     {
@@ -282,7 +286,8 @@ public class GameController : MonoBehaviour
             if (float.IsNaN(pos.x)) { gv.goal.target++; RefreshGoals(); StartCoroutine(Punch(gv.root)); continue; } // catnip spread
             gv.goal.progress++;
             var view = gv;
-            string key = type == GoalType.Box ? "box_full" : type == GoalType.Yarn ? "yarn_ball" : type == GoalType.Mint ? "mint_leaf" : type == GoalType.Vase ? "vase" : type == GoalType.Foam ? "bubble_7" : "fish";
+            string key = type == GoalType.Box ? "box_full" : type == GoalType.Yarn ? "yarn_ball" : type == GoalType.Mint ? "mint_leaf" : type == GoalType.Vase ? "vase" : type == GoalType.Foam ? "bubble_7"
+                       : type == GoalType.Leash ? "goal_leash" : type == GoalType.House ? "goal_cat_house" : type == GoalType.Laser ? "goal_laser" : "fish";
             FX.FlyToUI(key, pos, gv.icon.rectTransform, board.cell * 0.7f, () => { RefreshGoals(); StartCoroutine(Punch(view.root)); });
         }
     }
@@ -310,11 +315,14 @@ public class GameController : MonoBehaviour
                     case GoalType.Mint: if (p.cover == Cover.Mint) best = Mathf.Max(best, 10); break;
                     case GoalType.Vase: if (p.kind == PieceKind.Vase) best = Mathf.Max(best, 10); break;
                     case GoalType.Foam: if (board.FoamAt(p.x, p.y) > 0 && p.kind == PieceKind.Cat) best = Mathf.Max(best, 10); break;
+                    case GoalType.Leash: if (p.cover == Cover.Leash) best = Mathf.Max(best, 10); break;
+                    case GoalType.House: if (p.kind == PieceKind.House) best = Mathf.Max(best, 10); break;
+                    case GoalType.Laser: if (board.LaserCell.x == p.x && board.LaserCell.y == p.y) best = Mathf.Max(best, 12); break;
                     case GoalType.Color: if (p.kind == PieceKind.Cat && p.special == Special.None && p.color == g.color) best = Mathf.Max(best, 6); break;
                 }
             }
         if (best > 0) return best;
-        if (p.kind == PieceKind.Vase || (p.kind == PieceKind.Cat && p.cover != Cover.None)) return 3;
+        if (p.kind == PieceKind.Vase || p.kind == PieceKind.House || (p.kind == PieceKind.Cat && p.cover != Cover.None)) return 3;
         return p.kind == PieceKind.Cat && p.special == Special.None ? 1 : 0;
     }
 
@@ -584,6 +592,9 @@ public class GameController : MonoBehaviour
             case GoalType.Mint: return "mint_leaf";
             case GoalType.Vase: return "vase";
             case GoalType.Foam: return "goal_foam";
+            case GoalType.Leash: return "goal_leash";
+            case GoalType.House: return "goal_cat_house";
+            case GoalType.Laser: return "goal_laser";
             default: return "fish_bowl";
         }
     }
@@ -1572,6 +1583,9 @@ public class GameController : MonoBehaviour
         new Meet { id = "mint",  unlock = LevelGen.MintUnlock,  icon = "mint_leaf" },
         new Meet { id = "foam",  unlock = LevelGen.FoamUnlock,  icon = "goal_foam" },
         new Meet { id = "mouse", unlock = LevelGen.MouseUnlock, icon = "mouse_idle" },
+        new Meet { id = "leash", unlock = LevelGen.LeashUnlock, icon = "goal_leash" },
+        new Meet { id = "house", unlock = LevelGen.HouseUnlock, icon = "goal_cat_house" },
+        new Meet { id = "laser", unlock = LevelGen.LaserUnlock, icon = "goal_laser" },
     };
     const string MetBaseKey = "Kuzya.MetBase";
 
@@ -1587,6 +1601,9 @@ public class GameController : MonoBehaviour
             case "mint": return def.mints > 0;
             case "foam": return def.foam > 0;
             case "mouse": return def.mouse;
+            case "leash": return def.leashes > 0;
+            case "house": return def.houses > 0;
+            case "laser": return def.lasers > 0;
         }
         return false;
     }

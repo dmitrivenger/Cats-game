@@ -68,6 +68,14 @@ public class GameArtBuilder : AssetPostprocessor
         { "bubble_5", "Assets/Sprites/FX/Foam/bubble_5.png" }, { "bubble_6", "Assets/Sprites/FX/Foam/bubble_6.png" }, { "bubble_7", "Assets/Sprites/FX/Foam/bubble_7.png" }, { "bubble_8", "Assets/Sprites/FX/Foam/bubble_8.png" },
         { "mint_leaf", "Assets/Sprites/Cat-blockers/mint_leaf.png" },
         { "vase", "Assets/Sprites/Cat-blockers/vase.png" },
+        // leash (collar split into the half behind the cat and the half in front), cat house (4 stages), laser dot goal
+        { "leash_full_back", "Assets/Sprites/Cat-blockers/Leash/leash_full_back.png" }, { "leash_full_front", "Assets/Sprites/Cat-blockers/Leash/leash_full_front.png" },
+        { "leash_torn_back", "Assets/Sprites/Cat-blockers/Leash/leash_torn_back.png" }, { "leash_torn_front", "Assets/Sprites/Cat-blockers/Leash/leash_torn_front.png" },
+        { "goal_leash", "Assets/Sprites/Cat-blockers/Leash/goal_leash.png" },
+        { "cat_house_1", "Assets/Sprites/Cat-blockers/House/cat_house_1.png" }, { "cat_house_2", "Assets/Sprites/Cat-blockers/House/cat_house_2.png" },
+        { "cat_house_3", "Assets/Sprites/Cat-blockers/House/cat_house_3.png" }, { "cat_house_4", "Assets/Sprites/Cat-blockers/House/cat_house_4.png" },
+        { "goal_cat_house", "Assets/Sprites/Cat-blockers/House/goal_cat_house.png" }, { "kitten_pop", "Assets/Sprites/Cat-blockers/House/kitten_pop.png" },
+        { "goal_laser", "Assets/Sprites/Cat-blockers/Laser/goal_laser.png" },
         { "vase_cracked", "Assets/Sprites/Cat-blockers/vase_cracked.png" },
         { "fish_bowl", "Assets/Sprites/Cat-blockers/fish_bowl.png" },
         { "fish", "Assets/Sprites/Cat-blockers/fish.png" },
@@ -163,7 +171,7 @@ public class GameArtBuilder : AssetPostprocessor
         { "hunter_horn", "Assets/Sprites/FX/Burn/Hunter/hunter_horn.png" }, { "hunter_compass", "Assets/Sprites/FX/Burn/Hunter/hunter_compass.png" },
         { "hunter_needle", "Assets/Sprites/FX/Burn/Hunter/hunter_needle.png" }, { "hunter_crosshair", "Assets/Sprites/FX/Burn/Hunter/hunter_crosshair.png" },
         { "hunter_hit", "Assets/Sprites/FX/Burn/Hunter/hunter_hit.png" }, { "hunter_trail", "Assets/Sprites/FX/Burn/Hunter/hunter_trail.png" },
-        { "hunter_arrow", "Assets/Sprites/FX/Burn/Hunter/hunter_arrow.png" },
+        { "hunter_arrow", "Assets/Sprites/FX/Burn/Hunter/hunter_arrow.png" }, { "hunter_bomb", "Assets/Sprites/FX/Burn/Hunter/hunter_bomb.png" },
         { "hunter_feather_1", "Assets/Sprites/FX/Burn/Hunter/hunter_feather_1.png" }, { "hunter_feather_2", "Assets/Sprites/FX/Burn/Hunter/hunter_feather_2.png" },
         { "hunter_feather_3", "Assets/Sprites/FX/Burn/Hunter/hunter_feather_3.png" }, { "hunter_feather_4", "Assets/Sprites/FX/Burn/Hunter/hunter_feather_4.png" },
         // booster FX (Sprites/FX/Burn/Boosters): paw / bomb / wand keep colours, the rest is white and tinted in code
