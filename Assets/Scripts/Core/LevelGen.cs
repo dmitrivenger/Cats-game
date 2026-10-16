@@ -28,6 +28,7 @@ public class LevelDef
     public int theme;
     public bool rest;
     public string shape = "Rect";
+    public bool hardShape;               // one of the harder shapes (more holes): a few extra moves
     public bool[,] mask;                 // [x, y], y = 0 is the bottom row; false = no cell there
     public int LiveCells { get { int n = 0; foreach (var b in mask) if (b) n++; return n; } }
     public List<LevelGoal> goals = new List<LevelGoal>();
@@ -104,14 +105,30 @@ public static class LevelGen
         ("Hourglass", new[] { "XXXXXXX", "XXXXXXX", ".XXXXX.", "..XXX..", "..XXX..", ".XXXXX.", "XXXXXXX", "XXXXXXX" }),
         ("Cross",     new[] { "..XXX..", "..XXX..", "XXXXXXX", "XXXXXXX", "XXXXXXX", "XXXXXXX", "..XXX..", "..XXX.." }),
         ("Donut",     new[] { "XXXXXXX", "XXXXXXX", "XX...XX", "XX...XX", "XX...XX", "XXXXXXX", "XXXXXXX", "XXXXXXX" }),
+        // ---- harder shapes, from level ComplexShapesFrom. Cats fall straight through holes,
+        // so every shape works: a column only needs one cell to be fed from the top.
+        ("Window",    new[] { "XXXXXXX", "X.XXX.X", "XXXXXXX", "XXX.XXX", "XXX.XXX", "XXXXXXX", "X.XXX.X", "XXXXXXX" }),
+        ("Islands",   new[] { "XXX.XXX", "XXX.XXX", "XXX.XXX", "XXXXXXX", "XXXXXXX", "XXX.XXX", "XXX.XXX", "XXX.XXX" }),
+        ("Butterfly", new[] { "XX...XX", "XXX.XXX", "XXXXXXX", "..XXX..", "..XXX..", "XXXXXXX", "XXX.XXX", "XX...XX" }),
+        ("Arch",      new[] { "XXXXXXX", "XXXXXXX", "XXXXXXX", "XXXXXXX", "XXX.XXX", "XX...XX", "XX...XX", "XX...XX" }),
+        ("Stairs",    new[] { "XXX....", "XXXX...", "XXXXX..", "XXXXXX.", "XXXXXXX", "XXXXXXX", ".XXXXXX", "..XXXXX" }),
+        ("Zigzag",    new[] { "XXXXX..", "XXXXX..", "..XXXXX", "..XXXXX", "XXXXX..", "XXXXX..", "..XXXXX", "..XXXXX" }),
+        ("Cheese",    new[] { "XXXXXXX", "XX.XXXX", "XXXXX.X", "X.XXXXX", "XXXX.XX", "XXXXXXX", "XX.XX.X", "XXXXXXX" }),
+        ("Towers",    new[] { "XX...XX", "XX...XX", "XX.X.XX", "XXXXXXX", "XXXXXXX", "XX.X.XX", "XX...XX", "XX...XX" }),
+        ("Ladder",    new[] { "XX.X.XX", "XXXXXXX", "XX.X.XX", "XXXXXXX", "XX.X.XX", "XXXXXXX", "XX.X.XX", "XXXXXXX" }),
     };
+    const int SimpleShapes = 9;
+    public const int HardShapeMoves = 3; public const float HardShapeBlockers = 0.85f;               // the first nine: gentle shapes for the early levels
+    public const int ComplexShapesFrom = 21;  // from here the harder shapes join the mix
 
     // Levels 1-4 and rest levels: plain rectangle. Otherwise a fixed per-level shape (same on
-    // retry); consecutive levels always differ (step 7 or 8 mod 9 is never 0).
+    // retry); consecutive levels always differ (step 7 or 8 mod 9 is never 0). Harder shapes from level 21.
     public static int ShapeIndexFor(int level)
     {
         if (level <= 4 || IsRestLevel(level)) return 0;
-        return (level * 7 + level / 3) % Shapes.Length;
+        if (level < ComplexShapesFrom) return (level * 7 + level / 3) % SimpleShapes;
+        // later: every shape but the plain rectangle (17); step 7 or 8 mod 17 is never 0, so neighbours still differ
+        return 1 + (level * 7 + level / 3) % (Shapes.Length - 1);
     }
 
     public static bool[,] MaskFor(int idx, out string name)
@@ -150,6 +167,7 @@ public static class LevelGen
         d.mercyMoves = MercyExtraMoves(level);
         d.moves = Mathf.RoundToInt((level < 15 ? 25 : 23) * MovesFactor) + d.mercyMoves;
         d.mask = MaskFor(ShapeIndexFor(level), out d.shape);
+        d.hardShape = ShapeIndexFor(level) >= SimpleShapes;
         float area = d.LiveCells / (float)(Cols * Rows);   // smaller board -> fewer blockers, lower targets
 
         // The newest unlocked mechanic always features on its unlock level; others roll in.
@@ -210,7 +228,8 @@ public static class LevelGen
         d.foamThick = 0;   // all foam pops with a single hit (no thick 2-layer foam)
 
         // mercy + hard density cap (never more than ~35% of the live cells covered)
-        float m = MercyBlockerMult(level) * Mathf.Lerp(0.6f, 1f, area);
+        // holes cut rows apart: a harder shape gets fewer blockers (and extra moves below)
+        float m = MercyBlockerMult(level) * Mathf.Lerp(0.6f, 1f, area) * (d.hardShape ? HardShapeBlockers : 1f);
         d.boxes = Mathf.RoundToInt(d.boxes * m); d.yarns = Mathf.RoundToInt(d.yarns * m);
         d.vases = Mathf.RoundToInt(d.vases * m); d.mints = Mathf.Max(d.mints > 0 ? 1 : 0, Mathf.RoundToInt(d.mints * m));
         d.leashes = Mathf.RoundToInt(d.leashes * m);
@@ -245,6 +264,7 @@ public static class LevelGen
         if (d.foam > 0) d.moves += 2;   // foam is cleared cell by cell
         d.moves += 2 * d.houses;        // four hits each
         if (d.lasers > 0) d.moves += 2; // the dot has to be chased
+        if (d.hardShape) d.moves += HardShapeMoves;   // holes make matches harder to find
 
         float scale = Difficulty * WinRateMult(level) * MercyTargetMult(level) * Mathf.Lerp(0.55f, 1f, area);
         float blockerCost = 1f - 0.018f * d.BlockerTotal - 0.05f * d.fish - 0.01f * d.foam;

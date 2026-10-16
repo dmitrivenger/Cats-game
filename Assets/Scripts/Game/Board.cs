@@ -2353,28 +2353,31 @@ public class Board : MonoBehaviour
             float longest = 0f; dustCols.Clear();
             for (int x = 0; x < cols; x++)
             {
-                int y = 0;
-                while (y < rows)
+                // the column's board cells, bottom to top. Holes in the shape are skipped: cats fall
+                // straight through a gap to the next cell below it. Only static pieces split the column.
+                var cells = new List<int>();
+                for (int yy = 0; yy < rows; yy++) if (live[x, yy]) cells.Add(yy);
+                int i = 0;
+                while (i < cells.Count)
                 {
-                    // skip static cells; a segment is a vertical stretch between static pieces
-                    if (Blocked(x, y)) { y++; continue; }
-                    int lo = y;
-                    int hi = y;
-                    while (hi + 1 < rows && !Blocked(x, hi + 1)) hi++;
-                    bool top = OpenAbove(x, hi);
+                    if (Blocked(x, cells[i])) { i++; continue; }
+                    int lo = i, hi = i;
+                    while (hi + 1 < cells.Count && !Blocked(x, cells[hi + 1])) hi++;
+                    bool top = hi == cells.Count - 1;   // nothing static above: new cats drop in from the top
 
                     // compact falling pieces down
                     int write = lo;
                     for (int r = lo; r <= hi; r++)
                     {
-                        var p = grid[x, r];
+                        var p = grid[x, cells[r]];
                         if (p == null) continue;
                         if (r != write)
                         {
-                            grid[x, r] = null; Put(p, x, write);
-                            float d = MoveDuration(r - write);
+                            int from = cells[r], to = cells[write];
+                            grid[x, from] = null; Put(p, x, to);
+                            float d = MoveDuration(from - to);
                             longest = Mathf.Max(longest, d);
-                            StartCoroutine(MoveTo(p, CellPos(x, write), d, true, dustCols.Add(x)));   // one dust puff per column: under the lowest cat that fell
+                            StartCoroutine(MoveTo(p, CellPos(x, to), d, true, dustCols.Add(x)));   // one dust puff per column: under the lowest cat that fell
                         }
                         write++;
                     }
@@ -2382,7 +2385,7 @@ public class Board : MonoBehaviour
                     int missing = hi - write + 1;
                     for (int k = 0; k < missing; k++)
                     {
-                        int ty = write + k;
+                        int ty = cells[write + k];
                         Piece np;
                         if (top && fishToSpawn > 0 && k == missing - 1 && FishCount() < 2 && ClearColumn(x, ty))   // up to two fish swim at once
                         { np = NewPiece(PieceKind.Fish, -1, x, ty); fishToSpawn--; }
@@ -2402,7 +2405,7 @@ public class Board : MonoBehaviour
                             longest = Mathf.Max(longest, 0.25f);
                         }
                     }
-                    y = hi + 1;
+                    i = hi + 1;
                 }
             }
             if (longest > 0) yield return new WaitForSeconds(longest + 0.02f);
@@ -2416,9 +2419,10 @@ public class Board : MonoBehaviour
                 Piece p = null; int fy = -1;
                 for (int y = 0; y < rows; y++) if (grid[x, y] != null && grid[x, y].kind == PieceKind.Fish) { p = grid[x, y]; fy = y; break; }
                 if (p == null) continue;
-                // the bottom of the shape, a hole in the shape right under it, or only static pieces below
-                bool bottom = fy == 0 || !live[x, fy - 1];
-                if (!bottom) { bottom = true; for (int y = 0; y < fy; y++) if (!Blocked(x, y)) { bottom = false; break; } }
+                // the lowest cell of the column (cats fall through holes, so a hole is not an exit),
+                // or only static pieces below
+                bool bottom = true;
+                for (int y = 0; y < fy; y++) if (!Blocked(x, y)) { bottom = false; break; }
                 if (bottom)
                 {
                     delivered = true;
@@ -2437,8 +2441,8 @@ public class Board : MonoBehaviour
 
     bool FishOnBoard() { foreach (var p in grid) if (p != null && p.kind == PieceKind.Fish) return true; return false; }
     int FishCount() { int n = 0; foreach (var p in grid) if (p != null && p.kind == PieceKind.Fish && !p.dead) n++; return n; }
-    // every cell under (x, top) is part of the board and nothing static sits in the way
-    bool ClearColumn(int x, int top) { for (int y = LowestLive(x); y < top; y++) if (!live[x, y] || (grid[x, y] != null && grid[x, y].IsStatic)) return false; return true; }
+    // nothing static sits under (x, top): a fish there can sink to the exit (holes are fallen through)
+    bool ClearColumn(int x, int top) { for (int y = LowestLive(x); y < top; y++) if (live[x, y] && grid[x, y] != null && grid[x, y].IsStatic) return false; return true; }
 
     IEnumerator FishOut(Piece p)
     {
