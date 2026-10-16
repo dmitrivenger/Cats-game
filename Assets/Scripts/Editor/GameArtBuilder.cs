@@ -65,7 +65,7 @@ public class GameArtBuilder : AssetPostprocessor
         // soap foam tiles under the cats (1 and 2 layers), goal icon, bubbles for the pop effect
         { "tile_foam_1", "Assets/Sprites/Foam/tile_foam_1.png" }, { "tile_foam_2", "Assets/Sprites/Foam/tile_foam_2.png" }, { "goal_foam", "Assets/Sprites/Foam/goal_foam.png" },
         { "bubble_1", "Assets/Sprites/FX/Foam/bubble_1.png" }, { "bubble_2", "Assets/Sprites/FX/Foam/bubble_2.png" }, { "bubble_3", "Assets/Sprites/FX/Foam/bubble_3.png" }, { "bubble_4", "Assets/Sprites/FX/Foam/bubble_4.png" },
-        { "bubble_5", "Assets/Sprites/FX/Foam/bubble_5.png" }, { "bubble_6", "Assets/Sprites/FX/Foam/bubble_6.png" }, { "bubble_7", "Assets/Sprites/FX/Foam/bubble_7.png" }, { "bubble_8", "Assets/Sprites/FX/Foam/bubble_8.png" },
+        { "bubble_5", "Assets/Sprites/FX/Foam/bubble_5.png" }, { "bubble_6", "Assets/Sprites/FX/Foam/bubble_6.png" }, { "bubble_7", "Assets/Sprites/FX/Foam/bubble_7.png" }, { "bubble_cap", "Assets/Sprites/Foam/bubble_cap.png" }, { "bubble_8", "Assets/Sprites/FX/Foam/bubble_8.png" },
         { "mint_leaf", "Assets/Sprites/Cat-blockers/mint_leaf.png" },
         { "vase", "Assets/Sprites/Cat-blockers/vase.png" },
         // leash (collar split into the half behind the cat and the half in front), cat house (4 stages), laser dot goal

@@ -57,6 +57,8 @@ public class Board : MonoBehaviour
     int[,] foam;
     SpriteRenderer[,] foamSr;
     public int FoamAt(int x, int y) => foam != null && In(x, y) ? foam[x, y] : 0;
+    // a plain cat standing in soap foam sits inside a bubble: the first hit only pops the bubble, the next clears the cat
+    bool Foamed(Piece p) => p != null && !p.dead && p.PlainCat && foam != null && In(p.x, p.y) && foam[p.x, p.y] > 0;
     // milk puddles: moves left before the puddle dries (0 = no milk)
     int[,] milk;
     SpriteRenderer[,] milkSr;
@@ -910,7 +912,7 @@ public class Board : MonoBehaviour
             case PowerUpType.Paw:
                 yield return FX.PawSlam(pos, cell);
                 AudioManager.Play("hummer");
-                if (p.kind == PieceKind.Vase || p.kind == PieceKind.Milk || p.kind == PieceKind.House) ctx.hits.Add(p);
+                if (p.kind == PieceKind.Vase || p.kind == PieceKind.Milk || p.kind == PieceKind.House || Foamed(p)) ctx.hits.Add(p);
                 else { if (p.cover != Cover.None) { ReleaseCover(p, pos); } ctx.clear.Add(p); if (p.special != Special.None) Trigger(p, ctx, true); }
                 break;
             case PowerUpType.MegaBomb:
@@ -1195,7 +1197,7 @@ public class Board : MonoBehaviour
                 foreach (var p in r.cells)
                 {
                     if (p.cover == Cover.Yarn) ctx.yarn.Add(p);
-                    else if (p.cover == Cover.Leash) ctx.hits.Add(p);
+                    else if (p.cover == Cover.Leash || Foamed(p)) ctx.hits.Add(p);
                     else { ctx.clear.Add(p); ctx.seed.Add(p); }
                     foreach (var n in Neighbours(p.x, p.y))
                         if (Hittable(n))
@@ -1242,8 +1244,8 @@ public class Board : MonoBehaviour
         {
             if (r.square || used.Contains(r) || r.cells.Count < 4) continue;
             Piece at = null;
-            if (preferred != null) foreach (var p in r.cells) if (preferred.Contains(new Vector2Int(p.x, p.y)) && !Tied(p)) { at = p; break; }
-            if (at == null) foreach (var p in r.cells) if (!Tied(p)) { at = p; if (p == r.cells[r.cells.Count / 2]) break; }
+            if (preferred != null) foreach (var p in r.cells) if (preferred.Contains(new Vector2Int(p.x, p.y)) && !Tied(p) && !Foamed(p)) { at = p; break; }
+            if (at == null) foreach (var p in r.cells) if (!Tied(p) && !Foamed(p)) { at = p; if (p == r.cells[r.cells.Count / 2]) break; }
             if (at == null) continue;
             spawns.Add(new Spawn { x = at.x, y = at.y, type = r.cells.Count >= 5 ? Special.Rainbow : Special.Line, lineRow = r.horizontal });
             used.Add(r);
@@ -1258,8 +1260,8 @@ public class Board : MonoBehaviour
             foreach (var p in r.cells) if (claimed.Contains(p)) { taken = true; break; }
             if (taken) continue;
             Piece at = null;
-            if (preferred != null) foreach (var p in r.cells) if (preferred.Contains(new Vector2Int(p.x, p.y)) && !Tied(p)) { at = p; break; }
-            if (at == null) foreach (var p in r.cells) if (!Tied(p)) { at = p; break; }
+            if (preferred != null) foreach (var p in r.cells) if (preferred.Contains(new Vector2Int(p.x, p.y)) && !Tied(p) && !Foamed(p)) { at = p; break; }
+            if (at == null) foreach (var p in r.cells) if (!Tied(p) && !Foamed(p)) { at = p; break; }
             if (at == null) continue;
             foreach (var p in r.cells) claimed.Add(p);
             spawns.Add(new Spawn { x = at.x, y = at.y, type = Special.Hunter });
@@ -1281,7 +1283,7 @@ public class Board : MonoBehaviour
         var p = At(x, y);
         if (p == null || p.kind == PieceKind.Fish) return;
         ctx.Mark(p, t);
-        if (Hittable(p)) { ctx.hits.Add(p); return; }
+        if (Hittable(p) || Foamed(p)) { ctx.hits.Add(p); return; }
         if (p.cover == Cover.Yarn) { ctx.yarn.Add(p); return; }
         if (ctx.clear.Add(p) && p.special != Special.None) ctx.queue.Enqueue(p);
     }
@@ -1584,6 +1586,7 @@ public class Board : MonoBehaviour
         Vector3 pos = h.transform.position;
         if (h.kind == PieceKind.Milk) { TipBucket(h, from); return; }
         if (h.kind == PieceKind.House) { HitHouse(h); return; }
+        if (Foamed(h)) { FoamHit(h.x, h.y); StartCoroutine(h.Pulse(0.12f, 0.3f)); return; }   // the bubble pops, the cat stays
         if (h.cover == Cover.Leash)
         {
             h.coverHp--;
@@ -2067,6 +2070,15 @@ public class Board : MonoBehaviour
     void LateUpdate()
     {
         float tm = Time.time;
+        if (foamSr != null)   // the soap bubbles over foamed cats wobble gently, each in its own rhythm
+            for (int x = 0; x < cols; x++)
+                for (int y = 0; y < rows; y++)
+                {
+                    var f = foamSr[x, y]; if (f == null) continue;
+                    var b = f.transform.parent.Find("bubble"); if (b == null) continue;
+                    float w = Mathf.Sin(tm * 2.3f + x * 1.7f + y * 2.9f);
+                    b.localScale = new Vector3(1f + 0.03f * w, 1f - 0.03f * w, 1f);
+                }
         foreach (var m in mice)
         {
             if (m.t == null) continue;
@@ -2297,6 +2309,11 @@ public class Board : MonoBehaviour
             var sr = new GameObject("img").AddComponent<SpriteRenderer>(); sr.transform.SetParent(holder, false);
             sr.sortingOrder = 4;                    // above the base tile, under the cats
             foamSr[x, y] = sr;
+            // a soap bubble over the cat: it has to be popped before the cat can be cleared
+            var bubT = new GameObject("bubble").transform; bubT.SetParent(holder, false);   // wobbles; FitSprite owns the child's scale
+            var bub = new GameObject("img").AddComponent<SpriteRenderer>(); bub.transform.SetParent(bubT, false);
+            bub.sortingOrder = 14;                  // over the cat (its layers are 8..13), under the laser dot and the mouse
+            Kit.FitSprite(bub, GameArt.I.Has("bubble_cap") ? "bubble_cap" : "bubble_1", cell * 1.0f, 1f);   // see-through: the cat shows inside
         }
         Kit.FitSprite(foamSr[x, y], f >= 2 ? "tile_foam_2" : "tile_foam_1", cell, 0.99f);
         foamSr[x, y].color = FoamTint;
