@@ -4713,6 +4713,26 @@ MonoBehaviour:
       width: 1
       height: 1
     stamp: 639271380194776879
+  - key: ui_btn_green
+    path: Assets/ui/btn_green.png
+    sprite: {fileID: 21300000, guid: d08e96447da6543e482f29bb8a21131a, type: 3}
+    content:
+      serializedVersion: 2
+      x: 0
+      y: 0
+      width: 1
+      height: 1
+    stamp: 639278392188968127
+  - key: ui_btn_green_pressed
+    path: Assets/ui/btn_green_pressed.png
+    sprite: {fileID: 21300000, guid: ee7e43383ae8543158406195cf53fc59, type: 3}
+    content:
+      serializedVersion: 2
+      x: 0
+      y: 0
+      width: 1
+      height: 0.97282606
+    stamp: 639278392195731057
   - key: ui_play_big
     path: Assets/ui/play_big.png
     sprite: {fileID: 21300000, guid: 90cb4314af76149b98d6a19a99fcf322, type: 3}

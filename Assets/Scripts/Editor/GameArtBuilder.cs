@@ -196,6 +196,7 @@ public class GameArtBuilder : AssetPostprocessor
         { "bg_bokeh", "Assets/Sprites/Background/bg_bokeh.png" },
         { "bokeh_dot", "Assets/Sprites/Background/bokeh_dot.png" },
         { "splash", "Assets/Sprites/splash.png" }, { "splash_blur", "Assets/Sprites/splash_blur.png" },
+        { "ui_btn_green", "Assets/ui/btn_green.png" }, { "ui_btn_green_pressed", "Assets/ui/btn_green_pressed.png" },
         { "ui_play_big", "Assets/ui/play_big.png" }, { "ui_play_big_pressed", "Assets/ui/play_big_pressed.png" },
         // English versions of pictures with words on them: same key + "_en" (see Loc.Art)
         { "ui_play_big_en", "Assets/ui/play_big_en.png" }, { "ui_play_big_pressed_en", "Assets/ui/play_big_pressed_en.png" },
@@ -283,6 +284,12 @@ public class GameArtBuilder : AssetPostprocessor
             // plain blue middle stretches when a window is taller or shorter.
             ti.maxTextureSize = 2048;
             settings.spriteBorder = new Vector4(0, 410, 0, 440);
+            ti.SetTextureSettings(settings);
+        }
+        if (assetPath.EndsWith("btn_green.png") || assetPath.EndsWith("btn_green_pressed.png"))
+        {
+            // 9-slice: the round ends keep their shape, only the straight middle stretches sideways
+            settings.spriteBorder = new Vector4(190, 0, 190, 0);
             ti.SetTextureSettings(settings);
         }
         ti.wrapMode = assetPath.EndsWith("bg_pattern_tile.png") || (assetPath.Contains("/Worlds/") && assetPath.EndsWith("/floor.png")) ? TextureWrapMode.Repeat : TextureWrapMode.Clamp;

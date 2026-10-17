@@ -218,8 +218,36 @@ public static class UIKit
         return Vector2.Dot(p - a, n);
     }
 
+    // A green button gets the same glossy art as the big "Play" button on the splash screen (ui_btn_green:
+    // the Play art without its word and paw, a 9-slice so it stretches sideways), with a pressed look.
+    static bool IsGreen(Color c) => c.g > c.r + 0.2f && c.g > c.b + 0.2f;
+    static Button ArtButton(Transform parent, string text, Vector2 anchor, Vector2 pos, Vector2 size, Action onClick)
+    {
+        var rt = Place(Rect("btn_" + text, parent), anchor, pos, size);
+        var normal = GameArt.I.S("ui_btn_green");
+        var img = rt.gameObject.AddComponent<Image>();
+        img.sprite = normal;
+        img.type = UnityEngine.UI.Image.Type.Sliced;
+        img.pixelsPerUnitMultiplier = normal.rect.height / size.y;   // the round ends scale with the button's height
+        var b = rt.gameObject.AddComponent<Button>();
+        b.targetGraphic = img;
+        var pressed = GameArt.I.S("ui_btn_green_pressed");
+        if (pressed != null) { b.transition = Selectable.Transition.SpriteSwap; b.spriteState = new SpriteState { pressedSprite = pressed, highlightedSprite = normal, selectedSprite = normal }; }
+        else b.transition = Selectable.Transition.ColorTint;
+        // the face sits a little above the middle of the picture (the button's thick bottom edge is below it)
+        var lbl = Label(rt, text, (int)(size.y * 0.44f), Color.white, new Vector2(0.5f, 0.5f), new Vector2(0, size.y * 0.07f), size, true);
+        var o = lbl.GetComponent<Outline>(); o.effectColor = new Color(0.04f, 0.27f, 0.07f, 0.95f); o.effectDistance = new Vector2(3f, -3f);
+        lbl.horizontalOverflow = HorizontalWrapMode.Overflow;
+        int fs = lbl.fontSize;
+        while (fs > 18 && lbl.preferredWidth > size.x - size.y * 0.7f) { fs -= 2; lbl.fontSize = fs; }
+        rt.gameObject.AddComponent<Squish>();
+        b.onClick.AddListener(() => { AudioManager.PlayClick(); onClick?.Invoke(); });
+        return b;
+    }
+
     public static Button TextButton(Transform parent, string text, Vector2 anchor, Vector2 pos, Vector2 size, Color color, Action onClick)
     {
+        if (IsGreen(color) && GameArt.I.Has("ui_btn_green")) return ArtButton(parent, text, anchor, pos, size, onClick);
         var rt = Place(Rect("btn_" + text, parent), anchor, pos, size);
         var img = rt.gameObject.AddComponent<Image>();
         img.sprite = Kit.RoundedRect(128, 50);
