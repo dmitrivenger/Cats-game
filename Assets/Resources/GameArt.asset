@@ -3773,6 +3773,36 @@ MonoBehaviour:
       width: 0.9765625
       height: 0.8296089
     stamp: 639267528393004092
+  - key: cmb_word_5
+    path: Assets/Combos/Layers/combo_word_5.png
+    sprite: {fileID: 21300000, guid: 9ac19d72bce3345a8943a5d53cf0bed6, type: 3}
+    content:
+      serializedVersion: 2
+      x: 0.00390625
+      y: 0.007246377
+      width: 0.9941406
+      height: 0.98913044
+    stamp: 639278402795221972
+  - key: cmb_king
+    path: Assets/Combos/Layers/combo_king.png
+    sprite: {fileID: 21300000, guid: 53940b7c7d8804600acfab8f17d35a63, type: 3}
+    content:
+      serializedVersion: 2
+      x: 0.0057142857
+      y: 0.018518519
+      width: 0.9885714
+      height: 0.9777778
+    stamp: 639278402775997611
+  - key: cmb_paw_gold
+    path: Assets/Combos/Layers/combo_paw_gold.png
+    sprite: {fileID: 21300000, guid: 7c280813a3e12452bb9433aec6a12df0, type: 3}
+    content:
+      serializedVersion: 2
+      x: 0
+      y: 0.00390625
+      width: 0.99777776
+      height: 0.9921875
+    stamp: 639278402784700964
   - key: cmb_paw
     path: Assets/Combos/Layers/combo_paw.png
     sprite: {fileID: 21300000, guid: 37406adf11e7a44a0b7a58926987f4f5, type: 3}
@@ -4733,6 +4763,66 @@ MonoBehaviour:
       width: 1
       height: 0.97282606
     stamp: 639278392195731057
+  - key: ui_btn_purple
+    path: Assets/ui/btn_purple.png
+    sprite: {fileID: 21300000, guid: 0a260980705154a26bb362302c88f9ca, type: 3}
+    content:
+      serializedVersion: 2
+      x: 0
+      y: 0
+      width: 1
+      height: 1
+    stamp: 639278402873710279
+  - key: ui_btn_purple_pressed
+    path: Assets/ui/btn_purple_pressed.png
+    sprite: {fileID: 21300000, guid: ab336a770d7934018b8c30d5cbb6646f, type: 3}
+    content:
+      serializedVersion: 2
+      x: 0
+      y: 0
+      width: 1
+      height: 0.97282606
+    stamp: 639278402882388772
+  - key: ui_btn_blue
+    path: Assets/ui/btn_blue.png
+    sprite: {fileID: 21300000, guid: 6aa171b0fbdad4dcdb268704b16bc643, type: 3}
+    content:
+      serializedVersion: 2
+      x: 0
+      y: 0
+      width: 1
+      height: 1
+    stamp: 639278402845978688
+  - key: ui_btn_blue_pressed
+    path: Assets/ui/btn_blue_pressed.png
+    sprite: {fileID: 21300000, guid: f5249e5b683a24e46920510c0486e294, type: 3}
+    content:
+      serializedVersion: 2
+      x: 0
+      y: 0
+      width: 1
+      height: 0.97282606
+    stamp: 639278402851902743
+  - key: ui_btn_grey
+    path: Assets/ui/btn_grey.png
+    sprite: {fileID: 21300000, guid: beb0ec15746114d21aba7cda8e40ef83, type: 3}
+    content:
+      serializedVersion: 2
+      x: 0
+      y: 0
+      width: 1
+      height: 1
+    stamp: 639278402858939396
+  - key: ui_btn_grey_pressed
+    path: Assets/ui/btn_grey_pressed.png
+    sprite: {fileID: 21300000, guid: b22e7d4a7ee3347d1bcb0f78d9fc1d8b, type: 3}
+    content:
+      serializedVersion: 2
+      x: 0
+      y: 0
+      width: 1
+      height: 0.97282606
+    stamp: 639278402865709838
   - key: ui_play_big
     path: Assets/ui/play_big.png
     sprite: {fileID: 21300000, guid: 90cb4314af76149b98d6a19a99fcf322, type: 3}
@@ -4853,6 +4943,16 @@ MonoBehaviour:
       width: 1
       height: 0.99647886
     stamp: 639267524060217713
+  - key: cmb_word_5_en
+    path: Assets/Combos/Layers/combo_word_5_en.png
+    sprite: {fileID: 21300000, guid: 485a71617df9243dc97ac6dd3eb532bf, type: 3}
+    content:
+      serializedVersion: 2
+      x: 0.00390625
+      y: 0.008928572
+      width: 0.9921875
+      height: 0.98214287
+    stamp: 639278402807118269
   - key: ui_flag_ru
     path: Assets/ui/flag_ru.png
     sprite: {fileID: 21300000, guid: 6081bd7c0b6dd4f2b82fae74c7dbddcd, type: 3}
