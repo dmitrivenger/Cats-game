@@ -2489,7 +2489,8 @@ public class GameController : MonoBehaviour
                 else if (tier == 5)
                 {   // the cat king jumps up from below in the lower left, lands and pumps his fist
                     float k = Mathf.Clamp01(ct / 0.32f);
-                    float y = Mathf.LerpUnclamped(-H * 0.5f - 300f, C.y - 340f, Kit.EaseOutBack(k));
+                    // he lands fully below the word (his crown just under its lower edge), so nothing of him is hidden
+                    float y = Mathf.LerpUnclamped(-H * 0.5f - 300f, C.y - wh * 0.5f - 250f, Kit.EaseOutBack(k));
                     float pump = ct > 0.32f ? Mathf.Abs(Mathf.Sin((ct - 0.32f) * 9f)) : 0f;
                     rt.anchoredPosition = new Vector2(-W * 0.5f + 250f, y + 22f * pump);
                     rt.localScale = new Vector3(1f + 0.04f * pump, 1f - 0.03f * pump, 1f);
