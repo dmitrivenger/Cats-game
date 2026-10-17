@@ -156,7 +156,7 @@ public class GameArtBuilder : AssetPostprocessor
         { "map_flower_1", "Assets/Level-menu/map_flower_1.png" }, { "map_flower_2", "Assets/Level-menu/map_flower_2.png" }, { "map_flower_3", "Assets/Level-menu/map_flower_3.png" }, { "map_flower_4", "Assets/Level-menu/map_flower_4.png" }, { "map_flower_5", "Assets/Level-menu/map_flower_5.png" }, { "map_flower_6", "Assets/Level-menu/map_flower_6.png" },
         { "ui_booster_glow", "Assets/ui/booster_glow.png" }, { "ui_booster_sparkle", "Assets/ui/booster_sparkle.png" },
         // layered combo banner (Combos/Layers)
-        { "cmb_word_1", "Assets/Combos/Layers/combo_word_1.png" }, { "cmb_word_2", "Assets/Combos/Layers/combo_word_2.png" }, { "cmb_word_3", "Assets/Combos/Layers/combo_word_3.png" }, { "cmb_word_4", "Assets/Combos/Layers/combo_word_4.png" }, { "cmb_paw", "Assets/Combos/Layers/combo_paw.png" }, { "cmb_paw_monster", "Assets/Combos/Layers/combo_paw_monster.png" }, { "cmb_rocket", "Assets/Combos/Layers/combo_rocket.png" }, { "cmb_star", "Assets/Combos/Layers/combo_star.png" }, { "cmb_monster", "Assets/Combos/Layers/combo_monster.png" }, { "cmb_slash", "Assets/Combos/Layers/combo_slash.png" }, { "cmb_burst", "Assets/Combos/Layers/combo_burst.png" }, { "cmb_bit_1", "Assets/Combos/Layers/combo_bit_1.png" }, { "cmb_bit_2", "Assets/Combos/Layers/combo_bit_2.png" }, { "cmb_bit_3", "Assets/Combos/Layers/combo_bit_3.png" }, { "cmb_bit_4", "Assets/Combos/Layers/combo_bit_4.png" }, { "cmb_bit_5", "Assets/Combos/Layers/combo_bit_5.png" }, { "cmb_bit_6", "Assets/Combos/Layers/combo_bit_6.png" }, { "cmb_bit_7", "Assets/Combos/Layers/combo_bit_7.png" }, { "cmb_bit_8", "Assets/Combos/Layers/combo_bit_8.png" },
+        { "cmb_word_1", "Assets/Combos/Layers/combo_word_1.png" }, { "cmb_word_2", "Assets/Combos/Layers/combo_word_2.png" }, { "cmb_word_3", "Assets/Combos/Layers/combo_word_3.png" }, { "cmb_word_4", "Assets/Combos/Layers/combo_word_4.png" }, { "cmb_word_5", "Assets/Combos/Layers/combo_word_5.png" }, { "cmb_king", "Assets/Combos/Layers/combo_king.png" }, { "cmb_paw_gold", "Assets/Combos/Layers/combo_paw_gold.png" }, { "cmb_paw", "Assets/Combos/Layers/combo_paw.png" }, { "cmb_paw_monster", "Assets/Combos/Layers/combo_paw_monster.png" }, { "cmb_rocket", "Assets/Combos/Layers/combo_rocket.png" }, { "cmb_star", "Assets/Combos/Layers/combo_star.png" }, { "cmb_monster", "Assets/Combos/Layers/combo_monster.png" }, { "cmb_slash", "Assets/Combos/Layers/combo_slash.png" }, { "cmb_burst", "Assets/Combos/Layers/combo_burst.png" }, { "cmb_bit_1", "Assets/Combos/Layers/combo_bit_1.png" }, { "cmb_bit_2", "Assets/Combos/Layers/combo_bit_2.png" }, { "cmb_bit_3", "Assets/Combos/Layers/combo_bit_3.png" }, { "cmb_bit_4", "Assets/Combos/Layers/combo_bit_4.png" }, { "cmb_bit_5", "Assets/Combos/Layers/combo_bit_5.png" }, { "cmb_bit_6", "Assets/Combos/Layers/combo_bit_6.png" }, { "cmb_bit_7", "Assets/Combos/Layers/combo_bit_7.png" }, { "cmb_bit_8", "Assets/Combos/Layers/combo_bit_8.png" },
         // result screen backdrops (ui/Result)
         { "res_win_rays", "Assets/ui/Result/win_rays.png" }, { "res_win_firework", "Assets/ui/Result/win_firework.png" }, { "res_win_cats", "Assets/ui/Result/win_cats.png" }, { "res_lose_cloud", "Assets/ui/Result/lose_cloud.png" }, { "res_lose_drop", "Assets/ui/Result/lose_drop.png" }, { "res_lose_splash", "Assets/ui/Result/lose_splash.png" }, { "res_lose_cats", "Assets/ui/Result/lose_cats.png" }, { "res_confetti_1", "Assets/ui/Result/win_confetti_1.png" }, { "res_confetti_2", "Assets/ui/Result/win_confetti_2.png" }, { "res_confetti_3", "Assets/ui/Result/win_confetti_3.png" }, { "res_confetti_4", "Assets/ui/Result/win_confetti_4.png" }, { "res_confetti_5", "Assets/ui/Result/win_confetti_5.png" }, { "res_confetti_6", "Assets/ui/Result/win_confetti_6.png" }, { "res_confetti_7", "Assets/ui/Result/win_confetti_7.png" }, { "res_confetti_8", "Assets/ui/Result/win_confetti_8.png" },
         // regular cat pop (Sprites/FX/Burn/regular) - white layers are tinted per cat colour in code
@@ -197,12 +197,15 @@ public class GameArtBuilder : AssetPostprocessor
         { "bokeh_dot", "Assets/Sprites/Background/bokeh_dot.png" },
         { "splash", "Assets/Sprites/splash.png" }, { "splash_blur", "Assets/Sprites/splash_blur.png" },
         { "ui_btn_green", "Assets/ui/btn_green.png" }, { "ui_btn_green_pressed", "Assets/ui/btn_green_pressed.png" },
+        { "ui_btn_purple", "Assets/ui/btn_purple.png" }, { "ui_btn_purple_pressed", "Assets/ui/btn_purple_pressed.png" },
+        { "ui_btn_blue", "Assets/ui/btn_blue.png" }, { "ui_btn_blue_pressed", "Assets/ui/btn_blue_pressed.png" },
+        { "ui_btn_grey", "Assets/ui/btn_grey.png" }, { "ui_btn_grey_pressed", "Assets/ui/btn_grey_pressed.png" },
         { "ui_play_big", "Assets/ui/play_big.png" }, { "ui_play_big_pressed", "Assets/ui/play_big_pressed.png" },
         // English versions of pictures with words on them: same key + "_en" (see Loc.Art)
         { "ui_play_big_en", "Assets/ui/play_big_en.png" }, { "ui_play_big_pressed_en", "Assets/ui/play_big_pressed_en.png" },
         { "banner_win_en", "Assets/ui/win_en.png" }, { "banner_lose_en", "Assets/ui/lose_en.png" }, { "badge_meet_en", "Assets/ui/badge_meet_en.png" },
         { "caught_word_en", "Assets/Combos/Caught/caught_word_en.png" },
-        { "cmb_word_1_en", "Assets/Combos/Layers/combo_word_1_en.png" }, { "cmb_word_2_en", "Assets/Combos/Layers/combo_word_2_en.png" }, { "cmb_word_3_en", "Assets/Combos/Layers/combo_word_3_en.png" }, { "cmb_word_4_en", "Assets/Combos/Layers/combo_word_4_en.png" },
+        { "cmb_word_1_en", "Assets/Combos/Layers/combo_word_1_en.png" }, { "cmb_word_2_en", "Assets/Combos/Layers/combo_word_2_en.png" }, { "cmb_word_3_en", "Assets/Combos/Layers/combo_word_3_en.png" }, { "cmb_word_4_en", "Assets/Combos/Layers/combo_word_4_en.png" }, { "cmb_word_5_en", "Assets/Combos/Layers/combo_word_5_en.png" },
         // language switch in Settings
         { "ui_flag_ru", "Assets/ui/flag_ru.png" }, { "ui_flag_en", "Assets/ui/flag_en.png" },
     };
@@ -286,7 +289,7 @@ public class GameArtBuilder : AssetPostprocessor
             settings.spriteBorder = new Vector4(0, 410, 0, 440);
             ti.SetTextureSettings(settings);
         }
-        if (assetPath.EndsWith("btn_green.png") || assetPath.EndsWith("btn_green_pressed.png"))
+        if (System.Text.RegularExpressions.Regex.IsMatch(assetPath, @"/ui/btn_(green|purple|blue|grey)(_pressed)?\.png$"))
         {
             // 9-slice: the round ends keep their shape, only the straight middle stretches sideways
             settings.spriteBorder = new Vector4(190, 0, 190, 0);

@@ -507,6 +507,25 @@ public class Piece : MonoBehaviour
         visual.localRotation = Quaternion.identity;
     }
 
+    // a happy little jump (the "Purr-fect!" banner makes the whole board hop)
+    public IEnumerator Hop(float delay, float height)
+    {
+        if (delay > 0f) yield return new WaitForSeconds(delay);
+        Vector3 basePos = visual.localPosition;
+        float t = 0f, dur = 0.42f;
+        while (t < dur && !dead)
+        {
+            t += Time.deltaTime;
+            float k = Mathf.Clamp01(t / dur);
+            float up = Mathf.Sin(k * Mathf.PI);
+            float squash = k < 0.15f ? Mathf.Sin(k / 0.15f * Mathf.PI) : k > 0.85f ? Mathf.Sin((k - 0.85f) / 0.15f * Mathf.PI) : 0f;
+            visual.localPosition = basePos + new Vector3(0, height * up, 0);
+            visual.localScale = new Vector3(1f + 0.14f * squash, 1f - 0.14f * squash + 0.05f * up, 1f);
+            yield return null;
+        }
+        visual.localPosition = basePos; visual.localScale = Vector3.one;
+    }
+
     public IEnumerator Pulse(float amount = 0.15f, float dur = 0.35f)
     {
         float t = 0;

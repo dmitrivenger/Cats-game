@@ -1759,6 +1759,15 @@ public class Board : MonoBehaviour
     // ======================================================= win celebration
     // The level is won with moves to spare: every spare move sends a spark from the moves counter into a
     // random cat, which turns into a navigator or a demolition cat; then they go off one after another.
+    // every cat on the board hops, in a wave running out from the middle (the "Purr-fect!" combo)
+    public void CheerHop()
+    {
+        Vector2 mid = new Vector2((cols - 1) * 0.5f, (rows - 1) * 0.5f);
+        foreach (var p in grid)
+            if (p != null && !p.dead && p.kind == PieceKind.Cat)
+                StartCoroutine(p.Hop(0.035f * Vector2.Distance(new Vector2(p.x, p.y), mid), cell * 0.22f));
+    }
+
     public bool CelebrateSkip;
     public IEnumerator Celebrate(int count, Vector3 from, Action<Vector3> onFire)
     {

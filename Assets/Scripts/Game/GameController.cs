@@ -31,7 +31,7 @@ public class GameController : MonoBehaviour
     const float CoinRate = 0.51f;          // all coin income: 20% lower again than the 0.64 before (ad rewards stay as they are)
     float coinCarry, milkCarry;
     int Coins(int n) { coinCarry += n * CoinRate; int whole = Mathf.FloorToInt(coinCarry + 1e-4f); coinCarry -= whole; return whole; }
-    static readonly int[] ComboTiers = { 6, 10, 15, 20 };   // cats cleared by one move -> banner 1..4
+    static readonly int[] ComboTiers = { 6, 10, 15, 20, 30 };   // cats cleared by one move -> banner 1..5 (5 = "Purr-fect!", rare)
 
     Camera cam;
     Board board;
@@ -2243,8 +2243,8 @@ public class GameController : MonoBehaviour
     // paw swipes across -> glowing claw marks -> a coloured splat bursts -> the word slams in and wobbles,
     // glossy bits fly out, coins fly to the balance, the tier's character shows up (rocket / star / monster),
     // then everything shrinks and floats away. Bigger tiers = more bits, shake and a screen flash.
-    static readonly Color[] ComboTint = { new Color(1f, 0.6f, 0.15f), new Color(0.2f, 0.75f, 1f), new Color(0.45f, 0.9f, 0.2f), new Color(0.75f, 0.3f, 1f) };
-    static readonly int[] ComboCoins = { 1, 2, 3, 5 };
+    static readonly Color[] ComboTint = { new Color(1f, 0.6f, 0.15f), new Color(0.2f, 0.75f, 1f), new Color(0.45f, 0.9f, 0.2f), new Color(0.75f, 0.3f, 1f), new Color(1f, 0.78f, 0.15f) };
+    static readonly int[] ComboCoins = { 1, 2, 3, 5, 10 };
     RectTransform activeComboRoot;
 
     IEnumerator ComboBanner(int tier)
@@ -2267,7 +2267,8 @@ public class GameController : MonoBehaviour
         // the screen dims a little so the banner stands out
         var dim = UIKit.Panel(root, new Vector2(0.5f, 0.5f), Vector2.zero, new Vector2(4000, 6000), new Color(0.06f, 0.04f, 0.16f, 0f), 0);
         dim.raycastTarget = false;
-        var flash = tier == 4 ? UIKit.Panel(root, new Vector2(0.5f, 0.5f), Vector2.zero, new Vector2(4000, 6000), new Color(0.7f, 0.3f, 1f, 0f), 0) : null;
+        Color flashC = tier == 5 ? new Color(1f, 0.85f, 0.3f) : new Color(0.7f, 0.3f, 1f);   // monster: violet flash; purr-fect: gold
+        var flash = tier >= 4 ? UIKit.Panel(root, new Vector2(0.5f, 0.5f), Vector2.zero, new Vector2(4000, 6000), new Color(flashC.r, flashC.g, flashC.b, 0f), 0) : null;
         if (flash != null) flash.raycastTarget = false;
         // slowly turning light rays behind the splat
         Image rays = null, rays2 = null;
@@ -2286,9 +2287,9 @@ public class GameController : MonoBehaviour
         var slashGlow = Img("cmb_slash", C + new Vector2(-20, -10), new Vector2(1040, 600), new Color(tint.r, tint.g, tint.b, 0f));
         slashGlow.transform.SetSiblingIndex(slash.transform.GetSiblingIndex());
         var bitsLayer = UIKit.Rect("bits", root); UIKit.Stretch(bitsLayer);
-        string charKey = tier == 2 ? "cmb_rocket" : tier == 3 ? "cmb_star" : tier == 4 ? "cmb_monster" : null;
+        string charKey = tier == 2 ? "cmb_rocket" : tier == 3 ? "cmb_star" : tier == 4 ? "cmb_monster" : tier == 5 ? "cmb_king" : null;
         Image chr = charKey != null && GameArt.I.Has(charKey)
-            ? Img(charKey, Vector2.zero, tier == 4 ? new Vector2(430, 550) : new Vector2(300, 300), new Color(1, 1, 1, 0)) : null;
+            ? Img(charKey, Vector2.zero, tier == 4 ? new Vector2(430, 550) : tier == 5 ? new Vector2(560, 432) : new Vector2(300, 300), new Color(1, 1, 1, 0)) : null;
         float ww = 780f, wh = 230f;
         Graphic word;
         if (Loc.HasArt("cmb_word_" + tier))
@@ -2336,7 +2337,8 @@ public class GameController : MonoBehaviour
             }
         // confetti rains down for the two biggest combos
         var confetti = new List<(RectTransform t, Vector2 v, float spin)>();
-        var paw = Img(tier == 4 ? "cmb_paw_monster" : "cmb_paw", Vector2.zero, new Vector2(900, 550), Color.white);
+        string pawKey = tier == 5 && GameArt.I.Has("cmb_paw_gold") ? "cmb_paw_gold" : tier >= 4 ? "cmb_paw_monster" : "cmb_paw";
+        var paw = Img(pawKey, Vector2.zero, new Vector2(900, 550), Color.white);
 
         // flying bits
         var bits = new List<(RectTransform t, Image i, Vector2 v, float spin, float life)>();
@@ -2353,7 +2355,8 @@ public class GameController : MonoBehaviour
             }
         }
 
-        const float SwipeEnd = 0.2f, Impact = 0.2f, ExitAt = 0.9f, End = 1.15f;   // on screen for about a second
+        const float SwipeEnd = 0.2f, Impact = 0.2f;
+        float ExitAt = tier == 5 ? 1.5f : 0.9f, End = tier == 5 ? 1.8f : 1.15f;   // on screen for about a second (purr-fect: a little longer)
         bool impacted = false, paid = false;
         Vector2 pawFrom = new Vector2(-W * 0.5f - 70f, C.y - 520f);
         paw.rectTransform.pivot = new Vector2(0.02f, 0.2f);   // shoulder end of the arm
@@ -2384,9 +2387,14 @@ public class GameController : MonoBehaviour
             {
                 impacted = true;
                 SpawnBits(10 + 5 * tier);
-                if (tier >= 3) FX.Shake(board.cell * (tier == 4 ? 0.18f : 0.1f), 0.3f);
+                if (tier >= 3) FX.Shake(board.cell * (tier == 5 ? 0.24f : tier == 4 ? 0.18f : 0.1f), tier == 5 ? 0.45f : 0.3f);
+                if (tier == 5)
+                {   // the rare top combo: a fanfare and every cat on the board jumps for joy
+                    AudioManager.Play("celebrate", 0.9f);
+                    board.CheerHop();
+                }
                 if (tier >= 3 && GameArt.I.Has("res_confetti_1"))
-                    for (int k = 0; k < (tier == 4 ? 40 : 24); k++)
+                    for (int k = 0; k < (tier == 5 ? 70 : tier == 4 ? 40 : 24); k++)
                     {
                         var ci = UIKit.Image(bitsLayer, "res_confetti_" + (1 + k % 8), new Vector2(0.5f, 0.5f), new Vector2(Random.Range(-W * 0.5f, W * 0.5f), H * 0.5f + Random.Range(20f, 400f)), Vector2.one * Random.Range(34f, 58f));
                         ci.color = Color.HSVToRGB(Random.value, 0.6f, 1f);
@@ -2415,7 +2423,7 @@ public class GameController : MonoBehaviour
                 word.rectTransform.localScale = new Vector3(sc * (1f + 0.12f * land), sc * (1f - 0.12f * land), 1f);
                 word.rectTransform.localRotation = Quaternion.Euler(0, 0, 4f * land - 3f * (1f - wk));
                 word.color = new Color(1, 1, 1, Mathf.Clamp01(wk * 3f));
-                if (flash != null) flash.color = new Color(0.7f, 0.3f, 1f, 0.35f * Mathf.Clamp01(1f - it / 0.35f));
+                if (flash != null) flash.color = new Color(flashC.r, flashC.g, flashC.b, (tier == 5 ? 0.55f : 0.35f) * Mathf.Clamp01(1f - it / (tier == 5 ? 0.5f : 0.35f)));
 
                 // ---- the extra layers ----
                 float inA = Mathf.Clamp01(it / 0.12f);
@@ -2476,6 +2484,16 @@ public class GameController : MonoBehaviour
                     rt.anchoredPosition = C + new Vector2(ww * 0.43f, wh * 0.5f + 40f);
                     rt.localScale = Vector3.one * k * (1f + 0.05f * Mathf.Sin(ct * 12f));
                     rt.localRotation = Quaternion.Euler(0, 0, 14f * Mathf.Sin(ct * 9f));
+                    chr.color = Color.white;
+                }
+                else if (tier == 5)
+                {   // the cat king jumps up from below in the lower left, lands and pumps his fist
+                    float k = Mathf.Clamp01(ct / 0.32f);
+                    float y = Mathf.LerpUnclamped(-H * 0.5f - 300f, C.y - 340f, Kit.EaseOutBack(k));
+                    float pump = ct > 0.32f ? Mathf.Abs(Mathf.Sin((ct - 0.32f) * 9f)) : 0f;
+                    rt.anchoredPosition = new Vector2(-W * 0.5f + 250f, y + 22f * pump);
+                    rt.localScale = new Vector3(1f + 0.04f * pump, 1f - 0.03f * pump, 1f);
+                    rt.localRotation = Quaternion.Euler(0, 0, -4f + 6f * Mathf.Sin(ct * 6f));
                     chr.color = Color.white;
                 }
                 else
