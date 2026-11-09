@@ -12,22 +12,31 @@ using UnityEngine.UI;
 //    rotations, feints) as the streak of days grows. The player
 //    gets what is under the bowl they picked; then the other bowls lift too, so the result is honest.
 //  * Days in a row are shown as seven pips next to the flame-cat; the 7th day also gives a power-up.
+//  * It gets harder through the week: 3 bowls on days 1-2, 4 on days 3-5, 5 on days 6-7. Tricks from day 1:
+//    fakes, rotations of every bowl, two pairs trading places at once (4+ bowls), and once or twice a
+//    cat paw sweeps across in a puff of dust, hiding the bowls for a moment while they keep moving.
 // Built from code on the popup canvas, like every other window. Runs on unscaled time.
 public class DailyBowls : MonoBehaviour
 {
     public const int BigPrize = 10, SmallPrize = 2;   // 20% less again than 12 / 2 (the small one can't go lower)
-    // the shuffle grows with the streak day (1..7): more moves, faster at the end, tricks from day 2
-    int Swaps => 8 + day;
-    const float SwapSlow = 0.42f;
-    float SwapFast => Mathf.Max(0.17f, 0.3f - 0.019f * day);
-    const float BowlW = 280f, BowlH = BowlW * 448f / 512f, Gap = 315f;
+    // the shuffle grows with the streak day (1..7): more bowls, more moves, faster at the end
+    int Swaps => 12 + Mathf.RoundToInt(day * 1.3f);
+    const float SwapSlow = 0.38f;
+    float SwapFast => Mathf.Max(0.11f, 0.24f - 0.018f * day);
+    static int BowlsFor(int d) => d <= 2 ? 3 : d <= 5 ? 4 : 5;
+    int n = 3;                                            // bowls today
+    // 4 and 5 bowls are smaller and closer together, so the row stays as wide as with 3 (inside the mat)
+    float BowlW => n == 3 ? 280f : n == 4 ? 210f : 170f;
+    float BowlH => BowlW * 448f / 512f;
+    float Gap => n == 3 ? 315f : n == 4 ? 232f : 180f;
+    float Sc => BowlW / 280f;                             // prizes shrink with the bowls
     const float MatY = -120f, BowlY = MatY + 78f, Lift = 235f;
 
     RectTransform root, bowlLayer, prizeLayer;
     Action onClose;
-    readonly RectTransform[] bowls = new RectTransform[3];
-    readonly int[] slotOf = { 0, 1, 2 };                  // bowl index -> slot (0 left, 1 middle, 2 right)
-    readonly bool[] lifted = new bool[3];
+    RectTransform[] bowls;
+    int[] slotOf;                                         // bowl index -> slot (0 = leftmost)
+    bool[] lifted;
     int goldBowl, emptyBowl, picked = -1;
     bool secondTry; int firstDay;                       // a second round bought with a video (once, after a miss)
     readonly List<GameObject> revealBits = new List<GameObject>();
@@ -40,7 +49,7 @@ public class DailyBowls : MonoBehaviour
     readonly List<(RectTransform t, Vector2 v, float spin)> bits = new List<(RectTransform, Vector2, float)>();
     Image rays;
 
-    static float SlotX(int slot) => (slot - 1) * Gap;
+    float SlotX(int slot) => (slot - (n - 1) * 0.5f) * Gap;
 
     public static DailyBowls Open(RectTransform parent, Action onClose)
     {
@@ -55,8 +64,11 @@ public class DailyBowls : MonoBehaviour
     {
         var dim = root.gameObject.AddComponent<Image>(); dim.color = new Color(0.1f, 0.09f, 0.26f, 1f);      // its own little stage: nothing of the map shows through
         day = Progress.DailyDay;
-        goldBowl = UnityEngine.Random.Range(0, 3);
-        emptyBowl = (goldBowl + UnityEngine.Random.Range(1, 3)) % 3;
+        n = BowlsFor(day);
+        bowls = new RectTransform[n]; slotOf = new int[n]; lifted = new bool[n];
+        for (int i = 0; i < n; i++) slotOf[i] = i;
+        goldBowl = UnityEngine.Random.Range(0, n);
+        emptyBowl = (goldBowl + UnityEngine.Random.Range(1, n)) % n;
 
         if (GameArt.I.Has("res_win_rays"))
         {
@@ -69,7 +81,7 @@ public class DailyBowls : MonoBehaviour
         UIKit.Image(root, "daily_mat", new Vector2(0.5f, 0.5f), new Vector2(0, MatY), new Vector2(1040, 1040 * 308f / 1024f));
         prizeLayer = UIKit.Rect("prizes", root); UIKit.Place(prizeLayer, new Vector2(0.5f, 0.5f), Vector2.zero, Vector2.zero);
         bowlLayer = UIKit.Rect("bowls", root); UIKit.Place(bowlLayer, new Vector2(0.5f, 0.5f), Vector2.zero, Vector2.zero);
-        for (int i = 0; i < 3; i++)
+        for (int i = 0; i < n; i++)
         {
             int b = i;
             var img = UIKit.Image(bowlLayer, "daily_bowl", new Vector2(0.5f, 0.5f), new Vector2(SlotX(i), BowlY), new Vector2(BowlW, BowlH));
@@ -114,7 +126,7 @@ public class DailyBowls : MonoBehaviour
     IEnumerator Run()
     {
         foreach (var b in bowls) b.localScale = Vector3.zero;
-        for (int i = 0; i < 3; i++) { StartCoroutine(PopIn(bowls[i], 0.32f)); AudioManager.Play("Pop", 0.35f); yield return new WaitForSecondsRealtime(0.11f); }
+        for (int i = 0; i < n; i++) { StartCoroutine(PopIn(bowls[i], 0.32f)); AudioManager.Play("Pop", 0.35f); yield return new WaitForSecondsRealtime(0.11f); }
         yield return new WaitForSecondsRealtime(0.45f);
 
         // show the golden fish under one bowl
@@ -128,29 +140,48 @@ public class DailyBowls : MonoBehaviour
         if (closeBtn != null) closeBtn.gameObject.SetActive(false);
         yield return new WaitForSecondsRealtime(0.3f);
 
-        // shuffle: mostly two bowls trade places (one passing in front of the other); from day 2 a bowl
-        // sometimes fakes a move, from day 3 all three sometimes rotate at once
-        int lastA = -1, lastB = -1, n = Swaps;
-        for (int s = 0; s < n; s++)
+        // shuffle: pairs of bowls trade places, with tricks from day 1: a bowl fakes a move, every bowl shifts
+        // round at once, two pairs trade at the same time (4+ bowls), and once or twice a paw sweeps across
+        // in a puff of dust, hiding the bowls for a moment while they keep moving underneath
+        int lastA = -1, lastB = -1, total = Swaps;
+        int paws = day >= 4 ? 2 : 1;
+        var pawAt = new List<int>();
+        while (pawAt.Count < paws) { int at = UnityEngine.Random.Range(total / 3, total - 2); if (!pawAt.Contains(at) && !pawAt.Contains(at - 1) && !pawAt.Contains(at + 1)) pawAt.Add(at); }
+        for (int s = 0; s < total; s++)
         {
-            float dur = Mathf.Lerp(SwapSlow, SwapFast, s / (float)(n - 1));
+            float dur = Mathf.Lerp(SwapSlow, SwapFast, s / (float)(total - 1));
             AudioManager.Play("bowl_shuffle", 0.7f);
+            if (pawAt.Contains(s)) StartCoroutine(PawSweep(dur * 2.6f));
             float r = UnityEngine.Random.value;
-            if (day >= 3 && s > 0 && r < 0.22f)
+            if (s > 0 && r < 0.18f)
             {
                 yield return Rotate(UnityEngine.Random.value < 0.5f ? 1 : -1, dur * 1.25f);
+                lastA = lastB = -1;
+            }
+            else if (n >= 4 && s > 0 && r < 0.45f)
+            {   // two pairs at once; the second starts a moment after the first
+                var idx = new List<int>(); for (int i = 0; i < n; i++) idx.Add(i);
+                for (int i = idx.Count - 1; i > 0; i--) { int j = UnityEngine.Random.Range(0, i + 1); int t = idx[i]; idx[i] = idx[j]; idx[j] = t; }
+                StartCoroutine(Swap(idx[0], idx[1], dur));
+                yield return new WaitForSecondsRealtime(dur * UnityEngine.Random.Range(0.15f, 0.45f));
+                yield return Swap(idx[2], idx[3], dur);
                 lastA = lastB = -1;
             }
             else
             {
                 int a, b;
-                do { a = UnityEngine.Random.Range(0, 3); b = UnityEngine.Random.Range(0, 3); }
+                do { a = UnityEngine.Random.Range(0, n); b = UnityEngine.Random.Range(0, n); }
                 while (a == b || (Mathf.Min(a, b) == lastA && Mathf.Max(a, b) == lastB));
-                if (day >= 2 && r > 0.82f) { yield return Feint(a, b, dur * 0.7f); a = b == 0 ? 1 : 0; if (a == b) a = 2; }
+                if (r > 0.8f)
+                {   // a fake: a starts towards b and goes back, then a different pair trades
+                    yield return Feint(a, b, dur * 0.7f);
+                    int c; do { c = UnityEngine.Random.Range(0, n); } while (c == a || c == b);
+                    a = c;
+                }
                 lastA = Mathf.Min(a, b); lastB = Mathf.Max(a, b);
                 yield return Swap(a, b, dur);
             }
-            yield return new WaitForSecondsRealtime(0.04f);
+            yield return new WaitForSecondsRealtime(0.03f);
         }
 
         hint.text = Loc.T("Daily.Pick");
@@ -178,21 +209,21 @@ public class DailyBowls : MonoBehaviour
     // all three bowls shift one place round (dir +1 = to the right); the one at the end swoops across in front
     IEnumerator Rotate(int dir, float dur)
     {
-        var from = new float[3]; var to = new int[3];
-        for (int i = 0; i < 3; i++) { from[i] = SlotX(slotOf[i]); to[i] = (slotOf[i] + dir + 3) % 3; }
-        int wrap = -1; for (int i = 0; i < 3; i++) if (Mathf.Abs(to[i] - slotOf[i]) == 2) wrap = i;
+        var from = new float[n]; var to = new int[n];
+        for (int i = 0; i < n; i++) { from[i] = SlotX(slotOf[i]); to[i] = (slotOf[i] + dir + n) % n; }
+        int wrap = -1; for (int i = 0; i < n; i++) if (Mathf.Abs(to[i] - slotOf[i]) == n - 1) wrap = i;
         if (wrap >= 0) bowls[wrap].SetAsLastSibling();
         yield return Tween(dur, k =>
         {
             float e = Kit.EaseInOut(k), w = Mathf.Sin(k * Mathf.PI);
-            for (int i = 0; i < 3; i++)
+            for (int i = 0; i < n; i++)
             {
                 bool wr = i == wrap;
                 bowls[i].anchoredPosition = new Vector2(Mathf.Lerp(from[i], SlotX(to[i]), e), BowlY + (wr ? -95f : 40f) * w);
                 bowls[i].localScale = Vector3.one * (1f + (wr ? 0.08f : -0.04f) * w);
             }
         });
-        for (int i = 0; i < 3; i++) slotOf[i] = to[i];
+        for (int i = 0; i < n; i++) slotOf[i] = to[i];
     }
 
     // bowl a starts towards b, stops halfway and slides back: nothing changes places
@@ -208,6 +239,46 @@ public class DailyBowls : MonoBehaviour
             bowls[b].localRotation = Quaternion.Euler(0, 0, 6f * w * Mathf.Sin(k * 30f));
         });
         bowls[a].anchoredPosition = new Vector2(xa, BowlY); bowls[a].localScale = Vector3.one; bowls[b].localRotation = Quaternion.identity;
+    }
+
+    // the distraction: a big cat paw swipes across the bowls in a puff of dust, covering them for a moment
+    IEnumerator PawSweep(float dur)
+    {
+        var layer = UIKit.Rect("sweep", root); UIKit.Place(layer, new Vector2(0.5f, 0.5f), Vector2.zero, Vector2.zero);
+        float span = Gap * (n - 1) + BowlW;
+        var puffs = new List<(RectTransform r, Image i, Vector2 at, float size, float delay)>();
+        for (int k = 0; k < 16; k++)
+        {
+            var im = UIKit.Image(layer, null, new Vector2(0.5f, 0.5f), Vector2.zero, Vector2.one);
+            im.sprite = Kit.SoftCircle(64); im.raycastTarget = false;
+            float x = Mathf.Lerp(-span * 0.55f, span * 0.55f, k / 15f) + UnityEngine.Random.Range(-40f, 40f);
+            puffs.Add((im.rectTransform, im, new Vector2(x, BowlY + UnityEngine.Random.Range(-70f, 70f)), UnityEngine.Random.Range(230f, 330f), k / 15f * 0.35f));
+        }
+        // the paw art ends in a straight cut at its left (the shoulder): that end always stays off the screen's left edge
+        const float PawW = 1300f;
+        float edge = -root.rect.width * 0.5f;
+        Image paw = GameArt.I.Has("cmb_paw") ? UIKit.Image(layer, "cmb_paw", new Vector2(0.5f, 0.5f), Vector2.zero, new Vector2(PawW, PawW * 0.6f)) : null;
+        if (paw != null) paw.raycastTarget = false;
+        AudioManager.Play("swap_1", 0.8f);
+        yield return Tween(dur, k =>
+        {
+            foreach (var p in puffs)
+            {   // dust rises behind the paw, stays thick in the middle of the sweep, then thins out
+                float q = Mathf.Clamp01((k - p.delay) / 0.3f);
+                float a = q * Mathf.Clamp01((1f - k) / 0.3f);
+                p.r.anchoredPosition = p.at + new Vector2(0, 30f * k);
+                p.r.sizeDelta = Vector2.one * p.size * (0.6f + 0.5f * q);
+                p.i.color = new Color(0.93f, 0.86f, 0.74f, 0.95f * a);
+            }
+            if (paw != null)
+            {   // in from the left, across the bowls, and back out
+                float outX = edge - PawW * 0.5f - 40f, inX = edge + PawW * 0.5f - 60f;   // hidden / reaching across, cut end still off-screen
+                float x = Mathf.Lerp(outX, inX, Kit.EaseInOut(Mathf.Clamp01(k / 0.5f)));
+                if (k > 0.65f) x = Mathf.Lerp(inX, outX, Kit.EaseInCubic((k - 0.65f) / 0.35f));
+                paw.rectTransform.anchoredPosition = new Vector2(x, BowlY + 20f + 30f * Mathf.Sin(k * Mathf.PI * 3f));
+            }
+        });
+        Destroy(layer.gameObject);
     }
 
     void Pick(int b)
@@ -250,8 +321,8 @@ public class DailyBowls : MonoBehaviour
         }
 
         yield return new WaitForSecondsRealtime(0.75f);
-        // ...and the other two bowls show what they were hiding
-        for (int i = 0; i < 3; i++)
+        // ...and the other bowls show what they were hiding
+        for (int i = 0; i < n; i++)
         {
             if (i == picked) continue;
             var p = Prize(i, 0.8f);
@@ -305,12 +376,12 @@ public class DailyBowls : MonoBehaviour
         secondTry = true; canPick = false; idle = false;
         foreach (var g in revealBits) if (g != null) Destroy(g);
         revealBits.Clear();
-        for (int i = 0; i < 3; i++) StartCoroutine(LiftBowl(i, false, 0.24f));
+        for (int i = 0; i < n; i++) StartCoroutine(LiftBowl(i, false, 0.24f));
         yield return new WaitForSecondsRealtime(0.45f);
         foreach (Transform t in prizeLayer) Destroy(t.gameObject);
         picked = -1;
-        goldBowl = UnityEngine.Random.Range(0, 3);
-        emptyBowl = (goldBowl + UnityEngine.Random.Range(1, 3)) % 3;
+        goldBowl = UnityEngine.Random.Range(0, n);
+        emptyBowl = (goldBowl + UnityEngine.Random.Range(1, n)) % n;
         title.text = Loc.T("Daily.Title"); title.fontSize = 88;
         hint.gameObject.SetActive(true); hint.text = Loc.T("Daily.Watch");
         StartCoroutine(Run());
@@ -322,14 +393,14 @@ public class DailyBowls : MonoBehaviour
         bool gold = bowl == goldBowl;
         if (bowl == emptyBowl && GameArt.I.Has("daily_kitten"))
         {
-            var k = UIKit.Image(prizeLayer, "daily_kitten", new Vector2(0.5f, 0.5f), new Vector2(SlotX(slotOf[bowl]), BowlY - 20f), new Vector2(205, 205));
+            var k = UIKit.Image(prizeLayer, "daily_kitten", new Vector2(0.5f, 0.5f), new Vector2(SlotX(slotOf[bowl]), BowlY - 20f * Sc), new Vector2(205, 205) * Sc);
             k.color = new Color(1f, 1f, 1f, Mathf.Max(alpha, 0.95f));
             StartCoroutine(Cry(k.rectTransform));
             return k.rectTransform;
         }
-        float size = gold ? 200f : 170f;
+        float size = (gold ? 200f : 170f) * Sc;
         var img = UIKit.Image(prizeLayer, gold ? "daily_fish" : (GameArt.I.Has("daily_small") ? "daily_small" : "ui_balance"), new Vector2(0.5f, 0.5f),
-                              new Vector2(SlotX(slotOf[bowl]), BowlY - 42f), new Vector2(size, size));
+                              new Vector2(SlotX(slotOf[bowl]), BowlY - 42f * Sc), new Vector2(size, size));
         img.color = new Color(1f, 1f, 1f, alpha);
         return img.rectTransform;
     }
@@ -338,7 +409,7 @@ public class DailyBowls : MonoBehaviour
     IEnumerator Cry(RectTransform kitten)
     {
         // eyes on the art (share of its width / height from the top-left); the image is 424x512, fitted in 205
-        Vector2 size = new Vector2(205f * 424f / 512f, 205f);
+        Vector2 size = new Vector2(205f * 424f / 512f, 205f) * Sc;
         Vector2[] eyes = { new Vector2(0.318f, 0.40f), new Vector2(0.658f, 0.40f) };
         float next = 0f, t = 0f;
         var drops = new List<(RectTransform r, Image i, float age, float vy)>();
@@ -372,8 +443,8 @@ public class DailyBowls : MonoBehaviour
 
     RectTransform PrizeLabel(int bowl, int amount, bool mine)
     {
-        var l = UIKit.Label(root, "+" + amount, mine ? 70 : 50, mine ? new Color(1f, 0.9f, 0.4f) : new Color(0.82f, 0.86f, 1f),
-                            new Vector2(0.5f, 0.5f), new Vector2(SlotX(slotOf[bowl]), MatY - 190f), new Vector2(240, 90), true);
+        var l = UIKit.Label(root, "+" + amount, Mathf.RoundToInt((mine ? 70 : 50) * Mathf.Lerp(1f, Sc, 0.6f)), mine ? new Color(1f, 0.9f, 0.4f) : new Color(0.82f, 0.86f, 1f),
+                            new Vector2(0.5f, 0.5f), new Vector2(SlotX(slotOf[bowl]), MatY - 190f), new Vector2(Gap, 90), true);
         return (RectTransform)l.transform;
     }
 
@@ -382,7 +453,8 @@ public class DailyBowls : MonoBehaviour
         lifted[b] = up;
         float x = SlotX(slotOf[b]);
         float from = bowls[b].anchoredPosition.y, to = BowlY + (up ? Lift : 0f);
-        float tilt = (slotOf[b] - 1) * -7f + (slotOf[b] == 1 ? 6f : 0f);
+        float mid = (n - 1) * 0.5f;
+        float tilt = (slotOf[b] - mid) * -7f * (2f / Mathf.Max(1f, n - 1)) + (Mathf.Approximately(slotOf[b], mid) ? 6f : 0f);
         yield return Tween(dur, k =>
         {
             float e = up ? Kit.EaseOutBack(k) : Kit.EaseInCubic(k);
@@ -414,9 +486,9 @@ public class DailyBowls : MonoBehaviour
     {
         float dt = Mathf.Min(Time.unscaledDeltaTime, 1f / 20f), t = Time.unscaledTime;
         if (idle)
-            for (int i = 0; i < 3; i++)
+            for (int i = 0; i < n; i++)
             {   // "pick me": the bowls hop a little, one after another
-                float w = Mathf.Pow(Mathf.Max(0f, Mathf.Sin(t * 3.2f - slotOf[i] * 0.9f)), 6f);
+                float w = Mathf.Pow(Mathf.Max(0f, Mathf.Sin(t * 3.2f - slotOf[i] * (2.7f / n))), 6f);
                 bowls[i].anchoredPosition = new Vector2(SlotX(slotOf[i]), BowlY + 22f * w);
                 bowls[i].localRotation = Quaternion.Euler(0, 0, 3f * w * Mathf.Sin(t * 20f));
             }

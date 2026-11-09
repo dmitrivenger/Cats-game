@@ -1133,7 +1133,8 @@ public class Board : MonoBehaviour
         else Affect(best.x, best.y, ctx, hit);
     }
 
-    const float HunterBombFuse = 0.14f;   // between the arrow's hit and the bomb going off
+    const float HunterBombFuse = 0.14f;
+    const float DoubleCrossDelay = 0.12f;   // navigator + navigator: the second cross goes off this much later   // between the arrow's hit and the bomb going off
 
     // horn blast: the four neighbours
     void HunterHorn(int x, int y, float t0, Ctx ctx)
@@ -1430,10 +1431,16 @@ public class Board : MonoBehaviour
             BombShoot(cx, cy, 2, 0f, ctx);
         }
         else if (t1 == Special.Line && t2 == Special.Line)
-        {
+        {   // a double cross: the row and column through the merge, then a moment later the row and column
+            // next to them (through the other navigator, or the neighbouring ones): 2 rows + 2 columns
             AudioManager.Play("Line-Pop");
             LineShoot(cx, cy, true, 0f, ctx);
             LineShoot(cx, cy, false, 0f, ctx);
+            int cx2 = a.x != cx ? a.x : (cx + 1 < cols ? cx + 1 : cx - 1);
+            int cy2 = a.y != cy ? a.y : (cy + 1 < rows ? cy + 1 : cy - 1);
+            LineShoot(cx2, cy2, true, DoubleCrossDelay, ctx);
+            LineShoot(cx2, cy2, false, DoubleCrossDelay, ctx);
+            StartCoroutine(Later(DoubleCrossDelay + 0.14f, () => { AudioManager.Play("Line-Pop"); FX.Shake(cell * 0.12f, 0.25f); }));   // +0.14: the pops start after the cats' short angry look
         }
         else
         {

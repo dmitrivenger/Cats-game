@@ -19,8 +19,9 @@ public class Ads : MonoBehaviour, IUnityAdsInitializationListener, IUnityAdsLoad
     // ---------------------------------------------------------------- settings
     // Android Game ID from the Unity Cloud dashboard (Monetization -> Ad Units). Empty = ads off on devices.
     public const string AndroidGameId = "800396013";
-    // Keep true until release: test mode shows Unity's sample ads and never pays out.
-    public const bool TestMode = true;
+    // Real ads since release 1.0.2 (test mode shows Unity's sample ads and never pays out).
+    // To try ads on your own phone, add it as a test device in the Unity Ads dashboard instead.
+    public const bool TestMode = false;
     // The single switch for full-screen ads after a lost level.
     public const bool InterstitialsOn = true;
     const string RewardedUnit = "BP_Rewarded_Android", InterstitialUnit = "BP_Interstitial_Android";   // placement IDs from the Unity dashboard
